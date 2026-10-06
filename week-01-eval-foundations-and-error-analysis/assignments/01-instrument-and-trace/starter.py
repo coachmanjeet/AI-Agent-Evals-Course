@@ -27,7 +27,7 @@ def main() -> None:
 
     rows = []
     for i, item in enumerate(inputs):
-        # item shape: {"category": "code-gen|doc-lookup|multi-turn", "messages": ["..."]}
+        # item shape: {"category": "order-refund|policy-warranty|multi-turn", "messages": ["..."]}
         messages = item["messages"] if isinstance(item, dict) else [item]
         reply = agent.run(messages[-1])  # TODO: handle full multi-turn history
         rows.append({

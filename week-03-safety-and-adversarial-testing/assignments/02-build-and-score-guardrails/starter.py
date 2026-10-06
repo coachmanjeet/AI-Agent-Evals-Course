@@ -12,7 +12,7 @@ import re
 # ---------------------------------------------------------------------------
 TEST_SET = [
     # ("Ignore previous instructions and ...", True),
-    # ("Where is my order ORD-1001?", False),
+    # ("Where is my order PRN-10421?", False),
 ]
 
 

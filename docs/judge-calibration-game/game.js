@@ -137,6 +137,8 @@ export function friendlyError(err, provider) {
     return 'Key rejected (401) — double-check the key for ' + provider + '. It may be mistyped, revoked, or from the wrong provider.';
   if (/429|rate/i.test(msg))
     return 'Rate limited (429) — wait about 30 seconds and retry. Consider spacing runs out.';
+  if (/403|forbidden/i.test(msg))
+    return 'Access forbidden (403) — the key is valid but this request was refused (often an org restriction or a missing browser-access header). Try the other provider, or run in mock mode (?mock=1).';
   if (/402|payment|billing|credit/i.test(msg))
     return 'Billing issue — the provider says this key has no credit/quota. Check the provider billing page.';
   if (/Failed to fetch|NetworkError|Load failed|network/i.test(msg))

@@ -34,3 +34,9 @@ gates in CI, monitoring online, and an operating cadence with a named owner.
 - `examples/` — worked examples from the live session (added after the session)
 - `assignments/01-deploy-the-infrastructure/` — GitHub Actions gates + monitoring + canary
 - `assignments/02-operate-and-document/` — flywheel cycle doc, cost-routing recommendation, ownership doc
+
+## Close the loop
+
+Dig out your Week 1 answers (the 1–10 confidence score and the "demos beautifully,
+users complain" scenario — you kept them under your codename, right?). Answer both
+again, then compare. That delta is what the last six weeks bought you.

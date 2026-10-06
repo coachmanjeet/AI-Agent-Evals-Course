@@ -3,6 +3,27 @@
 Why AI products need evals, the six quality dimensions, and the error-analysis
 workflow that turns production failures into datasets.
 
+> **Two paths through this week's hands-on work — pick one, both are legitimate.**
+> **Path A — LangSmith** (recommended for engineers): follow the assignment steps
+> below. Needs a `LANGSMITH_API_KEY` in your `.env`; traces land in the
+> `ai-evals-course` project where you annotate them.
+> **Path B — Trace Viewer** (zero setup): open the
+> [Trace Viewer](https://coachmanjeet.github.io/AI-Agent-Evals-Course/trace-viewer/),
+> click "Load the Pronto sample", and annotate traces right in your browser —
+> no keys, no installs. Re-run the 6 sample traces a few times (or upload your
+> own OTel JSON), then export your annotations as JSON/CSV — that's your
+> `annotations.csv` equivalent for Assignment 1.
+
+## Before you begin — 2 questions
+
+Answer these now and keep your answers (pick a codename so it's anonymous but
+yours). The same two questions come back in Week 6.
+
+1. **On a scale of 1–10**, how confident are you that you could design an
+   evaluation that tells you whether your AI feature is actually ready to ship?
+2. **Scenario:** your AI agent demos beautifully, but real users keep complaining.
+   What's your first move?
+
 ## What we covered
 
 - Production failure case studies: how AI products actually break in the wild

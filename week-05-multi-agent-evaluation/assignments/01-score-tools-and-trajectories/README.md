@@ -6,10 +6,10 @@ Move from scoring answers to scoring behavior: did the agent use the right tools
 
 ## Steps
 
-1. Build **15+ expected-action records** (`starter.py` has the schema): each record is a test input plus the expected tool sequence — required tools in order, optional tools, and an **extra-call policy** (which unexpected calls are harmless vs. which fail the case, e.g. an extra `search_docs` is fine, an extra `escalate` is not).
+1. Build **15+ expected-action records** (`starter.py` has the schema): each record is a test input plus the expected tool sequence — required tools in order, optional tools, and an **extra-call policy** (which unexpected calls are harmless vs. which fail the case, e.g. an extra `lookup_policy` is fine, an extra `escalate_to_human` is not).
 2. Run the agent over all 15+ records, capturing the full tool trajectory per run (LangSmith traces from Week 1 make this easy).
 3. Score tool use **per dimension**: right tool? right arguments? (validate arguments as structured output — types, formats, required fields) right order? policy violations?
-4. Build a **trajectory evaluator**: property-based checks over the trajectory (e.g. "lookup_order called before answering about an order", "no tool called twice with identical args", "escalate only as the last step").
+4. Build a **trajectory evaluator**: property-based checks over the trajectory (e.g. "`get_order_status` called before answering about an order", "no tool called twice with identical args", "`escalate_to_human` only as the last step").
 5. Flag **one fragile pass**: a case that passed but succeeded for the wrong reason (right answer, wrong trajectory). Write up why it's fragile.
 
 ## Acceptance criteria

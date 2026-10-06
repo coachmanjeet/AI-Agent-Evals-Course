@@ -26,13 +26,20 @@ Learn to build evaluation frameworks you can trust — then use them to ship AI 
 ```bash
 git clone https://github.com/coachmanjeet/AI-Agent-Evals-Course.git
 cd AI-Agent-Evals-Course
-make setup          # creates .venv, installs deps, copies .env.example -> .env
+make setup          # creates .venv, installs core deps, copies .env.example -> .env
 ```
 
 Then edit `.env` and paste your API key. Verify with:
 
 ```bash
 make agent          # runs the Week 1 agent skeleton in --demo mode (no API key needed)
+```
+
+Later, as the weeks need them:
+
+```bash
+make setup-extra    # before Week 2: deepeval + ragas (slow — run ahead of time)
+npm install -g promptfoo   # before Week 3: adversarial scans (Node-based)
 ```
 
 ## Repo tour
@@ -51,6 +58,15 @@ make agent          # runs the Week 1 agent skeleton in --demo mode (no API key 
 ## How assignments work
 
 Each assignment folder has its own README with a **Goal**, numbered **Steps**, and **Acceptance criteria** — that README is the source of truth. Starter code/templates sit alongside it. Attempt the assignment before peeking at `solutions/`; the learning is in the struggle.
+
+## Troubleshooting
+
+- **Setup seems stuck:** it's the 3–5 minute pip install — don't Ctrl-C. If you did, just rerun `make setup`; it resumes.
+- **Windows:** use WSL2 — `ragas`/`deepeval` are painful on native Windows.
+- **LangSmith 401:** check `LANGSMITH_API_KEY` in `.env` (not committed — that's the point), and that your project is named `ai-evals-course`.
+- **`make agent` fails:** did `make setup` finish? Look for the `[3/3]` line.
+- **Judge game API errors:** 401 → check the key; 429 → wait 30s and retry; anything else → append `?mock=1` to the URL for keyless practice.
+- **promptfoo not found:** it's Node-based — `npm install -g promptfoo` (Week 3).
 
 ## Weekly rhythm
 

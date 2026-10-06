@@ -12,11 +12,11 @@ import json
 # ---------------------------------------------------------------------------
 EXPECTED_ACTIONS = [
     {
-        "input": "Where is my order ORD-1001?",
-        "required_tools": ["lookup_order"],
+        "input": "Where is my order PRN-10421?",
+        "required_tools": ["get_order_status"],
         "order_matters": True,
-        "extra_call_policy": "allow",   # an extra search_docs is harmless here
-        "forbidden_tools": ["escalate"],
+        "extra_call_policy": "allow",   # an extra lookup_policy is harmless here
+        "forbidden_tools": ["escalate_to_human"],
         # TODO: add 14+ more records covering your agent's surface.
     },
 ]
@@ -25,11 +25,11 @@ EXPECTED_ACTIONS = [
 def capture_trajectory(agent, user_message: str) -> list:
     """Run the agent and return the tool-call trajectory.
 
-    Returns e.g. [{"tool": "lookup_order", "args": {"order_id": "ORD-1001"}}].
+    Returns e.g. [{"tool": "get_order_status", "args": {"order_id": "PRN-10421"}}].
     TODO: implement by wrapping agent tools (or reading the LangSmith trace).
     """
-    # TODO: simplest path — monkeypatch agent.lookup_order / search_docs /
-    # escalate to append to a list, call agent.run(), return the list.
+    # TODO: simplest path — monkeypatch agent.get_order_status / lookup_policy /
+    # escalate_to_human to append to a list, call agent.run(), return the list.
     raise NotImplementedError("capture the tool trajectory here")
 
 
