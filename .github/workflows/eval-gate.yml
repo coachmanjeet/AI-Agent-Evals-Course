@@ -1,0 +1,49 @@
+# Example eval gate for GitHub Actions.
+#
+# Week 6 assignment: wire this up for real. Replace the placeholder echo
+# commands with your harness, e.g.:
+#   python -m eval_harness run --suite pr --fail-under 0.9
+#
+# Secrets needed (repo Settings -> Secrets and variables -> Actions):
+#   OPENAI_API_KEY, LANGSMITH_API_KEY
+name: eval-gate
+
+on:
+  pull_request:
+  schedule:
+    - cron: "0 6 * * *" # nightly regression, UTC
+
+jobs:
+  pr-check:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Run fast eval subset
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
+        run: |
+          echo "TODO (Week 6): replace with your fast PR eval suite."
+          echo "Example: python -m eval_harness run --suite pr --fail-under 0.9"
+
+  nightly-regression:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Run full regression suite
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
+        run: |
+          echo "TODO (Week 6): replace with your full regression suite."
+          echo "Example: python -m eval_harness run --suite full --report reports/nightly.md"
