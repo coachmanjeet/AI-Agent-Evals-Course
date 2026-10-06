@@ -30,6 +30,18 @@ workflow that turns production failures into datasets.
 - LangSmith docs — tracing, datasets, annotation: https://docs.langchain.com/langsmith
 - LangSmith concepts (traces, spans, runs): https://docs.langchain.com/langsmith/observability-concepts
 
+## Tool: Trace Viewer
+
+**[Trace Viewer](https://coachmanjeet.github.io/AI-Agent-Evals-Course/trace-viewer/)** —
+a static, in-browser OTel trace explorer built for this week's error-analysis
+workflow. Upload any OTel trace JSON (OTLP `resourceSpans` or flat `spans`),
+browse the span waterfall, inspect attributes/events, and annotate each trace
+with a failure mode from the course taxonomy. Annotations auto-save in your
+browser and export as JSON/CSV — the seed of the eval dataset you build in
+later weeks. Ships with a 6-trace Pronto sample (5 failure modes + 1 clean
+trace) so it works end-to-end with zero setup. No backend; nothing you upload
+leaves your browser.
+
 ## In this folder
 
 - `examples/` — worked examples from the live session (added after the session)

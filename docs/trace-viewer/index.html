@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trace Viewer — AI Evals Course</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Lato:wght@300;400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@salesforce-ux/design-system@2.25.5/assets/styles/salesforce-lightning-design-system.min.css">
+  <style>
+/* Inlined page styles (self-contained; no external site assets). */
+:root {
+  --tv-accent: #2f6db0;
+  --tv-accent-dark: #1f4e86;
+  --tv-accent-soft: #e8f0fa;
+  --tv-green: #2e9e4f;
+  --tv-green-soft: #e6f6ec;
+  --tv-red: #d93a2b;
+  --tv-red-soft: #fdeceb;
+  --tv-amber: #b7791f;
+  --tv-amber-soft: #fdf3e0;
+  --tv-border: #d5dce6;
+  --tv-ink: #111827;
+  --tv-ink-2: #374151;
+  --tv-ink-3: #6b7280;
+  --tv-bg: #f6f8fb;
+  --tv-card: #ffffff;
+  --tv-radius: 10px;
+  --tv-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+body.tv-body {
+  background: var(--tv-bg); color: var(--tv-ink);
+  font-family: 'Lato', -apple-system, 'Segoe UI', sans-serif;
+  margin: 0; min-height: 100vh;
+}
+/* ---------- Topbar ---------- */
+.tv-topbar { position: sticky; top: 0; z-index: 20; background: var(--tv-card);
+  border-bottom: 1px solid var(--tv-border); }
+.tv-topbar__inner { max-width: 1440px; margin: 0 auto; padding: 12px 24px;
+  display: flex; align-items: center; gap: 20px; }
+.tv-topbar__back { color: var(--tv-ink-3); font-size: 13px; font-weight: 600;
+  text-decoration: none; white-space: nowrap; }
+.tv-topbar__back:hover { color: var(--tv-accent-dark); }
+.tv-topbar__title { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.tv-topbar__eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--tv-accent-dark); }
+.tv-topbar__name { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; }
+.tv-topbar__actions { display: flex; align-items: center; gap: 10px; }
+.tv-progress { font-size: 13px; font-weight: 700; color: var(--tv-ink-2); white-space: nowrap; }
+/* ---------- Buttons / inputs ---------- */
+.tv-btn { font-family: inherit; font-size: 13px; font-weight: 600; padding: 8px 16px;
+  border-radius: 6px; border: 1px solid transparent; cursor: pointer; }
+.tv-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.tv-btn--primary { background: var(--tv-accent-dark); color: #fff; }
+.tv-btn--primary:not(:disabled):hover { background: #183c68; }
+.tv-btn--ghost { background: transparent; color: var(--tv-ink-2); border-color: var(--tv-border); }
+.tv-btn--ghost:not(:disabled):hover { border-color: #9aa3b5; color: var(--tv-ink); }
+.tv-input, .tv-select, .tv-textarea { border: 1px solid #c9d0e0; border-radius: 6px;
+  padding: 8px 10px; font-size: 13px; font-family: inherit; background: #fff; color: var(--tv-ink); }
+.tv-textarea { width: 100%; min-height: 54px; resize: vertical; }
+/* ---------- Layout ---------- */
+.tv-layout { max-width: 1440px; margin: 0 auto; padding: 16px 24px 60px;
+  display: grid; grid-template-columns: 300px minmax(0,1fr) 360px; gap: 16px;
+  align-items: start; }
+.tv-panel { background: var(--tv-card); border: 1px solid var(--tv-border);
+  border-radius: var(--tv-radius); overflow: hidden; }
+.tv-panel__head { padding: 12px 14px; border-bottom: 1px solid var(--tv-border);
+  font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; gap: 8px; }
+.tv-panel__head .tv-count { margin-left: auto; font-family: 'Lato', sans-serif;
+  font-size: 12px; font-weight: 600; color: var(--tv-ink-3); }
+/* ---------- Trace list ---------- */
+.tv-filters { padding: 10px 12px; border-bottom: 1px solid var(--tv-border);
+  display: flex; flex-direction: column; gap: 8px; }
+.tv-filters .tv-input, .tv-filters .tv-select { width: 100%; box-sizing: border-box; }
+.tv-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--tv-ink-2); }
+.tv-tracelist { max-height: calc(100vh - 330px); min-height: 200px; overflow-y: auto; }
+.tv-trace { padding: 10px 12px; border-bottom: 1px solid #eef1f6; cursor: pointer;
+  border-left: 3px solid transparent; }
+.tv-trace:hover { background: #f8fafd; }
+.tv-trace.is-selected { background: var(--tv-accent-soft); border-left-color: var(--tv-accent); }
+.tv-trace__id { font-family: var(--tv-mono); font-size: 11px; color: var(--tv-ink-3); }
+.tv-trace__name { font-size: 13.5px; font-weight: 700; margin: 2px 0; }
+.tv-trace__meta { font-size: 12px; color: var(--tv-ink-3); display: flex; gap: 8px; align-items: center; }
+.tv-badge { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 0.06em;
+  padding: 2px 8px; border-radius: 999px; text-transform: uppercase; }
+.tv-badge--err { background: var(--tv-red-soft); color: var(--tv-red); }
+.tv-badge--ok { background: var(--tv-green-soft); color: var(--tv-green); }
+.tv-badge--mode { background: var(--tv-amber-soft); color: var(--tv-amber); }
+.tv-badge--reviewed { background: var(--tv-accent-soft); color: var(--tv-accent-dark); }
+.tv-empty { padding: 28px 16px; text-align: center; color: var(--tv-ink-3); font-size: 13px; }
+/* ---------- Span tree ---------- */
+.tv-tracehead { padding: 12px 16px; border-bottom: 1px solid var(--tv-border); }
+.tv-tracehead__id { font-family: var(--tv-mono); font-size: 11px; color: var(--tv-ink-3); }
+.tv-tracehead__name { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; }
+.tv-tree { max-height: calc(100vh - 420px); min-height: 220px; overflow-y: auto; padding: 8px 0; }
+.tv-span { display: grid; grid-template-columns: minmax(0,1fr) 150px 70px; gap: 8px;
+  align-items: center; padding: 5px 12px 5px 0; cursor: pointer; font-size: 13px; }
+.tv-span:hover { background: #f8fafd; }
+.tv-span.is-selected { background: var(--tv-accent-soft); }
+.tv-span.is-error .tv-span__name { color: var(--tv-red); font-weight: 700; }
+.tv-span__left { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.tv-caret { width: 18px; height: 18px; flex: none; border: none; background: none;
+  cursor: pointer; color: var(--tv-ink-3); font-size: 11px; padding: 0; }
+.tv-caret--leaf { visibility: hidden; }
+.tv-span__name { font-family: var(--tv-mono); font-size: 12.5px; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; }
+.tv-span__dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: #c9d0e0; }
+.tv-span.is-error .tv-span__dot { background: var(--tv-red); }
+.tv-bar { position: relative; height: 10px; background: #eef1f6; border-radius: 4px; }
+.tv-bar__fill { position: absolute; top: 0; bottom: 0; border-radius: 4px; background: var(--tv-accent); }
+.tv-span.is-error .tv-bar__fill { background: var(--tv-red); }
+.tv-span__dur { font-family: var(--tv-mono); font-size: 11.5px; color: var(--tv-ink-3); text-align: right; }
+/* ---------- Annotation bar ---------- */
+.tv-annotate { border-top: 1px solid var(--tv-border); padding: 12px 16px; background: #fbfcfe;
+  position: sticky; bottom: 0; }
+.tv-annotate__title { font-size: 12px; font-weight: 800; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--tv-ink-3); margin-bottom: 8px; }
+.tv-annotate__row { display: flex; gap: 10px; align-items: flex-start; }
+.tv-annotate__row .tv-select { flex: none; width: 240px; }
+.tv-annotate__row .tv-textarea { flex: 1; }
+.tv-annotate__saved { font-size: 12px; color: var(--tv-green); font-style: italic; margin-top: 6px; min-height: 16px; }
+/* ---------- Detail panel ---------- */
+.tv-detail { max-height: calc(100vh - 190px); overflow-y: auto; }
+.tv-detail__sec { padding: 12px 14px; border-bottom: 1px solid #eef1f6; }
+.tv-detail__sec h4 { margin: 0 0 8px; font-size: 11px; font-weight: 800;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--tv-ink-3); }
+.tv-kv { display: grid; grid-template-columns: 150px minmax(0,1fr); gap: 4px 10px; font-size: 12.5px; }
+.tv-kv dt { color: var(--tv-ink-3); font-weight: 600; overflow-wrap: anywhere; }
+.tv-kv dd { margin: 0; font-family: var(--tv-mono); font-size: 12px; overflow-wrap: anywhere;
+  white-space: pre-wrap; }
+.tv-attr { border-bottom: 1px dashed #eef1f6; padding: 6px 0; }
+.tv-attr:last-child { border-bottom: none; }
+.tv-event { border: 1px solid var(--tv-border); border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; }
+.tv-event__name { font-family: var(--tv-mono); font-size: 12px; font-weight: 700; }
+.tv-event__time { font-size: 11px; color: var(--tv-ink-3); font-family: var(--tv-mono); }
+/* ---------- Upload / error ---------- */
+.tv-upload { border: 2px dashed var(--tv-border); border-radius: var(--tv-radius);
+  background: var(--tv-card); padding: 40px 24px; text-align: center; margin-bottom: 16px; }
+.tv-upload.is-drag { border-color: var(--tv-accent); background: var(--tv-accent-soft); }
+.tv-upload h3 { font-family: 'Poppins', sans-serif; margin: 0 0 8px; }
+.tv-upload p { color: var(--tv-ink-3); font-size: 13px; margin: 0 0 16px; }
+.tv-error { background: var(--tv-red-soft); border: 1px solid #f3b8bc; border-radius: var(--tv-radius);
+  padding: 16px 20px; margin-bottom: 16px; color: #8f1d22; font-size: 13.5px; }
+.tv-error code { font-family: var(--tv-mono); font-size: 12px; background: #fff;
+  padding: 2px 6px; border-radius: 4px; }
+.tv-error ul { margin: 8px 0 0; padding-left: 20px; }
+.tv-exportbar { display: flex; gap: 10px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+.tv-exportbar__hint { font-size: 12.5px; color: var(--tv-ink-3); font-style: italic; }
+.tv-hidden { display: none !important; }
+@media (max-width: 1100px) {
+  .tv-layout { grid-template-columns: 1fr; }
+  .tv-tracelist, .tv-tree, .tv-detail { max-height: 420px; }
+}
+  </style>
+</head>
+<body class="tv-body">
+
+  <header class="tv-topbar">
+    <div class="tv-topbar__inner">
+      <a class="tv-topbar__back" href="https://github.com/coachmanjeet/AI-Agent-Evals-Course">← Back to AI-Agent-Evals-Course</a>
+      <div class="tv-topbar__title">
+        <span class="tv-topbar__eyebrow">Week 1 · Tool</span>
+        <span class="tv-topbar__name">Trace Viewer</span>
+      </div>
+      <div class="tv-topbar__actions">
+        <span class="tv-progress" data-role="progress"></span>
+        <button class="tv-btn tv-btn--ghost" data-role="load-sample">Load sample</button>
+        <button class="tv-btn tv-btn--ghost" data-role="export-json" disabled>Export JSON</button>
+        <button class="tv-btn tv-btn--ghost" data-role="export-csv" disabled>Export CSV</button>
+        <button class="tv-btn tv-btn--primary" data-role="upload-btn">Upload traces</button>
+        <input type="file" class="tv-hidden" data-role="file-input" accept=".json,application/json">
+      </div>
+    </div>
+  </header>
+
+  <main class="tv-layout">
+    <div data-role="alert-mount" style="grid-column: 1 / -1;"></div>
+
+    <section data-role="upload-zone" class="tv-upload" style="grid-column: 1 / -1;">
+      <h3>Drop an OTel trace JSON file here</h3>
+      <p>Accepts OTLP JSON (<code>resourceSpans</code>) or a flat <code>{"spans": [...]}</code>.
+         Everything stays in your browser — nothing is uploaded anywhere.</p>
+      <button class="tv-btn tv-btn--primary" data-role="upload-btn-2">Choose file</button>
+      <span style="margin: 0 10px; color: var(--tv-ink-3); font-size: 13px;">or</span>
+      <button class="tv-btn tv-btn--ghost" data-role="load-sample-2">Load the Pronto sample</button>
+    </section>
+
+    <aside class="tv-panel tv-hidden" data-role="panel-left">
+      <div class="tv-panel__head">Traces <span class="tv-count" data-role="trace-count"></span></div>
+      <div class="tv-filters">
+        <input class="tv-input" data-role="filter-q" type="search" placeholder="Search name or trace id…">
+        <select class="tv-select" data-role="filter-review">
+          <option value="all">All review states</option>
+          <option value="unreviewed">Unreviewed</option>
+          <option value="has_failure">Has failure</option>
+          <option value="no_failure">No failure</option>
+        </select>
+        <select class="tv-select" data-role="filter-mode">
+          <option value="all">All failure modes</option>
+        </select>
+        <label class="tv-check"><input type="checkbox" data-role="filter-errors"> Errors only</label>
+      </div>
+      <div class="tv-tracelist" data-role="trace-list"></div>
+    </aside>
+
+    <section class="tv-panel tv-hidden" data-role="panel-center">
+      <div class="tv-tracehead" data-role="trace-head"></div>
+      <div class="tv-tree" data-role="span-tree"></div>
+      <div class="tv-annotate">
+        <div class="tv-annotate__title">Annotate this trace</div>
+        <div class="tv-annotate__row">
+          <select class="tv-select" data-role="annot-mode" aria-label="Failure mode"></select>
+          <textarea class="tv-textarea" data-role="annot-note" placeholder="What went wrong? (free-text note)"></textarea>
+        </div>
+        <div class="tv-annotate__saved" data-role="annot-saved" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <aside class="tv-panel tv-hidden" data-role="panel-right">
+      <div class="tv-panel__head">Span detail</div>
+      <div class="tv-detail" data-role="span-detail"></div>
+    </aside>
+
+    <div class="tv-exportbar tv-hidden" data-role="exportbar" style="grid-column: 1 / -1;">
+      <span class="tv-exportbar__hint">📦 Your annotations are the seed of your eval dataset — each labeled trace becomes a gold example for the evals you build next.</span>
+    </div>
+  </main>
+
+  <script type="module" src="./viewer.js"></script>
+</body>
+</html>
