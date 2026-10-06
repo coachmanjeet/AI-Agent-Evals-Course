@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Judge Calibration Game — AI Evals Course</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Lato:wght@300;400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@salesforce-ux/design-system@2.25.5/assets/styles/salesforce-lightning-design-system.min.css">
+  <style>
+/* Inlined page styles (self-contained; no external site assets). */
+
+:root {
+  --rb-accent: #34d399;
+  --rb-accent-dark: #059669;
+  --rb-accent-soft: #d1fae5;
+  --rb-border: #d5dce6;
+  --rb-border-strong: #b5bcc9;
+  --rb-ink: #111827;
+  --rb-ink-2: #374151;
+  --rb-ink-3: #6b7280;
+  --rb-bg: #f6f8fb;
+  --rb-card: #ffffff;
+  --rb-radius: 10px;
+  --rb-radius-sm: 6px;
+  --rb-shadow-1: 0 1px 2px rgba(15,23,42,0.06), 0 1px 3px rgba(15,23,42,0.04);
+  --rb-shadow-2: 0 4px 10px rgba(15,23,42,0.06), 0 10px 24px rgba(15,23,42,0.06);
+}
+
+.rb-body {
+  background: var(--rb-bg);
+  color: var(--rb-ink);
+  font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* ---------- Topbar + stepper ---------- */
+.rb-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--rb-card);
+  border-bottom: 1px solid var(--rb-border);
+}
+.rb-topbar__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.rb-topbar__back {
+  color: var(--rb-ink-3);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.rb-topbar__back:hover { color: var(--rb-accent-dark); }
+.rb-topbar__title { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.rb-topbar__eyebrow {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rb-accent-dark);
+}
+.rb-topbar__name {
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--rb-ink);
+}
+.rb-topbar__actions { display: flex; align-items: center; gap: 12px; }
+.rb-topbar__save {
+  font-size: 11px;
+  color: var(--rb-ink-3);
+  font-style: italic;
+  min-width: 90px;
+  text-align: right;
+}
+
+.rb-stepper {
+  border-top: 1px solid var(--rb-border);
+  background: #fbfcfe;
+}
+.rb-stepper__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 24px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.rb-step {
+  border: 1px solid var(--rb-border);
+  background: var(--rb-card);
+  border-radius: var(--rb-radius-sm);
+  padding: 8px 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s, border-color 0.12s;
+  font-family: inherit;
+}
+.rb-step:hover { border-color: var(--rb-border-strong); }
+.rb-step[disabled] { cursor: not-allowed; opacity: 0.5; }
+.rb-step.is-current { border-color: var(--rb-accent); background: var(--rb-accent-soft); }
+.rb-step.is-done { border-color: var(--rb-accent-dark); }
+.rb-step__num {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--rb-ink-3);
+  text-transform: uppercase;
+}
+.rb-step.is-current .rb-step__num { color: var(--rb-accent-dark); }
+.rb-step.is-done .rb-step__num { color: var(--rb-accent-dark); }
+.rb-step__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rb-ink);
+  margin-top: 2px;
+}
+.rb-step__check { color: var(--rb-accent-dark); font-weight: 800; margin-right: 4px; }
+
+.rb-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+}
+.rb-stage {
+  background: var(--rb-card);
+  border: 1px solid var(--rb-border);
+  border-radius: var(--rb-radius);
+  padding: 28px 32px;
+  box-shadow: var(--rb-shadow-1);
+  min-height: 400px;
+}
+/* ---------- Stage typography ---------- */
+.rb-stage__eyebrow {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rb-accent-dark);
+  margin-bottom: 8px;
+}
+.rb-stage__title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--rb-ink);
+  margin: 0 0 10px;
+}
+.rb-stage__lede {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--rb-ink-2);
+  margin: 0 0 22px;
+  max-width: 640px;
+}
+
+/* ---------- Buttons ---------- */
+.rb-btn {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: var(--rb-radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.rb-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.rb-btn--primary {
+  background: var(--rb-accent-dark);
+  color: white;
+}
+.rb-btn--primary:not(:disabled):hover { background: #047857; }
+.rb-btn--ghost {
+  background: transparent;
+  color: var(--rb-ink-2);
+  border-color: var(--rb-border);
+}
+.rb-btn--ghost:not(:disabled):hover {
+  background: var(--rb-card);
+  border-color: var(--rb-border-strong);
+  color: var(--rb-ink);
+}
+
+/* ---------- Nav ---------- */
+.rb-nav {
+  max-width: 1200px;
+  margin: 20px auto 40px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.rb-nav__hint {
+  flex: 1;
+  font-size: 12.5px;
+  color: var(--rb-ink-3);
+  font-style: italic;
+}
+
+    .jc-shell { max-width: 960px; margin: 0 auto; padding: 24px 24px 80px; }
+    .jc-xp { height: 10px; border-radius: 999px; background: #e6e9f0; overflow: hidden; }
+    .jc-xp__fill { height: 100%; width: 0%; border-radius: 999px;
+      background: linear-gradient(90deg, #34d399, #22d3ee); transition: width .4s ease; }
+    .jc-card { background: #fff; border: 1px solid #e2e6ef; border-radius: 14px;
+      padding: 20px; margin: 16px 0; box-shadow: 0 2px 10px rgba(20,30,60,.05); }
+    .jc-card__who { font-size: 11px; letter-spacing: .12em; font-weight: 700; color: #7b86a0; margin-bottom: 6px; }
+    .jc-card__text { font-size: 16px; line-height: 1.55; white-space: pre-wrap; }
+    .jc-choices { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+    .jc-note { width: 100%; margin-top: 12px; }
+    .jc-kbd { display: inline-block; border: 1px solid #c9d0e0; border-bottom-width: 2px;
+      border-radius: 6px; padding: 1px 8px; font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px; background: #f7f9fc; }
+    .jc-matrix { border-collapse: collapse; margin: 12px 0; }
+    .jc-matrix th, .jc-matrix td { border: 1px solid #d9dee9; padding: 8px 14px; text-align: center; font-size: 14px; }
+    .jc-matrix th { background: #f2f5fa; font-weight: 600; }
+    .jc-metric { display: inline-block; background: #f2f5fa; border-radius: 10px;
+      padding: 10px 16px; margin: 0 10px 10px 0; min-width: 120px; }
+    .jc-metric__v { font-size: 22px; font-weight: 700; font-family: 'Poppins', sans-serif; }
+    .jc-metric__l { font-size: 12px; color: #7b86a0; }
+    .jc-mismatch { border-left: 4px solid #e5484d; }
+    .jc-match { border-left: 4px solid #34d399; }
+    .jc-warn { background: #fff8e6; border: 1px solid #f0d98c; border-radius: 10px;
+      padding: 12px 16px; font-size: 13px; margin: 12px 0; }
+    .jc-error { background: #fdecec; border: 1px solid #f3b8bc; border-radius: 10px;
+      padding: 12px 16px; font-size: 13px; margin: 12px 0; color: #8f1d22; }
+    .jc-muted { color: #7b86a0; font-size: 13px; }
+    .jc-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .jc-field { margin: 10px 0; }
+    .jc-field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .jc-input, .jc-select, .jc-textarea { width: 100%; border: 1px solid #c9d0e0; border-radius: 8px;
+      padding: 10px 12px; font-size: 14px; font-family: 'Lato', sans-serif; }
+    .jc-textarea { min-height: 170px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.5; }
+    .jc-progress { font-size: 13px; font-weight: 600; color: #42506b; }
+    @media (max-width: 640px) {
+      .jc-shell { padding: 16px 14px 70px; }
+      .jc-choices .rb-btn { flex: 1; }
+    }
+  
+  </style>
+</head>
+<body class="rb-body">
+
+  <header class="rb-topbar">
+    <div class="rb-topbar__inner">
+      <a class="rb-topbar__back" href="https://github.com/coachmanjeet/AI-Agent-Evals-Course">← Back to AI-Agent-Evals-Course</a>
+      <div class="rb-topbar__title">
+        <span class="rb-topbar__eyebrow">Week 2 · Exercise</span>
+        <span class="rb-topbar__name">Judge Calibration Game</span>
+      </div>
+      <div class="rb-topbar__actions">
+        <span class="rb-topbar__save" data-role="save-indicator" aria-live="polite"></span>
+        <button class="rb-btn rb-btn--ghost" data-role="reset">Start over</button>
+      </div>
+    </div>
+    <div class="rb-stepper" role="tablist" aria-label="Builder stages">
+      <div class="rb-stepper__inner" data-role="stepper"></div>
+    </div>
+  </header>
+
+  <main class="rb-main">
+    <div class="jc-shell">
+      <section class="rb-stage" data-role="stage-mount" aria-live="polite"></section>
+    </div>
+    <nav class="rb-nav">
+      <button class="rb-btn rb-btn--ghost" data-role="back">← Back</button>
+      <div class="rb-nav__hint" data-role="nav-hint"></div>
+      <button class="rb-btn rb-btn--primary" data-role="next">Next →</button>
+    </nav>
+  </main>
+
+  <script type="module" src="./game.js"></script>
+</body>
+</html>

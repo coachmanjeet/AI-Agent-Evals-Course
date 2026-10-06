@@ -34,3 +34,16 @@ root causes, and how to validate them against human labels before they gate anyt
 - `examples/` — worked examples from the live session (added after the session)
 - `assignments/01-build-and-validate-judge/` — 3 binary rubrics as DeepEval judges, validated on 40 labels
 - `assignments/02-diagnose-and-compare/` — diagnose-and-fix cycle, prompt A/B, ship/no-ship decision
+
+## Hands-on game
+
+**[Judge Calibration Game](https://coachmanjeet.github.io/AI-Agent-Evals-Course/judge-calibration-game/)**
+— the interactive companion for this week. Label 24 Pronto support responses
+pass/fail, write a judge prompt, and watch your judge's agreement with your
+labels scored live (accuracy, precision/recall, F1, Cohen's κ) — then check
+your labels against the gold answer key. Bring your own OpenAI/Anthropic key,
+or run the whole thing in `?mock=1` test mode with no key. Source and docs:
+`docs/judge-calibration-game/`.
+
+> Requires GitHub Pages to be enabled on this repo (Settings → Pages →
+> Deploy from a branch → `main` → `/docs`).
