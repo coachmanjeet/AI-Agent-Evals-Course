@@ -40,6 +40,7 @@ make agent          # runs the Week 1 agent skeleton in --demo mode (no API key 
 | Path | What it is |
 |------|------------|
 | `agent/` | The shared customer-service agent you build in Week 1 and reuse every week after |
+| `datasets/` | The Pronto reference dataset: 24 support tickets, a 48-row gold eval set, a 12-row regression set, and the ticket generator |
 | `week-01-...` … `week-06-...` | One folder per live session: recap README, worked `examples/`, and two `assignments/` |
 | `solutions/` | Released after each live session — one folder per week |
 | `resources/` | Glossary and curated links |
