@@ -15,7 +15,8 @@ workflow that turns production failures into datasets.
 > `annotations.csv` equivalent for Assignment 1.
 >
 > Path B is a complete Week 1 experience — no key needed at all. From Week 2
-> on you'll need an LLM API key, so get one set up before then.
+> on you'll need an LLM API key (any provider — OpenAI, Anthropic, or Gemini;
+> $5 is enough to start), so get one set up before then.
 
 ## This week's workflow
 

@@ -47,7 +47,7 @@ flowchart TD
 
 - Python 3.10+ (Mac, Windows, or Linux, 4 GB RAM)
 - Basic familiarity with Git and GitHub
-- An LLM API key (OpenAI, Anthropic, or Gemini) — **not needed for Week 1** (Path B below is fully keyless), but required from Week 2 onward. Expect roughly **$10–20** in total API usage across the course.
+- An LLM API key — any provider works (OpenAI, Anthropic, or Gemini); **$5** is enough to start. **Not needed for Week 1** (Path B below is fully keyless), but required from Week 2 onward.
 
 ## Setup
 
