@@ -713,6 +713,27 @@ Process layer — human review workflows for flagged interactions, escalation pa
 
 Governance layer — policies, risk acceptance criteria, audit logging, compliance evidence.
 
+<details>
+<summary><strong>How do I decide how much human-in-the-loop my agent needs?</strong></summary>
+
+The principle is closed-loop human control. Responsible agents do not require a person to approve every action — that would not scale — but people must remain in control in three ways.
+
+Authorize. A human defines the agent's mission, its permissions, and its boundaries. Nothing the agent does should surprise the person who authorized it.
+
+Observe. People can see what the agent did, what tools and data it used, and why it made a recommendation or took an action. Observability is what makes the other two possible.
+
+Correct. They can pause it, override it, reverse an action where possible, and use failures to improve the system. Every correction should feed the eval set.
+
+In practice, the line is drawn by impact:
+
+Allow autonomy for low-impact, well-scoped, visible, reversible work. A Pronto agent refunding $18.40 on a moldy-strawberry claim with a photo on file needs no human.
+
+Require approval when money, permissions, customer commitments, or irreversible changes are involved. The $50 refund cap, issuing account credit, or changing a delivery address — a human signs off.
+
+And if the agent is outside its mandate, uncertain, or cannot explain its intended action, it should stop and escalate. "I don't know" is a valid and safe output; guessing is not.
+
+Calibrate over time: start strict, then widen autonomy as the evals prove each task type safe. The approval boundary is a living policy, tightened or loosened by evidence — not set once and forgotten.
+
 </details>
 
 ## Section 7 — Context Engineering & RAG Evaluation
