@@ -1004,6 +1004,27 @@ Prompt optimization — run automated prompt compression for repetitive system p
 
 Context management strategies — reduce, offload, and isolate context (see Section 2 on context engineering) to prevent token bloat in long sessions.
 
+<details>
+<summary><strong>What does it cost to run AI evals, and how do I make it cheaper?</strong></summary>
+
+Four things cost money, in descending order: LLM-judge calls (almost always the biggest line item), human annotation for gold sets, compute/CI time to run suites, and one-time dataset creation.
+
+Illustrative numbers (rough — they move with model pricing): a GPT-4o-class judge runs about $2.50 per 1,000 judgments. A 100-case suite scored on 4 criteria costs on the order of $0.40 with a flash-class judge versus ~$6 with a frontier-class judge. Human annotation runs $50–125 per 1,000 labels — 20–50× the judge. A 200-case suite on every PR at mini-class pricing is roughly $4 a run, or ~$160/month at 10 PRs a week. Compare that to one bad deploy.
+
+Six levers to bring it down:
+
+Judge with small models. A mini/flash-class judge is 10–30× cheaper and perfectly good for binary pass/fail rubrics. Reserve frontier judges for calibrating the small ones, not for every run.
+
+Deterministic checks first — they're free. Code assertions (valid JSON, correct order ID format, refund ≤ $50) run before any LLM call and catch a large share of failures at $0.
+
+Tiered evals. Cheap filters gate expensive judges: only the cases the cheap checks can't decide reach the costly judge.
+
+Cache judgments. Content-address judgments and commit them — CI re-scores from disk at $0 until you deliberately re-pin the judge.
+
+Sample, don't exhaust. A representative 100–500 cases per PR, the full suite nightly. Cost scales linearly with cases × judges, so sampling is the fastest win.
+
+Track tokens per point of gain on the outer loop. If the optimizer loop itself becomes your biggest line item, you're paying more to measure than to improve.
+
 </details>
 
 <details>
@@ -1341,6 +1362,19 @@ Shared ownership — PMs own failure prioritization, engineers own fix implement
 Experiment tracking — count experiments, not features. Track what changed, what you expected, and what actually happened.
 
 Feedback flywheel — route production failures directly into your eval dataset. Every user complaint is a potential test case.
+
+<details>
+<summary><strong>How do enterprises define units of work and evaluate task completion to build a self-improving agent harness?</strong></summary>
+
+Start with the unit of work. A "task" is one user goal with a verifiable completion condition — "resolve the refund request," not "reply to the message." Enterprises build a task taxonomy per workflow where each task type gets three things: binary completion criteria (done / not done), a quality rubric (outcome, trajectory, experience, governance), and cost/latency budgets. Task completion is judged against that contract — never vibes. This is the same rubric discipline from the course, applied as the definition of done.
+
+The self-improving harness is the eval flywheel grown up. The loop: production runs → structured traces → weakness mining (cluster the failing traces) → a bounded proposal (a prompt edit, new few-shot examples, a memory or tool-config change — never an unbounded rewrite) → validation through the eval gate (offline eval, safety checks, regression set, cost/latency analysis) → canary or shadow on live traffic → promote or roll back. Then the new version generates new traces and the loop continues: experience → reflection → improvement → validation → learning.
+
+Three things make this different from classic MLOps: the feedback signal is raw execution traces, not a scalar loss; the training signal is a verifier you build per goal, not a labeled dataset you already own; and you version config, not weights — so promotion is a safety event, and all the trust moves into the eval.
+
+Four guardrails keep the loop safe. Keep a held-out gold set the optimizer never sees, or the loop Goodharts itself into looking better instead of being better. Use statistical gates (multiple samples), not single runs — non-determinism makes one-shot pass/fail lie. Contain the meta-agent: it must not expand autonomy, permissions, or budget without a human. And keep the previous version one config flip away — the rollback path is what makes the loop safe enough to run unattended.
+
+In course terms: Week 1's flywheel is the loop, the Week 2 judge plus the Week 4 gold set are the verifier, and the Week 6 decision gate is the validation step. The eval suite is the asset that makes all of it trustworthy.
 
 </details>
 
