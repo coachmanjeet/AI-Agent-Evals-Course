@@ -31,11 +31,17 @@ datasets/pronto-support-tickets.csv?"*
 
 | Skill | Use it in | One-liner |
 |-------|-----------|-----------|
-| `generate-synthetic-data` | Week 4 | Dimension-based synthetic input generation — compare its output against `datasets/generate_pronto_tickets.py`. |
+| `ticket-to-eval` | Weeks 1, 4, 6 | **Course-native.** Turns one real Pronto ticket or trace into two dataset rows: a regression row (exact input, tagged with one of the 14 failure modes) and a generalized coverage row. Strips PII first. This is the Week 6 flywheel made concrete — production failures become tests. |
+| `generate-synthetic-data` | Week 4 | Dimension-based synthetic input generation — compare its output against `datasets/generate_pronto_tickets.py`. Use when you need coverage the real world hasn't given you; use `ticket-to-eval` when production hands you real failures. |
 | `evaluate-rag` | Week 4 | Retrieval vs. generation scoring for the RAG week. |
 | `write-code-eval` | Weeks 1–2 | Code checks for objective failure modes — always try these before reaching for an LLM judge. |
 | `evals-start` | Anytime | Entry point: describe your situation and it routes you to the right skill. |
 | `eval-audit` | Week 6 | Audits an existing eval pipeline and prioritizes what's broken — a second opinion on your production harness. |
+
+> **Why `ticket-to-eval` and not `error-discovery`?** `error-discovery` finds failure
+> *patterns* across many traces (Week 1, Assignments 1–2). `ticket-to-eval` converts
+> *one* ticket into dataset rows. Discovery first, conversion after — they compose,
+> they don't compete.
 
 ## Pairs well with the AI Skills Lab
 
@@ -56,6 +62,8 @@ Every skill above can run against this repo's own data — no setup beyond the
 skill install:
 
 - `error-discovery` → `datasets/pronto-support-tickets.csv` (24 tickets, 14 failure modes)
+- `ticket-to-eval` → pick any row of `datasets/pronto-support-tickets.csv` and convert it:
+  regression row appends to `datasets/pronto-regression.csv`, generalized row to `datasets/pronto-eval-gold.csv`
 - `write-judge-prompt` + `validate-evaluator` → `datasets/pronto-eval-gold.csv`
   (48 rows; the `expected` column is your human-label proxy)
 - `generate-synthetic-data` → extend the ticket set; diff against the generator

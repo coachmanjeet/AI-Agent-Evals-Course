@@ -46,6 +46,27 @@ flowchart LR
 - `examples/` — worked examples from the live session (added after the session)
 - `assignments/01-deploy-the-infrastructure/` — GitHub Actions gates + monitoring + canary
 - `assignments/02-operate-and-document/` — flywheel cycle doc, cost-routing recommendation, ownership doc
+- `resources/` — production references, Pronto-flavored for this course
+
+## Production resources
+
+Read these alongside the assignments — they cover operating Pronto, while the
+assignments cover wiring the eval infrastructure:
+
+- [`resources/pronto-production-readiness-checklist.md`](resources/pronto-production-readiness-checklist.md) —
+  the pre-launch bar: hard requirements that block ship, plus the 30/90-day
+  backlog and a launch dry-run. Use after Assignment 1.
+- [`resources/pronto-metrics-catalog.md`](resources/pronto-metrics-catalog.md) —
+  which metrics to emit (10-metric starter set in bold), including
+  Pronto-specific refund and escalation metrics. Use when defining Assignment
+  1's monitoring signals.
+- [`resources/pronto-incident-response-playbook.md`](resources/pronto-incident-response-playbook.md) —
+  the on-call runbook: first-5-minutes procedure plus 7 Pronto scenarios
+  (refund runaway, prompt-injection wave, order-lookup failure…). Use when
+  writing Assignment 2's 2-AM playbook.
+- [`resources/pronto-rca-template.md`](resources/pronto-rca-template.md) —
+  the full postmortem template (blameless). Use when Assignment 2's flywheel
+  cycle deserves more than the short template.
 
 ## Close the loop
 
