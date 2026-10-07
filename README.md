@@ -80,7 +80,7 @@ npm install -g promptfoo   # before Week 3: adversarial scans (Node-based)
 | `docs/` | GitHub Pages site — the Judge Calibration Game (Week 2 hands-on) and the Trace Viewer (Week 1 error-analysis tool) |
 | `week-01-...` … `week-06-...` | One folder per live session: recap README, worked `examples/`, and two `assignments/` |
 | `solutions/` | Released after each live session — one folder per week |
-| `resources/` | Glossary, curated links, and the sample AI PRD (Pronto worked example) |
+| `resources/` | Glossary, curated links, sample AI PRD (Pronto), and the running [Evals & Observability FAQ](resources/faq.md) |
 | `.github/workflows/eval-gate.yml` | Example CI eval gate (you wire this up for real in Week 6) |
 
 ## The tools
