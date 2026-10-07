@@ -713,6 +713,8 @@ Process layer — human review workflows for flagged interactions, escalation pa
 
 Governance layer — policies, risk acceptance criteria, audit logging, compliance evidence.
 
+</details>
+
 <details>
 <summary><strong>How do I decide how much human-in-the-loop my agent needs?</strong></summary>
 
@@ -734,6 +736,25 @@ And if the agent is outside its mandate, uncertain, or cannot explain its intend
 
 Calibrate over time: start strict, then widen autonomy as the evals prove each task type safe. The approval boundary is a living policy, tightened or loosened by evidence — not set once and forgotten.
 
+</details>
+
+<details>
+<summary><strong>What determines autonomous action vs. human approval?</strong></summary>
+
+Use a simple risk × reversibility × confidence framework. Three questions, one decision:
+
+Low-risk and reversible: allow autonomy. Summarize a case, classify an inquiry, draft a follow-up, retrieve approved knowledge. If it's wrong, the cost is a few seconds and no harm done.
+
+Moderate-risk: allow the agent to act within bounded policy limits. Update a case status, make a small policy-compliant service adjustment — like Pronto's under-$50 refund with the photo on file. The policy is the pre-approval; the agent operates inside it.
+
+High-risk, irreversible, sensitive, or customer-impacting: require human approval. Large refunds, contract changes, payment actions, employee decisions, access to highly sensitive data. No policy shortcut — a person signs off.
+
+Low confidence or policy conflict: escalate, even if the action is normally automated. Confidence is the override switch on the whole framework: a routine refund with an ambiguous order ID stops and escalates, because the framework's first question — "are we sure?" — failed.
+
+Write the boundaries down per task type (this is your governance rubric), and revisit them as evals accumulate. Autonomy should expand on evidence, never on optimism.
+
+</details>
+
 <details>
 <summary><strong>What should teams test before connecting agents to tools?</strong></summary>
 
@@ -750,6 +771,17 @@ Adversarial behavior. What happens with prompt injection, malicious content in e
 Failure behavior. Does it stop, explain uncertainty, log what happened, and escalate gracefully when the information or tool response is incomplete? A tool timeout should produce a pause and an escalation, never a confident fabrication.
 
 Run all five against every new tool connection, and re-run them when the tool's API changes. Tools are the agent's hands — you wouldn't ship a robot without testing what its hands can break.
+
+</details>
+
+<details>
+<summary><strong>Who is accountable when an agent makes a mistake?</strong></summary>
+
+Accountability cannot be outsourced to the model. The organization deploying the system owns the outcome.
+
+In practice, accountability is shared but explicit: product defines intended use and risk boundaries; engineering implements the controls; security and privacy validate access and data handling; operations monitors the system in production; and business owners own the policy decisions embedded in the workflow. Write these down — a RACI for the agent, not just for the project.
+
+The important thing is that no harmful outcome ends with "the AI did it." There must be a traceable record of what happened, why the agent acted, what data and tools it used, and who could have intervened. That record is what turns a failure into an accountable one: without it you have blame diffusion, with it you have a specific control to fix and a specific owner to fix it.
 
 </details>
 
@@ -1041,6 +1073,8 @@ Model routing — route simple queries to smaller, cheaper models; reserve large
 Prompt optimization — run automated prompt compression for repetitive system prompt content that does not change between turns.
 
 Context management strategies — reduce, offload, and isolate context (see Section 2 on context engineering) to prevent token bloat in long sessions.
+
+</details>
 
 <details>
 <summary><strong>What does it cost to run AI evals, and how do I make it cheaper?</strong></summary>
@@ -1400,6 +1434,8 @@ Shared ownership — PMs own failure prioritization, engineers own fix implement
 Experiment tracking — count experiments, not features. Track what changed, what you expected, and what actually happened.
 
 Feedback flywheel — route production failures directly into your eval dataset. Every user complaint is a potential test case.
+
+</details>
 
 <details>
 <summary><strong>How do enterprises define units of work and evaluate task completion to build a self-improving agent harness?</strong></summary>
