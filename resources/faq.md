@@ -734,6 +734,23 @@ And if the agent is outside its mandate, uncertain, or cannot explain its intend
 
 Calibrate over time: start strict, then widen autonomy as the evals prove each task type safe. The approval boundary is a living policy, tightened or loosened by evidence — not set once and forgotten.
 
+<details>
+<summary><strong>What should teams test before connecting agents to tools?</strong></summary>
+
+Don't just test whether the agent succeeds. Test how it fails — and whether that failure is safe, visible, and recoverable. Five practical test categories:
+
+Task quality. Does the agent complete the intended job correctly, not merely produce plausible text? A convincing summary of a refund it never issued is a failure, not a near-miss.
+
+Tool-use safety. Does it select the correct tool, pass valid parameters, respect limits, and avoid unintended side effects? Test wrong-tool selection, malformed arguments, and repeated calls — the agent that refunds twice is worse than the one that fails once.
+
+Authorization. Can it access only the data and take only the actions the user is entitled to access or perform? Probe with another customer's order ID, a refund above its limit, and a data export it was never granted.
+
+Adversarial behavior. What happens with prompt injection, malicious content in emails or documents, conflicting instructions, or attempts to exfiltrate data? The Week 3 red-team set exists for exactly this — run it before the tool goes live, not after.
+
+Failure behavior. Does it stop, explain uncertainty, log what happened, and escalate gracefully when the information or tool response is incomplete? A tool timeout should produce a pause and an escalation, never a confident fabrication.
+
+Run all five against every new tool connection, and re-run them when the tool's API changes. Tools are the agent's hands — you wouldn't ship a robot without testing what its hands can break.
+
 </details>
 
 ## Section 7 — Context Engineering & RAG Evaluation
