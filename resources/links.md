@@ -12,7 +12,7 @@ Grouped by week. Framework docs first, then one or two seminal reads per theme.
 
 ## Week 2 — LLM judges
 
-- DeepEval docs (judges, GEval, strict output formats): https://deepeval.com
+- LangSmith evaluators (custom evaluators, `evaluate()`, experiments): https://docs.langchain.com/langsmith/evaluation
 
 ## Week 3 — Adversarial testing
 
@@ -20,7 +20,11 @@ Grouped by week. Framework docs first, then one or two seminal reads per theme.
 
 ## Week 4 — RAG eval
 
-- RAGAS docs (metrics, integrations): https://docs.ragas.io
+- Braintrust docs (experiments, scorers, autoevals): https://www.braintrust.dev/docs
+
+## Week 5 — Multi-agent eval
+
+- CrewAI docs (agents, tasks, crews, tools): https://docs.crewai.com
 
 ## Week 6 — Production
 

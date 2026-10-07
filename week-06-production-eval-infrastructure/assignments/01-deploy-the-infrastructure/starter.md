@@ -13,7 +13,7 @@ Copy to `deploy.md` and work through it.
 ## 2. Nightly regression (full suite)
 
 - [ ] Cron schedule set (e.g. `0 6 * * *` UTC)
-- [ ] Full suite: golden set v1 + RAGAS + trajectory evals + guardrail suite
+- [ ] Full suite: golden set v1 + Braintrust scorers + trajectory evals + guardrail suite
 - [ ] Results written to `reports/` (or LangSmith) with date stamps
 - [ ] Failure alert configured (where does the alert go?)
 

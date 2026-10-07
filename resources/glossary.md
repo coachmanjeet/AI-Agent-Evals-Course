@@ -15,10 +15,10 @@ Plain-English definitions for the terms used across the course.
 - **Prompt injection (indirect)** — malicious instructions smuggled in via content the agent reads (a doc, a webpage, a tool result).
 - **Jailbreak** — a technique that gets a model to bypass its safety training (role-play, hypotheticals, encoding, emotional framing).
 - **Groundedness** — whether an answer is actually supported by the retrieved context, as opposed to hallucinated.
-- **Faithfulness** — a RAGAS metric: is the generated answer consistent with the retrieved context?
-- **Answer relevance** — a RAGAS metric: does the answer actually address the question asked?
-- **Context precision** — a RAGAS metric: of the retrieved chunks, how many were relevant? (signal vs. noise)
-- **Context recall** — a RAGAS metric: of the relevant chunks that exist, how many were retrieved? (coverage)
+- **Faithfulness** — a RAG eval metric: is the generated answer consistent with the retrieved context?
+- **Answer relevance** — a RAG eval metric: does the answer actually address the question asked?
+- **Context precision** — a RAG eval metric: of the retrieved chunks, how many were relevant? (signal vs. noise)
+- **Context recall** — a RAG eval metric: of the relevant chunks that exist, how many were retrieved? (coverage)
 - **Data drift** — the incoming data distribution shifts (users start asking new kinds of questions).
 - **Concept drift** — the right answer changes even though the inputs look the same (policies update, the world moves).
 - **Prompt/model drift** — behavior changes because the prompt or the underlying model changed.

@@ -11,7 +11,7 @@ flowchart TD
     W1["Week 1 · Foundations<br/>30 traced runs → failure taxonomy"]
     W2["Week 2 · LLM Judges<br/>binary rubrics → judge–human agreement"]
     W3["Week 3 · Safety & Adversarial<br/>red teaming → guardrails"]
-    W4["Week 4 · RAG Evaluation<br/>golden set → RAGAS → confidence intervals"]
+    W4["Week 4 · RAG Evaluation<br/>golden set → Braintrust → confidence intervals"]
     W5["Week 5 · Multi-Agent Eval<br/>tool trajectories → handoffs"]
     W6["Week 6 · Production Infra<br/>CI gates → drift → canaries"]
     W1 --> W2 --> W3 --> W4 --> W5 --> W6
@@ -39,7 +39,7 @@ flowchart TD
 | 01 | Eval Foundations & Error Analysis | Quality dimensions, cost/latency metrics, traces vs logs, failure taxonomies, the eval flywheel |
 | 02 | Designing Reliable LLM Judges | Evaluator types, binary rubrics, judge prompt anatomy, judge–human agreement, per-metric A/B |
 | 03 | Safety & Adversarial Testing | Prompt injection, jailbreaks, red teaming with Promptfoo, guardrails, HITL approval flows |
-| 04 | RAG Evaluation | Golden sets, RAGAS metrics, groundedness, bootstrap confidence intervals, repeatable harnesses |
+| 04 | RAG Evaluation | Golden sets, Braintrust scorers, groundedness, bootstrap confidence intervals, repeatable harnesses |
 | 05 | Multi-Agent Evaluation | Tool-call scoring, trajectory evaluation, handoff evaluation, interaction failures |
 | 06 | Production Eval Infrastructure | Eval gates in CI/CD, drift detection, canary evals, cost routing, ownership |
 
@@ -48,6 +48,7 @@ flowchart TD
 - Python 3.10+ (Mac, Windows, or Linux, 4 GB RAM)
 - Basic familiarity with Git and GitHub
 - An LLM API key — any provider works (OpenAI, Anthropic, or Gemini); **$5** is enough to start. **Not needed for Week 1** (Path B below is fully keyless), but required from Week 2 onward.
+- A free Braintrust key (Week 4) — sign up at braintrust.dev, add `BRAINTRUST_API_KEY` to `.env`.
 
 ## Setup
 

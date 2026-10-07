@@ -30,7 +30,7 @@ One line: what coverage gap this closed.
 # Eval-driven cost routing recommendation
 
 ## Current state
-Per-task cost (Week 1 metrics): $___ — quality scores: ___ (judges), ___ (RAGAS).
+Per-task cost (Week 1 metrics): $___ — quality scores: ___ (judges), ___ (Braintrust).
 
 ## Proposal
 Route <which traffic> to <cheaper model / smaller top-k / fewer retries>.

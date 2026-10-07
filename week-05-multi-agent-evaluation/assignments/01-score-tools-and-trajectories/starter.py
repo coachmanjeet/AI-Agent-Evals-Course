@@ -1,10 +1,17 @@
 """Week 5, Assignment 1 starter: expected-action records + trajectory evaluator.
 
-Capture tool trajectories (Week 1 tracing already records these), then score
-them against expected-action records with property-based checks.
+The system under test is the Pronto crew (pronto_crew.py): triage -> policy ->
+refund agents on CrewAI. Capture its tool trajectories, then score them
+against expected-action records with property-based checks.
 """
 
 import json
+import os
+import sys
+
+# pronto_crew.py lives one folder up (shared by both Week 5 assignments).
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from pronto_crew import run_crew, TRAJECTORY_LOG
 
 # ---------------------------------------------------------------------------
 # Expected-action record schema.
@@ -22,15 +29,15 @@ EXPECTED_ACTIONS = [
 ]
 
 
-def capture_trajectory(agent, user_message: str) -> list:
-    """Run the agent and return the tool-call trajectory.
+def capture_trajectory(user_message: str) -> list:
+    """Run the Pronto crew and return the tool-call trajectory.
 
     Returns e.g. [{"tool": "get_order_status", "args": {"order_id": "PRN-10421"}}].
-    TODO: implement by wrapping agent tools (or reading the LangSmith trace).
+    pronto_crew logs every tool call into TRAJECTORY_LOG — just run the crew
+    and read it. (Week 1 LangSmith tracing records these runs too.)
     """
-    # TODO: simplest path — monkeypatch agent.get_order_status / lookup_policy /
-    # escalate_to_human to append to a list, call agent.run(), return the list.
-    raise NotImplementedError("capture the tool trajectory here")
+    run_crew(user_message, clear_log=True)
+    return list(TRAJECTORY_LOG)
 
 
 def check_properties(trajectory: list, record: dict) -> dict:
@@ -69,9 +76,10 @@ def score_arguments(trajectory: list) -> dict:
 if __name__ == "__main__":
     print(f"{len(EXPECTED_ACTIONS)} expected-action records (need 15+).")
     # TODO:
-    #   1. Add 14+ records.
-    #   2. Implement capture_trajectory + score_arguments.
+    #   1. Add 14+ records covering the crew's surface (triage routing,
+    #      policy lookup, refunds, escalations).
+    #   2. Implement score_arguments (capture_trajectory is wired already).
     #   3. Run all records; report per-dimension scores.
     #   4. Find ONE fragile pass — passed overall, wrong trajectory — and write
     #      it up in fragile_pass.md.
-    print("TODO: implement capture + scoring, run the suite, find the fragile pass.")
+    print("TODO: add records, implement scoring, run the suite, find the fragile pass.")

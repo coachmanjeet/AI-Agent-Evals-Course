@@ -3,3 +3,4 @@
 langsmith          # tracing, datasets, annotation (Weeks 1+)
 openai             # model provider client (any provider works; swap as you like)
 python-dotenv      # loads .env
+crewai             # multi-agent framework (Week 5 Pronto crew)

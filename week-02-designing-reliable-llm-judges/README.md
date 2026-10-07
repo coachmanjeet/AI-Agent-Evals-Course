@@ -38,13 +38,13 @@ flowchart LR
 
 ## Links
 
-- DeepEval docs — judges, metrics, strict output formats: https://deepeval.com
+- LangSmith evaluators — custom evaluators, `evaluate()`, experiments: https://docs.langchain.com/langsmith/evaluation
 - LangSmith annotation queues (human labels): https://docs.langchain.com/langsmith
 
 ## In this folder
 
 - `examples/` — worked examples from the live session (added after the session)
-- `assignments/01-build-and-validate-judge/` — 3 binary rubrics as DeepEval judges, validated on 40 labels
+- `assignments/01-build-and-validate-judge/` — 3 binary rubrics as LangSmith evaluators, validated on 40 labels
 - `assignments/02-diagnose-and-compare/` — diagnose-and-fix cycle, prompt A/B, ship/no-ship decision
 
 ## Hands-on game

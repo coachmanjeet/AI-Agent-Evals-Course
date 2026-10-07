@@ -5,7 +5,7 @@ where the system fails even though the parts look fine.
 
 ## Setup
 
-**Handoff under test:** (e.g. code-gen review: agent A drafts, agent B reviews against checklist, agent A revises)
+**Handoff under test:** Pronto crew (`../pronto_crew.py`) — triage → policy → refund. Handoff 1: triage's classification + order facts → policy. Handoff 2: policy's quoted snippets → refund.
 
 **Scenarios run:** n = ___ (10+ required, including adversarial ones)
 
@@ -23,8 +23,9 @@ where the system fails even though the parts look fine.
 
 | Agent | Metric | Score |
 |-------|--------|-------|
-| A (generator) | | |
-| B (reviewer) | | |
+| triage | | |
+| policy | | |
+| refund | | |
 
 ## Layer 3 — System scores
 

@@ -7,7 +7,7 @@ Build three binary LLM judges for your agent and prove they agree with humans be
 ## Steps
 
 1. Write 3 binary rubrics as judge prompts: **policy adherence** (did the agent follow the Pronto policy bible?), **escalation correctness** (escalated exactly when required — legal, safety, PII, over-$50 — and not otherwise?), **tool-call accuracy** (right tool, right arguments?). One criterion each; strict output format (`PASS`/`FAIL` + one-line reason).
-2. Implement them as LLM judges in DeepEval (`starter.py` has the skeleton).
+2. Implement them as LangSmith custom evaluators (`starter.py` has the skeleton): one evaluator function per rubric, each returning `{"key": <rubric>, "score": 0/1}`, run over a LangSmith dataset with `evaluate()`.
 3. Label 40 agent outputs by hand (reuse Week 1 traces or generate fresh ones): your ground-truth pass/fail per rubric.
 4. Run the judges over the 40-label set. Build the agreement matrix per judge (judge-pass/human-pass, judge-pass/human-fail, …).
 5. Compute Cohen's kappa per judge (function provided in the starter). Investigate every disagreement: is the judge wrong, or is your label wrong?
@@ -22,7 +22,8 @@ Build three binary LLM judges for your agent and prove they agree with humans be
 
 ## Starter
 
-`starter.py` — rubric prompt templates, DeepEval judge skeleton, and a
+`starter.py` — rubric prompt templates, LangSmith evaluator skeleton
+(`run_judge` + `make_evaluator` + `evaluate()` wiring), and a
 `cohens_kappa()` implementation. Fill in the three prompts and the judge wiring.
 
 ## Stretch — put error bars on your judge

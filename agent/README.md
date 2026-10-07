@@ -36,6 +36,6 @@ up a real model call.
 | 1 | Add LangSmith tracing; annotate traces |
 | 2 | Judges score its outputs |
 | 3 | Guardrails wrap its tools |
-| 4 | Its doc answers get RAGAS-scored |
+| 4 | Its doc answers get scored in Braintrust |
 | 5 | Its tool trajectories get evaluated |
 | 6 | Its evals gate every change in CI |

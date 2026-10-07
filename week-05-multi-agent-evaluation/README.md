@@ -38,10 +38,11 @@ flowchart LR
 ## Links
 
 - LangSmith docs — tracing multi-step trajectories: https://docs.langchain.com/langsmith
-- DeepEval docs — conversational metrics: https://deepeval.com
+- CrewAI docs — agents, tasks, crews, tools: https://docs.crewai.com
 
 ## In this folder
 
 - `examples/` — worked examples from the live session (added after the session)
+- `assignments/pronto_crew.py` — the system under test: triage → policy → refund crew on CrewAI (`pip install crewai`)
 - `assignments/01-score-tools-and-trajectories/` — expected-action records + trajectory evaluator
 - `assignments/02-find-interaction-failures/` — three-layer report + handoff root causes
