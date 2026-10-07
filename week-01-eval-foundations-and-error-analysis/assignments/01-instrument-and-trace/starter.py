@@ -3,6 +3,10 @@
 Prereqs: agent/agent.py has @traceable wired in (Assignment step 1),
 inputs.json exists (Assignment step 3), .env has LANGSMITH_API_KEY.
 Writes annotations.csv with empty pass/fail + note columns for you to fill.
+
+Multi-turn inputs are replayed turn by turn in order (agent.run per
+message); the CSV row keeps the full conversation as input and the last
+turn's reply as output.
 """
 
 import csv
@@ -29,11 +33,14 @@ def main() -> None:
     for i, item in enumerate(inputs):
         # item shape: {"category": "order-refund|policy-warranty|multi-turn", "messages": ["..."]}
         messages = item["messages"] if isinstance(item, dict) else [item]
-        reply = agent.run(messages[-1])  # TODO: handle full multi-turn history
+        category = item.get("category", "?") if isinstance(item, dict) else "?"
+        reply = ""
+        for m in messages:  # run every turn in order; multi-turn inputs keep their context
+            reply = agent.run(m)
         rows.append({
             "id": i,
-            "category": item.get("category", "?") if isinstance(item, dict) else "?",
-            "input": messages[-1][:120],
+            "category": category,
+            "input": " / ".join(messages)[:160],
             "output": reply[:160],
             "pass_fail": "",   # TODO: fill after reviewing the trace in LangSmith
             "note": "",        # TODO: one line on what happened
