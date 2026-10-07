@@ -20,6 +20,10 @@ flowchart LR
 - Eval checkpoints: PR check, nightly regression, pre-launch gate
 - Eval gates in GitHub Actions (this repo has a starter: `.github/workflows/eval-gate.yml`)
 - Gating policy: blocking vs. logged metrics
+- Decision gates: turning eval numbers into ship / no-ship product calls
+- Threshold-setting from business impact: which metric moves which dollar
+- Fix prioritization: failure frequency × business cost (the Week 1 taxonomy, now priced)
+- The decision memo: what shipped, what didn't, what gets fixed first and why
 - Fast PR subsets vs. full regression suites
 - Online evaluation signals; traffic sampling for eval cost control
 - Alerting policy: what pages, what waits for morning
@@ -35,6 +39,23 @@ flowchart LR
 2. **Blocking vs. logged is a policy decision.** Block on safety and correctness; log (don't block) on exploratory metrics — or every team learns to bypass the gate.
 3. **Production is a new eval surface.** Drift, canaries, and traffic sampling are evals too — they just run on live data.
 4. **Evals compound.** Every incident becomes a regression test; every regression test makes the next incident cheaper. That flywheel needs an owner and a cadence, or it stops.
+5. **Evals end in decisions, not dashboards.** A measurement gate gives you the number; the decision memo says what ships. Set thresholds from business impact and prioritize fixes by frequency × cost — never by loudness.
+
+## Decision gates — from eval numbers to product calls
+
+A measurement gate tells you the score. A decision gate tells you what to do:
+
+| Eval result | Decision | Why |
+|---|---|---|
+| Refund correctness 96% (target 95%) | SHIP | Above bar; log the 4% misses into the gold set |
+| Escalation correctness 84% (target 90%) | SHIP WITH CONDITIONS | Ship, but the $50-cap misses become P0 fixes this sprint — each miss is unapproved revenue leaving the building |
+| Hallucination rate 0.4% (target 0%) | NO-SHIP for auto-refunds | Any hallucinated order ID is a wrong-customer refund; the gate stays red until 0% on the regression set |
+
+Rules of thumb:
+
+- **Set every threshold from a business number, not a vibe.** "95% refund correctness" exists because 5% wrong at Pronto's ticket volume costs real money each month — write the dollar figure next to the threshold.
+- **Prioritize fixes by frequency × business cost.** The Week 1 taxonomy gave you frequency; multiply by cost per incident. The top of that ranked list is your sprint plan.
+- **Write the decision memo.** One page: what the evals said, what shipped, what didn't, what's fixed first and why. This is the artifact your stakeholders actually read — it's also how you demonstrate the business value of the eval work itself.
 
 ## Links
 
