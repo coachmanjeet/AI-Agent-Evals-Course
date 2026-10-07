@@ -6,7 +6,7 @@ Build three binary LLM judges for your agent and prove they agree with humans be
 
 ## Steps
 
-1. Write 3 binary rubrics as judge prompts: **code correctness** (is the generated code right?), **doc relevance** (does the cited doc answer the question?), **tool-call accuracy** (right tool, right arguments?). One criterion each; strict output format (`PASS`/`FAIL` + one-line reason).
+1. Write 3 binary rubrics as judge prompts: **policy adherence** (did the agent follow the Pronto policy bible?), **escalation correctness** (escalated exactly when required — legal, safety, PII, over-$50 — and not otherwise?), **tool-call accuracy** (right tool, right arguments?). One criterion each; strict output format (`PASS`/`FAIL` + one-line reason).
 2. Implement them as LLM judges in DeepEval (`starter.py` has the skeleton).
 3. Label 40 agent outputs by hand (reuse Week 1 traces or generate fresh ones): your ground-truth pass/fail per rubric.
 4. Run the judges over the 40-label set. Build the agreement matrix per judge (judge-pass/human-pass, judge-pass/human-fail, …).

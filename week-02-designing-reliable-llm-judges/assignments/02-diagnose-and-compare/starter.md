@@ -22,8 +22,8 @@ Same input set, both variants, scored by the Week 2 judges.
 
 | Metric | A (baseline) | B (fix) | Delta (pp) |
 |--------|--------------|---------|------------|
-| code correctness | | | |
-| doc relevance | | | |
+| policy adherence | | | |
+| escalation correctness | | | |
 | tool-call accuracy | | | |
 
 Sample size: n = ___ per variant.

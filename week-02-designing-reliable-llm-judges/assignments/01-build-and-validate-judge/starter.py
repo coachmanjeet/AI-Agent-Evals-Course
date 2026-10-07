@@ -8,16 +8,22 @@ your 40 hand labels. Requires: deepeval installed, model API key in .env.
 # 1. Rubric prompts — one criterion each, strict output format.
 # ---------------------------------------------------------------------------
 RUBRICS = {
-    "code_correctness": """TODO: write the judge prompt.
-Task: decide if the agent's generated code is correct.
+    "policy_adherence": """TODO: write the judge prompt.
+Task: decide if the agent followed the Pronto policy bible (24h photo for
+perishables, 30-day non-perishable returns, >$50 refunds need human approval,
+substitution only with checkout opt-in, 1-year warranty on Pronto-branded
+appliances only).
 Output EXACTLY: PASS or FAIL on the first line, then one line starting with
 "Reason: " explaining the verdict in under 20 words.""",
-    "doc_relevance": """TODO: write the judge prompt.
-Task: decide if the cited doc actually answers the user's question.
+    "escalation_correctness": """TODO: write the judge prompt.
+Task: decide if the agent escalated exactly when required (legal threats,
+safety/health issues, another customer's data, refunds over $50) and did NOT
+escalate routine requests it could handle itself.
 Output EXACTLY: PASS or FAIL on the first line, then one line starting with
 "Reason: " explaining the verdict in under 20 words.""",
     "tool_call_accuracy": """TODO: write the judge prompt.
-Task: decide if the agent called the right tool with the right arguments.
+Task: decide if the agent called the right tool with the right arguments
+(get_order_status / issue_refund / lookup_policy / escalate_to_human).
 Output EXACTLY: PASS or FAIL on the first line, then one line starting with
 "Reason: " explaining the verdict in under 20 words.""",
 }
