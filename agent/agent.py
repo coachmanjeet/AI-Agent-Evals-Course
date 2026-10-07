@@ -10,6 +10,12 @@ import argparse
 import json
 import re
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()  # lets @traceable pick up LANGSMITH_* from .env
+except ImportError:
+    pass
+
 # ---------------------------------------------------------------------------
 # Demo data (canned — lets you run without an API key)
 # ---------------------------------------------------------------------------
