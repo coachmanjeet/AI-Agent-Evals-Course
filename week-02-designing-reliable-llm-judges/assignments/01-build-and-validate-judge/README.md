@@ -24,3 +24,23 @@ Build three binary LLM judges for your agent and prove they agree with humans be
 
 `starter.py` — rubric prompt templates, DeepEval judge skeleton, and a
 `cohens_kappa()` implementation. Fill in the three prompts and the judge wiring.
+
+## Stretch — put error bars on your judge
+
+Your agreement matrix says how the judge did on 40 labels. But the number you
+actually ship — the pass rate on thousands of unlabeled traces — inherits the
+judge's bias (judges that over-pass inflate it; judges that over-fail deflate
+it). `judge_stats.py` (stdlib only, no new dependencies) fixes that:
+
+- `bias_corrected_rate(...)`: your 40 hand-labels measure the judge's
+  true-positive / true-negative rates; the correction applies them to the
+  judge's verdicts on unlabeled data to estimate the TRUE pass rate.
+- `bootstrap_ci(...)`: resamples your 40 labels 2000 times to put a 95%
+  confidence interval around that estimate.
+
+Run it on one judge: your 40 hand labels + its verdicts on those 40 + its
+verdicts on 200+ unlabeled traces (`python judge_stats.py` shows a worked
+Pronto example with illustrative synthetic numbers).
+
+- [ ] Bias-corrected pass rate reported with 95% CI for at least one judge
+- [ ] One-line interpretation: which direction was your judge biased, and by how much?
