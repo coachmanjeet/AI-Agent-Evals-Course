@@ -3,6 +3,18 @@
 Single-agent evals stop being enough the moment agents use tools, keep memory,
 and hand work to each other. This week: score the trajectory, not just the answer.
 
+## This week's workflow
+
+```mermaid
+flowchart LR
+    E["15+ expected-action records<br/>tools in order + extra-call policy"]
+    T["Run agent, capture<br/>full tool trajectories"]
+    V["Trajectory evaluator<br/>property checks, not exact match"]
+    H["Wire A → B → A handoff<br/>10+ scenarios"]
+    R["3-layer report<br/>model vs agent vs system gap"]
+    E --> T --> V --> H --> R
+```
+
 ## What we covered
 
 - Agent eval foundations: model vs. agent vs. system (three different things to score)

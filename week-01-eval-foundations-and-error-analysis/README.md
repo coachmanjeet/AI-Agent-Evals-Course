@@ -14,6 +14,18 @@ workflow that turns production failures into datasets.
 > own OTel JSON), then export your annotations as JSON/CSV — that's your
 > `annotations.csv` equivalent for Assignment 1.
 
+## This week's workflow
+
+```mermaid
+flowchart LR
+    R["Run 30 inputs<br/>10 refund · 10 policy · 10 multi-turn"]
+    T["Trace every run<br/>LangSmith or Trace Viewer"]
+    A["Annotate pass/fail<br/>+ one-line notes"]
+    C["Cluster failures<br/>into 5+ binary codes"]
+    S["Ship taxonomy.md<br/>top 3 modes + 1 anomaly"]
+    R --> T --> A --> C --> S
+```
+
 ## Before you begin — 2 questions
 
 Answer these now and keep your answers (pick a codename so it's anonymous but
@@ -52,6 +64,8 @@ yours). The same two questions come back in Week 6.
 - LangSmith concepts (traces, spans, runs): https://docs.langchain.com/langsmith/observability-concepts
 
 ## Tool: Trace Viewer
+
+![Trace Viewer with 30 Pronto traces loaded — trace list, span waterfall, and per-trace annotation](../../docs/images/trace-viewer.png)
 
 **[Trace Viewer](https://coachmanjeet.github.io/AI-Agent-Evals-Course/trace-viewer/)** —
 a static, in-browser OTel trace explorer built for this week's error-analysis

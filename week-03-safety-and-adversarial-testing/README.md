@@ -4,6 +4,18 @@ Adversarial eval is a different discipline from quality eval: you're not
 asking "does it work?" but "can someone make it misbehave?" — then building
 the guardrails that catch it.
 
+## This week's workflow
+
+```mermaid
+flowchart LR
+    S["Promptfoo baseline scan<br/>5 attack categories"]
+    T["Triage failures<br/>frequency × severity"]
+    H["Hand-craft 5 attacks<br/>domain-specific"]
+    G["Build 3 guardrails<br/>regex · LLM judge · hybrid"]
+    V["Score catch vs over-block<br/>ship verdict + HITL flow"]
+    S --> T --> H --> G --> V
+```
+
 ## What we covered
 
 - Adversarial evaluation vs. quality evaluation

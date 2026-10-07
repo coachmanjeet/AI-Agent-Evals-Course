@@ -4,6 +4,34 @@ Learn to build evaluation frameworks you can trust — then use them to ship AI 
 
 **Instructor:** Manjeet Singh · **Course:** [AI Evals in Practice](https://live.bytebytego.com/courses/ai-evals) (ByteByteGo Live, 6 live sessions)
 
+## Course map
+
+```mermaid
+flowchart TD
+    W1["Week 1 · Foundations<br/>30 traced runs → failure taxonomy"]
+    W2["Week 2 · LLM Judges<br/>binary rubrics → judge–human agreement"]
+    W3["Week 3 · Safety & Adversarial<br/>red teaming → guardrails"]
+    W4["Week 4 · RAG Evaluation<br/>golden set → RAGAS → confidence intervals"]
+    W5["Week 5 · Multi-Agent Eval<br/>tool trajectories → handoffs"]
+    W6["Week 6 · Production Infra<br/>CI gates → drift → canaries"]
+    W1 --> W2 --> W3 --> W4 --> W5 --> W6
+
+    AG["agent/<br/>one Pronto support agent,<br/>reused all 6 weeks"]
+    DS["datasets/<br/>24 tickets · 48-row gold set<br/>12-row regression set"]
+    W1 -.-> AG
+    AG -.-> DS
+    DS -.-> W2
+    DS -.-> W4
+
+    TV["Trace Viewer<br/>annotate traces in your browser<br/>Week 1"]
+    JG["Judge Calibration Game<br/>calibrate your judge vs gold labels<br/>Week 2"]
+    W1 -.-> TV
+    W2 -.-> JG
+
+    SOL["solutions/ + resources/<br/>released weekly · glossary + links"]
+    W6 --> SOL
+```
+
 ## The 6 weeks
 
 | Week | Theme | Key topics |
@@ -54,6 +82,13 @@ npm install -g promptfoo   # before Week 3: adversarial scans (Node-based)
 | `solutions/` | Released after each live session — one folder per week |
 | `resources/` | Glossary and curated links |
 | `.github/workflows/eval-gate.yml` | Example CI eval gate (you wire this up for real in Week 6) |
+
+## The tools
+
+| | |
+|---|---|
+| ![Trace Viewer with 30 Pronto traces loaded — trace list, span waterfall, annotation panel](docs/images/trace-viewer.png) | ![Judge Calibration Game — label Pronto responses, earn XP](docs/images/judge-game.png) |
+| **[Trace Viewer](https://coachmanjeet.github.io/AI-Agent-Evals-Course/trace-viewer/)** — explore OTel traces and annotate failures in your browser (Week 1) | **[Judge Calibration Game](https://coachmanjeet.github.io/AI-Agent-Evals-Course/judge-calibration-game/)** — label 24 Pronto responses, then score your judge vs your labels (Week 2) |
 
 ## How assignments work
 

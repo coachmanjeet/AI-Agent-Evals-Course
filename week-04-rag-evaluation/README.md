@@ -4,6 +4,18 @@ Retrieval-augmented generation fails in two places — retrieval and generation 
 and your evals have to score them separately. This week is also where statistical
 rigor enters: sample sizes, paired tests, and confidence intervals.
 
+## This week's workflow
+
+```mermaid
+flowchart LR
+    G["Define golden-set schema<br/>question · contexts · ground truth"]
+    B["Build 150+ cases<br/>hand-validate 30"]
+    P["Pin v1 in LangSmith"]
+    M["Run 4 RAGAS metrics<br/>retrieval vs generation"]
+    R["Paired bootstrap test<br/>one config, one command, report.md"]
+    G --> B --> P --> M --> R
+```
+
 ## What we covered
 
 - Eval data: the four dataset qualities — representativeness, diversity, label correctness, versioning

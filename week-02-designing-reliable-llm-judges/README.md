@@ -3,6 +3,18 @@
 When to trust an LLM to grade your agent, how to design judges that isolate
 root causes, and how to validate them against human labels before they gate anything.
 
+## This week's workflow
+
+```mermaid
+flowchart LR
+    W["Write 3 binary rubrics<br/>one criterion each"]
+    L["Hand-label 40 outputs<br/>ground truth"]
+    J["Run judges → agreement matrix<br/>+ Cohen's kappa"]
+    D["Diagnose worst failure<br/>change ONE thing"]
+    AB["A/B test → ship/no-ship<br/>decision with numbers"]
+    W --> L --> J --> D --> AB
+```
+
 ## What we covered
 
 - Evaluator types: code-based, traditional metrics, LLM-as-a-Judge, human eval
@@ -36,6 +48,8 @@ root causes, and how to validate them against human labels before they gate anyt
 - `assignments/02-diagnose-and-compare/` — diagnose-and-fix cycle, prompt A/B, ship/no-ship decision
 
 ## Hands-on game
+
+![Judge Calibration Game mid-labeling — XP progress bar and a prompt-injection item](../../docs/images/judge-game.png)
 
 **[Judge Calibration Game](https://coachmanjeet.github.io/AI-Agent-Evals-Course/judge-calibration-game/)**
 — the interactive companion for this week. Label 24 Pronto support responses

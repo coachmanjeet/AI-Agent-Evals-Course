@@ -3,6 +3,18 @@
 Everything so far was practice. This week the evals move into production:
 gates in CI, monitoring online, and an operating cadence with a named owner.
 
+## This week's workflow
+
+```mermaid
+flowchart LR
+    G["Wire eval-gate.yml<br/>PR check + nightly regression"]
+    P["Gating policy<br/>block vs log"]
+    M["Production monitoring<br/>sampling + alerts + drift canary"]
+    B["Break it on purpose<br/>watch the gate block the PR"]
+    O["Flywheel doc + cost routing<br/>+ ownership → re-answer Week 1"]
+    G --> P --> M --> B --> O
+```
+
 ## What we covered
 
 - Eval checkpoints: PR check, nightly regression, pre-launch gate
