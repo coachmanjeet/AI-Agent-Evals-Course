@@ -1,23 +1,26 @@
 # AI Eval Skills
 
 Agent skills that help you (and your AI coding agent) do the course's hands-on
-work with fewer footguns. They come from the
-[ai-evals-course/evals-skills](https://github.com/ai-evals-course/evals-skills)
-repo — install once, then invoke by name in any agent that supports skills
-(Claude Code, Codex, etc.).
+work with fewer footguns. They ship in this repo under `skills/` — install once,
+then invoke by name in any agent that supports skills (Claude Code, Codex, etc.).
 
 ## Install
 
 ```bash
-# all nine skills
-npx skills add https://github.com/ai-evals-course/evals-skills
+# all ten skills — symlink them into your agent's skills directory
+for d in ~/workspace/AI-Agent-Evals-Course/skills/*/; do
+  [ -f "$d/SKILL.md" ] && ln -sfn "$d" ~/.claude/skills/$(basename "$d")
+done
 
 # or just one
-npx skills add https://github.com/ai-evals-course/evals-skills --skill error-discovery
+ln -sfn ~/workspace/AI-Agent-Evals-Course/skills/error-discovery ~/.claude/skills/error-discovery
 ```
 
 Then ask your agent, e.g.: *"Can you help me do error analysis on
 datasets/pronto-support-tickets.csv?"*
+
+No CLI? Point your agent at the skill folder directly:
+`skills/error-discovery/SKILL.md` — the skill files are plain markdown.
 
 ## The top 3 for this course
 
