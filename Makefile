@@ -19,5 +19,7 @@ setup-extra:
 agent:
 	.venv/bin/python agent/agent.py --demo
 
+agent-demo: agent  # alias used in the Week 1 assignment doc
+
 test-weeks:
 	@echo "TODO: wire per-week eval suites here as the course progresses."
