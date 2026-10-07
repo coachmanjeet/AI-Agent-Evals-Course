@@ -1,7 +1,0 @@
-# Heavier, week-specific deps. Install with `make setup-extra` before Week 2.
-# Kept separate so day-one setup stays fast.
-deepeval           # LLM-judge harness (Week 2)
-ragas              # RAG metrics: faithfulness, answer relevance, context precision/recall (Week 4)
-
-# NOTE: promptfoo (Week 3, adversarial scans) is Node-based — install separately:
-#   npm install -g promptfoo
