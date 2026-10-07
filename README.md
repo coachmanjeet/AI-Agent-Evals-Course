@@ -76,7 +76,7 @@ npm install -g promptfoo   # before Week 3: adversarial scans (Node-based)
 |------|------------|
 | `agent/` | The shared customer-service agent you build in Week 1 and reuse every week after |
 | `datasets/` | The Pronto reference dataset: 24 support tickets, a 48-row gold eval set, a 12-row regression set, and the ticket generator |
-| `skills/` | Curated AI eval agent-skills with a per-week map (install via `npx skills add`) |
+| `skills/` | Curated AI eval agent-skills with a per-week map (symlink into `~/.claude/skills/`) |
 | `docs/` | GitHub Pages site — the Judge Calibration Game (Week 2 hands-on) and the Trace Viewer (Week 1 error-analysis tool) |
 | `week-01-...` … `week-06-...` | One folder per live session: recap README, worked `examples/`, and two `assignments/` |
 | `solutions/` | Released after each live session — one folder per week |
