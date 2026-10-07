@@ -13,6 +13,9 @@ workflow that turns production failures into datasets.
 > no keys, no installs. Re-run the 6 sample traces a few times (or upload your
 > own OTel JSON), then export your annotations as JSON/CSV — that's your
 > `annotations.csv` equivalent for Assignment 1.
+>
+> Path B is a complete Week 1 experience — no key needed at all. From Week 2
+> on you'll need an LLM API key, so get one set up before then.
 
 ## This week's workflow
 
