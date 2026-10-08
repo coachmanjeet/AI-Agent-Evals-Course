@@ -39,3 +39,19 @@ up a real model call.
 | 4 | Its doc answers get scored in Braintrust |
 | 5 | Its tool trajectories get evaluated |
 | 6 | Its evals gate every change in CI |
+
+## Braintrust tracing demo
+
+`pronto_braintrust_demo.py` — a small variant that sends its traces to
+Braintrust instead of LangSmith. Three moves: `init_logger(project=...)`,
+`wrap_openai(OpenAI())`, `@traced` on each tool. Run it, then open the
+`pronto-demo` project at braintrust.dev → Logs to see the full trace tree.
+
+```bash
+pip install braintrust   # per-week install, like promptfoo
+python agent/pronto_braintrust_demo.py --ask "Where is my order PRN-10421?"
+```
+
+Needs `BRAINTRUST_API_KEY` and `OPENAI_API_KEY` in `.env`. Good for a live
+"where do traces go?" demo — the trace you watch being built is the trace
+you then open in the dashboard.
