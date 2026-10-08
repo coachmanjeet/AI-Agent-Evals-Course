@@ -42,10 +42,12 @@ up a real model call.
 
 ## Braintrust tracing demo
 
-`pronto_braintrust_demo.py` — a small variant that sends its traces to
-Braintrust instead of LangSmith. Three moves: `init_logger(project=...)`,
+`pronto_braintrust_demo.py` — the Pronto agent as a real end-to-end loop
+(model reasons → calls tools → reads results → answers), sending its traces
+to Braintrust instead of LangSmith. Three moves: `init_logger(project=...)`,
 `wrap_openai(OpenAI())`, `@traced` on each tool. Run it, then open the
-`pronto-demo` project at braintrust.dev → Logs to see the full trace tree.
+`pronto-demo` project at braintrust.dev → Logs to see the full trace tree —
+each turn's model calls and tool calls nested in the order the agent ran them.
 
 ```bash
 pip install braintrust   # per-week install, like promptfoo

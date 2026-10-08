@@ -1,22 +1,27 @@
-"""Pronto agent with Braintrust tracing — live demo script.
+"""Pronto agent, end to end, with Braintrust tracing.
 
-The whole point in one screen: how an agent's traces get into Braintrust.
-Three moves, nothing else:
+A REAL agent loop — not a scripted demo. The model reasons, picks tools,
+reads their results, picks more tools, and answers when it's done:
 
-  1. init_logger(project=...)  — opens the pipe to Braintrust
-  2. wrap_openai(OpenAI())     — every LLM call becomes a span, automatically
-  3. @traced on each tool      — every tool call becomes a span
+    user message -> model -> tool call -> result -> model -> ... -> answer
+
+Every step lands in Braintrust as one nested trace. The tracing itself is
+still just three moves:
+
+  1. init_logger(project=...)  -- opens the pipe to Braintrust
+  2. wrap_openai(OpenAI())     -- every model call becomes a span, automatically
+  3. @traced on each tool     -- every tool call becomes a span
 
 Run it, then open the "pronto-demo" project at braintrust.dev -> Logs and
-click the trace: one root span per turn, LLM calls and tool calls nested
-inside it. That tree IS the trace.
+click the trace: one root span per turn, model calls and tool calls nested
+inside it, in the order the agent actually ran them.
 
 Needs:  pip install braintrust
         BRAINTRUST_API_KEY and OPENAI_API_KEY in .env (Week 2+ keys)
 
 Usage:
     python agent/pronto_braintrust_demo.py --ask "Where is my order PRN-10421?"
-    python agent/pronto_braintrust_demo.py --ask "My strawberries arrived moldy, refund me"
+    python agent/pronto_braintrust_demo.py --ask "My $85 order arrived half missing, refund me in full"
 """
 
 import argparse
@@ -27,7 +32,7 @@ import sys
 try:
     from braintrust import init_logger, traced, wrap_openai
 except ImportError:
-    sys.exit("pip install braintrust  (Week 4: it's a per-week install, like promptfoo)")
+    sys.exit("pip install braintrust  (Week 4: a per-week install, like promptfoo)")
 
 try:
     from openai import OpenAI
@@ -53,11 +58,22 @@ logger = init_logger(project="pronto-demo")
 client = wrap_openai(OpenAI())
 
 MODEL = os.getenv("PRONTO_MODEL", "gpt-4o-mini")
+MAX_STEPS = 6  # the agent gets 6 model->tool rounds, then we escalate
+
+SYSTEM = (
+    "You are Pronto's customer support agent (\"Groceries in 30 minutes\"). "
+    "Use the tools to look things up — never invent order details, policies, or "
+    "refund amounts. Acknowledge the customer's problem first, plain language, "
+    "one clear next step. Refunds over $50 need human approval: call "
+    "escalate_to_human instead of issue_refund. Legal threats, safety issues, "
+    "or requests about other customers: escalate_to_human immediately."
+)
 
 
 # Move 3: @traced on each tool. Args in, return value out, nested in the trace.
 @traced
 def get_order_status(order_id: str) -> dict:
+    """Look up a Pronto order by ID, e.g. PRN-10421."""
     order = DEMO_ORDERS.get(order_id)
     if not order:
         return {"found": False, "order_id": order_id}
@@ -66,6 +82,7 @@ def get_order_status(order_id: str) -> dict:
 
 @traced
 def lookup_policy(topic: str) -> dict:
+    """Look up the Pronto policy bible for a topic (refunds, warranty, substitution...)."""
     topic = topic.lower()
     hits = [p["text"] for p in DEMO_POLICIES
             if any(k in topic for k in p["topics"])]
@@ -74,59 +91,84 @@ def lookup_policy(topic: str) -> dict:
 
 @traced
 def issue_refund(order_id: str, amount: float, reason: str) -> dict:
+    """Refund a customer. Amounts over $50 escalate — the agent can't approve those."""
     if amount > 50:
-        return escalate_to_human(f"refund ${amount:.2f} exceeds $50 approval limit")
+        return escalate_to_human(
+            f"refund of ${amount:.2f} exceeds the $50 approval limit")
     return {"refunded": True, "order_id": order_id,
             "amount": amount, "reason": reason}
 
 
 @traced
 def escalate_to_human(reason: str) -> dict:
-    return {"escalated": True, "reason": reason,
-            "summary": f"Human needed: {reason}"}
+    """Hand off to a human agent. Always safe to call; never the wrong move."""
+    return {"escalated": True, "reason": reason}
 
 
 TOOLS = {"get_order_status": get_order_status, "lookup_policy": lookup_policy,
          "issue_refund": issue_refund, "escalate_to_human": escalate_to_human}
 
+TOOL_SCHEMAS = [
+    {"type": "function", "function": {
+        "name": "get_order_status",
+        "description": "Look up a Pronto order by ID (format PRN-#####).",
+        "parameters": {"type": "object",
+                       "properties": {"order_id": {"type": "string"}},
+                       "required": ["order_id"]}}},
+    {"type": "function", "function": {
+        "name": "lookup_policy",
+        "description": "Look up Pronto policy: refunds, warranties, substitutions, delivery fees.",
+        "parameters": {"type": "object",
+                       "properties": {"topic": {"type": "string"}},
+                       "required": ["topic"]}}},
+    {"type": "function", "function": {
+        "name": "issue_refund",
+        "description": "Refund a customer. Over $50 will auto-escalate.",
+        "parameters": {"type": "object",
+                       "properties": {"order_id": {"type": "string"},
+                                      "amount": {"type": "number"},
+                                      "reason": {"type": "string"}},
+                       "required": ["order_id", "amount", "reason"]}}},
+    {"type": "function", "function": {
+        "name": "escalate_to_human",
+        "description": "Hand off to a human. Use for legal/safety/privacy issues or anything over your authority.",
+        "parameters": {"type": "object",
+                       "properties": {"reason": {"type": "string"}},
+                       "required": ["reason"]}}},
+]
+
 
 @traced
 def run_turn(user_message: str) -> str:
-    """One customer turn. This @traced is the ROOT span — everything nests under it."""
+    """One customer turn, as a real agent loop. This @traced is the ROOT span."""
     lowered = user_message.lower()
     if any(k in lowered for k in ESCALATION_KEYWORDS):
-        return escalate_to_human("legal/safety/privacy keyword matched")["summary"]
+        return escalate_to_human("legal/safety/privacy keyword matched")["reason"]
 
-    # LLM call 1 (auto-traced by wrap_openai): pick the tool + args.
-    plan_resp = client.chat.completions.create(
-        model=MODEL,
-        response_format={"type": "json_object"},
-        messages=[
-            {"role": "system", "content":
-             "You route Pronto grocery support requests. Reply ONLY with JSON: "
-             '{"tool": "<one of get_order_status, lookup_policy, issue_refund, escalate_to_human>", '
-             '"args": {<the tool arguments>}}. '
-             "Extract order IDs like PRN-10421. Refund amounts as numbers."},
-            {"role": "user", "content": user_message},
-        ],
-    )
-    plan = json.loads(plan_resp.choices[0].message.content)
-    tool = TOOLS.get(plan.get("tool", ""), escalate_to_human)
-    result = tool(**plan.get("args", {}))
+    messages = [{"role": "system", "content": SYSTEM},
+                {"role": "user", "content": user_message}]
 
-    # LLM call 2 (auto-traced): draft the customer-facing reply from the tool result.
-    reply_resp = client.chat.completions.create(
-        model=MODEL,
-        messages=[
-            {"role": "system", "content":
-             "You are Pronto's support agent. Acknowledge the problem first, "
-             "plain language, one clear next step. Never invent order details."},
-            {"role": "user", "content":
-             f"Customer said: {user_message}\nTool result: {json.dumps(result)}\n"
-             f"Write the reply."},
-        ],
-    )
-    return reply_resp.choices[0].message.content
+    for _ in range(MAX_STEPS):
+        # Model thinks (auto-traced by wrap_openai) — may call tools, may answer.
+        resp = client.chat.completions.create(
+            model=MODEL, messages=messages, tools=TOOL_SCHEMAS)
+        msg = resp.choices[0].message
+        messages.append(msg)
+
+        if not msg.tool_calls:
+            return msg.content or "(no answer produced)"
+
+        # Agent acts: each @traced tool becomes a span under this turn.
+        for call in msg.tool_calls:
+            fn = TOOLS.get(call.function.name, escalate_to_human)
+            try:
+                result = fn(**json.loads(call.function.arguments or "{}"))
+            except Exception as exc:  # tools fail — the agent sees the error
+                result = {"error": f"{call.function.name} failed: {exc}"}
+            messages.append({"role": "tool", "tool_call_id": call.id,
+                             "content": json.dumps(result)})
+
+    return escalate_to_human("too many steps without resolving")["reason"]
 
 
 def main() -> None:
@@ -136,8 +178,7 @@ def main() -> None:
     args = parser.parse_args()
 
     print(f"> {args.ask}\n")
-    reply = run_turn(args.ask)
-    print(reply)
+    print(run_turn(args.ask))
     logger.flush()  # make sure spans land before exit
     print("\n— trace sent. Open braintrust.dev → project 'pronto-demo' → Logs.")
 
