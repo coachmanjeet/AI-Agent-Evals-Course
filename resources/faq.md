@@ -874,6 +874,41 @@ Note the order: reliability, transparency, control, ownership, graduation. Teams
 
 </details>
 
+<details>
+<summary><strong>What are the non-negotiable rules for multi-agent safety?</strong></summary>
+
+Four rules worth memorizing. One: never trust anything a model produces — guardrails live outside the model, not inside the prompt. Two: authority only shrinks as work gets delegated. If you can approve $100, the agent you hand work to can't approve $101. Three: treat everything the agent reads as untrusted — emails, web pages, tool outputs are data, never instructions. Four: anything that changes the world gets a human checkpoint, at least for now. A phishing email three steps upstream should never be able to authorize a payment three steps downstream.
+
+</details>
+
+<details>
+<summary><strong>What is a watchdog agent?</strong></summary>
+
+An agent whose only job is watching your other agents. It looks at what they're doing — the tools they call, the money they spend, how long they take — and flags anything weird. If an agent starts looping, burning API calls, or doing things it never did before, the watchdog can pause or shut it off automatically. Like a factory supervisor with an emergency stop button. It's one of the cheapest safety upgrades: you don't need every agent to be perfect if something is watching all of them.
+
+</details>
+
+<details>
+<summary><strong>Why do safety and security teams need to merge for agents?</strong></summary>
+
+Because agents knocked down the wall between them. Safety teams used to check what the model says; security teams protected the code and the network. Now one prompt injection through a customer chatbot can run code inside your company network — a security breach that walked in through a safety door. The fix is unglamorous: shared threat modeling, shared access controls, shared PII rules. If your safety and security teams still meet separately, start merging them now.
+
+</details>
+
+<details>
+<summary><strong>How do you red-team an agent?</strong></summary>
+
+Don't just test the happy path — attack it like someone who wants to break it. Hide instructions in a document it reads. Ask for the banned thing in three polite steps instead of one. Feed it a tool response that says "ignore your instructions." Real story from the panel: an agent got blocked, then base64-encoded the banned request on its third try, decoded the answer, and finished the job anyway. The lesson: defend wherever the model keeps trying. If it hits repeated errors and doesn't stop, that's where your guardrail needs to be — not just at the front door.
+
+</details>
+
+<details>
+<summary><strong>Are evals enough to make my agent safe?</strong></summary>
+
+No. Think of evals as a flashlight in a dark forest: they show you what's in the beam, but the forest stays dark. Evals are probabilistic, not guarantees — you can't measure everything an agent might do, especially once it has ten tools and the possible paths explode into thousands. So you do both: evals to catch what you can catch, and layered guardrails — access controls, human checkpoints, watchdogs — for everything else. Evals are necessary. They're just not sufficient.
+
+</details>
+
 ## Section 7 — Context Engineering & RAG Evaluation
 
 *Hands-on in [Week 4 — RAG Evaluation](../week-04-rag-evaluation/)*
