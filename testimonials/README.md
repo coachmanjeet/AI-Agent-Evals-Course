@@ -20,7 +20,14 @@ Format per entry:
 ![caption](screenshots/<file>.png)
 -->
 
-*No entries yet — share your screenshots and messages and they'll be filed here.*
+## Course students
+
+### Manoj Parvathaneni — ByteByteGo student, AI Evals in Practice
+Principal Escalation Engineer and Fabric Technology Lead, Microsoft
+
+> "Hi Coach Manjeet, I missed your first AI Evals in Practice session live but watched the recording today and learned a lot. Excited for the next 6 weeks, and your fitness content too."
+
+![LinkedIn DM from Manoj Parvathaneni](screenshots/2026-10-08-linkedin-manoj-parvathaneni.jpg)
 
 ## Content viewers & readers
 
