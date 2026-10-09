@@ -504,6 +504,21 @@ If you struggle to achieve good alignment, try a different model — but onboard
 </details>
 
 <details>
+<summary><strong>How do I set up a pipeline where one model does the work and another evaluates it — and how do I know the evaluator is reliable?</strong></summary>
+
+Think of it like a kitchen: one cook makes the dish, a second person tastes it, and the manager decides whether it goes out, gets redone, or goes to the head chef. That's the whole pipeline — one model does the work, a second model grades it pass or fail against a clear checklist, and a simple rule decides what happens next: accept, retry, or send to a human.
+
+Keep the grader's job tiny. Don't ask "is this good?" — ask one thing, like "does the refund amount match the receipt?" Give it two good examples and two bad ones, and it'll do a far better job.
+
+Now, how do you know the grader is any good? Hand the same 50 examples to a human and to the grader, and see how often they agree. The honest score for this is called Cohen's kappa — it corrects for lucky guesses, and it's exactly what the Week 2 Judge Calibration Game trains. Where the two disagree, have a human take a look. That disagreement pile is where your checklist gets better.
+
+One trap to avoid: don't make the grader the same model running the same prompt as the worker. It'll have the same blind spots. Use a different model, or at least a different prompt — and re-check the agreement every few weeks, because graders drift as your product changes.
+
+See also: "What is an LLM Judge and how do I use it to evaluate other LLM outputs?" for the full 7-step judge-building process.
+
+</details>
+
+<details>
 <summary><strong>How do I evaluate a model's ability to express uncertainty (know what it doesn't know)?</strong></summary>
 
 This capability — called "Abstention Ability" in the research literature — requires a carefully constructed evaluation set with two types of scenarios:
@@ -513,6 +528,19 @@ Answerable questions — Scenarios where a correct, verifiable answer exists in 
 Unanswerable questions — Questions with false premises, missing context, or topics outside the knowledge base. Designed to tempt hallucination.
 
 Evaluation is a binary pass/fail: the model passes if it answers answerable questions correctly AND refuses to answer unanswerable ones. Fabricating an answer to an unanswerable question is a failure.
+
+</details>
+
+<details>
+<summary><strong>How do I produce meaningful confidence scores — and decide when to trust them?</strong></summary>
+
+One rule: a confidence score only means something if it's honest. When the system says 90% confident, it should be right about 9 times out of 10. The catch is that AI models are naturally overconfident — they'll say 90% when they really mean 70%.
+
+So how do you get an honest number? Three tricks that actually work. Ask the same question three to five times and see how often the answers agree. Have a second model double-check the first one's work. Or run simple checks — say you're pulling a date off an invoice: does the date parse? Does the total match the line items? Those little checks combine into a score you can defend.
+
+Then you validate. Take a hundred past outputs, group them by the confidence they were given — the 70s, the 80s, the 90s — and check how often each group was actually right. If your "90% confident" group was only right 70% of the time, your scores are lying and you need to adjust them.
+
+Finally, the decision. Pick a cutoff based on what a mistake costs you. Everything above it goes through on its own; everything below goes to a human. And keep watching — if humans keep fixing your "high confidence" outputs, your cutoff is wrong.
 
 </details>
 
@@ -554,6 +582,25 @@ Break large tasks into smaller, more constrained subtasks — reduces variance a
 Do not use an LLM when you do not need one — regex, fuzzy matching, and rule-based logic are deterministic, cheaper, and often more reliable for specific tasks.
 
 Design for modularity — build so you can swap models, change prompts, and add guardrails without rewriting everything.
+
+</details>
+
+<details>
+<summary><strong>How do we build evals for a large horizontal launch spanning 5-10 eng teams?</strong></summary>
+
+Good news first: your spreadsheet is the right starting point. A shared list of scenarios across teams is exactly the backbone you need. It just needs four upgrades to become a real eval program.
+
+First, write down how each row gets checked — by code, by an AI grader, or by a human. A spreadsheet quietly assumes a person clicks through every row. At your scale, most rows need to run by themselves, so the method has to be explicit.
+
+Second, add the nasty rows. What if someone tries to trick the support bot? What if a payment times out and the system charges twice? What if a risk-score change flips an onboarding decision? Each team writes these for their own area — they know where the skeletons are.
+
+Third, put a budget on each row: tokens, latency, downstream calls. A launch that works perfectly but costs three times more is still a failure, and the sheet should catch it.
+
+Fourth, run each row many times and track the pass rate. AI is unpredictable — passing once proves nothing. Passing 19 out of 20 tells you something real.
+
+How to run it across teams: each team owns its own rows, and one central team owns the test runner, the shared failure categories, and the dashboard everyone looks at. And always test the handoffs between teams — onboarding handing off to payments, for example — because that's where the worst bugs hide.
+
+Start with your five most important user journeys end to end, run the whole set on every release candidate, and every time something breaks in production, add it as a new row.
 
 </details>
 
