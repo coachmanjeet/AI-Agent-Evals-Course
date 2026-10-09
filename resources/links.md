@@ -49,3 +49,12 @@ Evals-guide deep dives, mapped to course weeks:
 - [How do you know whether an automated evaluator is trustworthy? (Week 2)](https://link.courses.maven.com/c/eJws0MHOpCAQBOCnkVsbQEQ8cNiLr2Eauv31HxVH0Mm8_WZm9_qlKqkUeUNShVawV12vGqWtk4I3XNYxrpizD2dCipjLfy3vg_0rnY88p0Pwfo___LoW8seZqJaToyn2DoLUEgxaCUgUoaHY9l1wjoIVs5fWsrMyGN2yjq5T3JBCO7XYux6DEYvXUlslpVWuVcrVTTCxm6yRtuHOkq6MjOk6M-d6w5v3OqZNLHmczrSNX_EDrpnF6udSjlw1fyo9VHqYceO1Jr4rPYQ1_VR6OFIuudID37hmmPD5TTZPmNMLKMECjz29YJlggYg7lPPKBbY34FXShoUJPlVx-g33X-byi48Zz8rIn88932k5zimt40K-b6wRt9d_AwAA__9_v3xo)
 - [When is synthetic data useful, and when can it mislead you? (Week 1)](https://link.courses.maven.com/c/eJws0EGSpCAQheHTyA4DENFasJiN1zASMi3sRrFJyo6-_cTU9PaLt3jxo7eodBgFeT099KCNm5WgA_a8xgzMPtQCGIHbr7afi_x3qZ-cyiXovNf__nrt6K9asFfbjFt8zDIoo6QFpyQgRjlgHB9TmGcMTiSPIZjNAU12noKGyVg1OjAjRLVNOBixe6OM00o5PY9az_0QbJw2Z5UbaHJoOqtieVUm7g-46exjOcTO61bLsb7FL5CZRPaptYu74U9nls4sCQ7KPdLdmSXk8uzMchVu3JmFbsgsN_h6L4cv-Z2gyZ1lSyQDcZNwXbVATHIrVT7ppAptP5-Sf86WqO1RIjQQ1R9wfhC1D_hMUDurnv86vT9yTKXkdUf_GJwVtzd_AwAA__-LM4DB)
 - [Where synthetic data can be unreliable (Week 1)](https://link.courses.maven.com/c/eJws0MGSpCAQBNCvkRsGFor0gcNe_A2joMqRGRQHaCf67ze2Z4_5Ig8ZSW4kNfhJsBvmx6AHMFYJPjCmNSSs1fmSkQLW9l_b62L3k8tX3fMl-LzXX38-I7mrZOrVZmkLDyu9AiVHNEoiUZCawvSYvbXkjdidUSPhPAHYScFEsyZGmnUAGwDYoIgOFJhBKTPYaRhsr_0Y5s2MymieDUE3qpCfpXLtD7z57EM-RKzrVvKxvsUtmCqL5PbWrtrpPx0sHSw7Hpx64ruDxaf80cFy5dpqBwvfmKrc8Pvd1N8SC8u2c2FZA59YYq7y5ze_zrZzi0ESNpQHvuSZm_QsC6eIPrEo7sDzk7l94teOpRvVx7-z3kNr2HNOayT30GYUt4O_AQAA__-2aYIs)
+
+## Newsletter flashcards (fwd by Manjeet 2026-10-09)
+
+- Hamel Husain — Evals Flashcard #8: Ways to Sample Traces (random, clustering,
+  data analysis, classification, customer feedback). Underlying FAQ entry:
+  https://hamel.dev/blog/posts/evals-faq/
+- Marily Nika — AI PM Flashcard #4: How do you know if your AI feature is actually
+  good? (don't confuse evals with product metrics; AI quality vs product value mismatches):
+  https://marily.substack.com/p/ai-pm-flashcard-4-how-do-you-know
