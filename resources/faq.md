@@ -671,6 +671,27 @@ Effective systems layer all three. The cheapest guardrail is a well-written syst
 
 </details>
 
+<details>
+<summary><strong>What guardrails actually work in production?</strong></summary>
+
+The guardrails that work share one trait: they live in the harness, not in the prompt. A system-prompt instruction ("never refund over $50 without approval") is a suggestion; a code check that blocks `issue_refund` when `amount > 50` is a guardrail. In practice, the ones teams rely on:
+
+**Enforcement in code, not prose.** Policy-bible rules — Pronto's $50 approval limit, the perishable photo rule — implemented as pre-tool checks that cannot be talked around. The model proposes; the harness disposes.
+
+**Tool allowlists and approval gates.** The agent can only call tools it is explicitly granted, and high-risk tools (refunds, external sends, data deletion) pause for human approval. This is the autonomy framework from the earlier question, implemented as infrastructure.
+
+**Input hygiene.** PII redaction before transcripts are stored, prompt-injection detection on untrusted input, scope validation (is this request even in the agent's job?). Cheap, fast, and they fail closed.
+
+**Output verification.** Format checks, groundedness checks against retrieved sources, sensitive-data filters on the way out. Run the expensive checks (LLM judges) only on the paths that matter.
+
+**Budgets and rate limits.** Per-session token caps, per-tool call limits, cost-per-task ceilings. These catch the failure mode nobody writes a test for: the agent that is technically correct but burns $40 doing it.
+
+**Audit logging of everything.** Not a guardrail that prevents, but the one that makes all the others accountable: every decision traceable, every override recorded.
+
+What doesn't work: a single guardrail, any guardrail evaluated once and never again, and guardrails that exist only as prompt text. Defense in depth, re-validated on every deploy — that's the whole answer.
+
+</details>
+
 | Make guardrails modular: Build them so they can be ripped out and replaced. Your guardrail needs will evolve as your product evolves, models improve, and you discover new failure modes. |
 | --- |
 
@@ -782,6 +803,27 @@ Accountability cannot be outsourced to the model. The organization deploying the
 In practice, accountability is shared but explicit: product defines intended use and risk boundaries; engineering implements the controls; security and privacy validate access and data handling; operations monitors the system in production; and business owners own the policy decisions embedded in the workflow. Write these down — a RACI for the agent, not just for the project.
 
 The important thing is that no harmful outcome ends with "the AI did it." There must be a traceable record of what happened, why the agent acted, what data and tools it used, and who could have intervened. That record is what turns a failure into an accountable one: without it you have blame diffusion, with it you have a specific control to fix and a specific owner to fix it.
+
+When the action was unexpected — the agent did something nobody predicted — the RACI doesn't change, but the incident path kicks in. Unexpected actions signal that the risk boundaries were wrong or a control was missing, not that ownership is unclear. The owning team runs the postmortem: what did the trace show, which control should have caught it, who fixes the control. "Unexpected" describes the behavior, never the ownership.
+
+</details>
+
+<details>
+<summary><strong>What does it take to earn user trust?</strong></summary>
+
+Trust is earned with agents the same way as with people: slowly, through kept promises — and it compounds, or collapses, on the edges.
+
+**Reliability first.** The agent does what it says, within the boundaries it claims. Nothing builds trust like a boring track record; nothing destroys it like one confident fabrication. The eval suite is a trust asset, not just an engineering one.
+
+**Transparency about uncertainty.** Agents that say "I'm not sure — here's what I'd need" are trusted more than agents that guess fluently. Expressing uncertainty is a feature, and it should be evaluated like one.
+
+**User control.** The user can see what the agent is doing, interrupt it, correct it, and undo it. Closed-loop human control isn't just a safety posture — it's how users learn the agent is safe to delegate to.
+
+**Ownership of mistakes.** When it fails, the system says what happened and what changed — never "the AI did it." Accountability, done visibly, builds trust.
+
+**Graduated autonomy.** Start narrow: low-risk, reversible, supervised. Expand the envelope only as the track record earns it. Trust is granted in small amounts and revoked all at once — design the rollout that way.
+
+Note the order: reliability, transparency, control, ownership, graduation. Teams that skip to "trust us" messaging without the first four get exactly the skepticism they earned.
 
 </details>
 
@@ -1138,6 +1180,25 @@ Maintain a staging/production split — test prompt changes in a non-production 
 Never change a prompt and a model simultaneously — you will not know which change caused a quality shift.
 
 Log the prompt version alongside every production trace — essential for debugging regressions introduced by prompt changes.
+
+</details>
+
+<details>
+<summary><strong>How do you evaluate behavior before deployment?</strong></summary>
+
+Before an agent touches production, run it through a deployment gate — a fixed sequence that must pass before the version ships:
+
+**1. Regression set.** Your curated set of known-good and known-bad cases (the eval suite from Weeks 1–2). The new version must not break anything the old version got right. This is the non-negotiable floor.
+
+**2. Held-out gold set.** Cases the development loop never saw. If the team tuned against the regression set, the gold set is what catches the overfitting.
+
+**3. Adversarial probes.** Prompt injection, jailbreaks, PII extraction attempts, edge-case inputs from your failure taxonomy. You're not testing the happy path — you're testing the paths an attacker or a confused user finds on day one.
+
+**4. Statistical thresholds, not vibes.** Pass rates with confidence intervals, not single runs. Non-determinism means one green run proves nothing; the gate requires the metric to clear the bar across multiple samples.
+
+**5. Canary or shadow on live traffic.** The final gate isn't offline at all: run the new version alongside production (shadow) or on a slice of traffic (canary) and compare. Offline evals predict; production confirms.
+
+A version that clears all five ships. A version that fails anywhere goes back with a named failure and a new test case. This is the Week 6 decision gate, run as a checklist instead of a meeting.
 
 </details>
 
