@@ -4,6 +4,11 @@ All files below live in
 `week-02-designing-reliable-llm-judges/assignments/01-build-and-validate-judge/`
 unless noted otherwise.
 
+> **Follow [`walkthrough.md`](walkthrough.md)** — the step-by-step guide for
+> this assignment: exact commands, what you should see at each step, and
+> checkpoints before moving on. The sections below are the spec; the
+> walkthrough is the path.
+
 ## Goal
 
 Build three binary LLM judges for the Pronto agent and prove each one agrees
