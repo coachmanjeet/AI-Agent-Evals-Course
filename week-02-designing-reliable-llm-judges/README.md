@@ -3,6 +3,12 @@
 When to trust an LLM to grade your agent, how to design judges that isolate
 root causes, and how to validate them against human labels before they gate anything.
 
+> **Tooling:** Braintrust is the default platform for this course — you get
+> free access for the whole course, so there's no API key to buy and no
+> separate model key needed (judge calls run on the course credit via
+> Braintrust's proxy). Prefer LangSmith or another tool? Totally fine — the
+> rubrics, agreement math, and trust gates below transfer unchanged.
+
 ## This week's workflow
 
 ```mermaid
@@ -38,13 +44,14 @@ flowchart LR
 
 ## Links
 
-- LangSmith evaluators — custom evaluators, `evaluate()`, experiments: https://docs.langchain.com/langsmith/evaluation
-- LangSmith annotation queues (human labels): https://docs.langchain.com/langsmith
+- Braintrust evals — datasets, scorers, `Eval()`, experiment view: https://www.braintrust.dev/docs/guides/evals
+- Braintrust AI proxy (judge calls on course credit): https://www.braintrust.dev/docs/reference/proxy
+- LangSmith evaluators (if you prefer LangSmith) — custom evaluators, `evaluate()`, experiments: https://docs.langchain.com/langsmith/evaluation
 
 ## In this folder
 
 - `examples/` — worked examples from the live session (added after the session)
-- `assignments/01-build-and-validate-judge/` — 3 binary rubrics as LangSmith evaluators, validated on 40 labels
+- `assignments/01-build-and-validate-judge/` — 3 binary rubrics as Braintrust scorers, validated on 40 labels
 - `assignments/02-diagnose-and-compare/` — diagnose-and-fix cycle, prompt A/B, ship/no-ship decision
 
 ## Hands-on game
@@ -55,8 +62,9 @@ flowchart LR
 — the interactive companion for this week. Label 24 Pronto support responses
 pass/fail, write a judge prompt, and watch your judge's agreement with your
 labels scored live (accuracy, precision/recall, F1, Cohen's κ) — then check
-your labels against the gold answer key. Bring your own OpenAI/Anthropic key,
-or run the whole thing in `?mock=1` test mode with no key. Source and docs:
+your labels against the gold answer key. Paste your Braintrust API key (free
+course credit), bring your own OpenAI/Anthropic key, or run the whole thing
+in `?mock=1` test mode with no key. Source and docs:
 `docs/judge-calibration-game/`.
 
 > Requires GitHub Pages to be enabled on this repo (Settings → Pages →

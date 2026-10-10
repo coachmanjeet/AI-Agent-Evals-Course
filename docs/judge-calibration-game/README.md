@@ -29,9 +29,13 @@ http://localhost:8000/judge-calibration-game/?mock=1
 
 ## With a real key
 
-Bring your own OpenAI or Anthropic key (Setup step). The key stays in your
-browser's localStorage and is sent only to the provider's API — there is no
-backend. A full judge run over your labeled items costs well under $0.10.
+Pick **Braintrust** in the Setup step and paste your Braintrust API key —
+course students get free Braintrust credit for the duration of the course, so
+this costs you nothing. (The game calls Braintrust's OpenAI-compatible proxy.)
+You can also bring your own OpenAI or Anthropic key instead. Keys stay in your
+browser's localStorage and are sent only to the provider's API — there is no
+backend. A full judge run over your labeled items costs well under $0.10 on a
+paid key.
 
 ## Live URL (once Pages is enabled)
 

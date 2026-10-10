@@ -1,9 +1,16 @@
 """Week 2, Assignment 1 starter: three binary LLM judges + agreement math.
 
-Fill in the three rubric prompts, wire the LangSmith evaluators, then run
-against your 40 hand labels. Requires: LANGSMITH_API_KEY + a model API key
-in .env (both set up in Week 1).
+Braintrust is the default platform for this course (free credit for the
+duration of the course). Prefer LangSmith or another tool? Fine — the rubrics
+and the validation method below transfer unchanged.
+
+Fill in the three rubric prompts, wire the Braintrust scorers, then run
+against your 40 hand labels. Requires: BRAINTRUST_API_KEY in .env
+(free course access at braintrust.dev — no separate model key needed,
+the course credit covers judge calls too).
 """
+
+import os
 
 # ---------------------------------------------------------------------------
 # 1. Rubric prompts — one criterion each, strict output format.
@@ -31,13 +38,29 @@ Output EXACTLY: PASS or FAIL on the first line, then one line starting with
 
 
 # ---------------------------------------------------------------------------
-# 2. LangSmith evaluators — one per rubric. Each returns {"key", "score"}.
+# 2. Judge LLM call — via Braintrust's proxy (free course credit).
 # ---------------------------------------------------------------------------
+def _judge_client():
+    """OpenAI-compatible client pointed at Braintrust's AI proxy.
+
+    Your BRAINTRUST_API_KEY doubles as the model credential here, so judge
+    calls draw from the free course credit. Prefer your own provider key?
+    Point the client at api.openai.com (or Anthropic's API) instead — the
+    rest of this file doesn't care.
+    """
+    # TODO: pip install openai braintrust   (both in requirements.txt)
+    #   from openai import OpenAI
+    #   return OpenAI(
+    #       base_url="https://api.braintrust.dev/v1",
+    #       api_key=os.environ["BRAINTRUST_API_KEY"],
+    #   )
+    raise NotImplementedError("wire up your judge LLM client here")
+
+
 def run_judge(rubric_name: str, agent_output: str) -> str:
     """Call the judge LLM with the rubric prompt. Returns 'PASS' or 'FAIL'."""
-    # TODO: pick your provider client (openai is already a course dep).
-    #   from openai import OpenAI
-    #   client = OpenAI()  # reads OPENAI_API_KEY from .env
+    # TODO:
+    #   client = _judge_client()
     #   resp = client.chat.completions.create(
     #       model="gpt-4o-mini",
     #       messages=[
@@ -50,57 +73,61 @@ def run_judge(rubric_name: str, agent_output: str) -> str:
     raise NotImplementedError("wire up your judge LLM call here")
 
 
-def make_evaluator(rubric_name: str):
-    """Build a LangSmith evaluator for one rubric.
+# ---------------------------------------------------------------------------
+# 3. Braintrust scorers — one per rubric. Each returns 0 or 1.
+#
+#    A Braintrust scorer takes (output, expected) and returns a number.
+#    Here output is the agent's stored response and expected is YOUR hand
+#    label, so the score IS the agreement signal: 1 = judge agrees with you.
+# ---------------------------------------------------------------------------
+def make_scorer(rubric_name: str):
+    def scorer(output, expected) -> float:
+        agent_output = output["output"] if isinstance(output, dict) else output
+        verdict = run_judge(rubric_name, agent_output)
+        human = expected["human"] if isinstance(expected, dict) else expected
+        return 1.0 if verdict == human else 0.0
 
-    LangSmith evaluators take (run, example) and return a dict with
-    "key" (the metric name) and "score" (0 or 1 for our binary judges).
+    scorer.__name__ = f"{rubric_name}_scorer"
+    return scorer
+
+
+SCORERS = {name: make_scorer(name) for name in RUBRICS}
+
+
+async def run_braintrust_eval(cases: list, project: str = "pronto-judges-w2"):
+    """Score all three judges over your labeled cases in Braintrust.
+
+    cases: list of {"input": <user msg>, "output": <agent response>,
+                    "human": {"policy_adherence": "PASS", ...}} — one human
+           label per rubric per case (your 40 hand labels).
+    Open the run in Braintrust afterwards: per-scorer averages ARE your
+    agreement rates; drill into individual rows to read disagreements.
     """
-    def evaluator(run, example) -> dict:
-        output = run.outputs.get("output", "") if run.outputs else ""
-        verdict = run_judge(rubric_name, output)
-        return {"key": rubric_name, "score": 1 if verdict == "PASS" else 0}
-
-    evaluator.__name__ = f"{rubric_name}_evaluator"
-    return evaluator
-
-
-EVALUATORS = [make_evaluator(name) for name in RUBRICS]
-
-
-def run_langsmith_eval(dataset_name: str = "pronto-judge-labels-40"):
-    """Run all three judges over a LangSmith dataset via evaluate()."""
     # TODO:
-    #   from langsmith import Client
-    #   from langsmith.evaluation import evaluate
+    #   import braintrust
     #
-    #   client = Client()  # reads LANGSMITH_API_KEY from .env
-    #   # Upload your 40 hand-labeled outputs as a dataset first (Week 1 Path A
-    #   # traces, or rows you build by hand):
-    #   #   dataset = client.create_dataset(dataset_name)
-    #   #   for row in labels:  # {"input": ..., "output": ..., "human": "PASS"/"FAIL"}
-    #   #       client.create_example(
-    #   #           inputs={"input": row["input"]},
-    #   #           outputs={"output": row["output"], "human": row["human"]},
-    #   #           dataset_id=dataset.id)
+    #   async def main():
+    #       for rubric_name, scorer in SCORERS.items():
+    #           data = [
+    #               braintrust.EvalCase(
+    #                   input={"input": c["input"], "output": c["output"]},
+    #                   expected={"human": c["human"][rubric_name]},
+    #               )
+    #               for c in cases
+    #           ]
+    #           await braintrust.Eval(
+    #               project,
+    #               data=data,
+    #               task=lambda input: {"output": input["output"]},  # judge stored outputs
+    #               scores=[scorer],
+    #           )
     #
-    #   def target(inputs):  # the "system" under eval: identity over the outputs
-    #       return {"output": inputs["output"]}
-    #
-    #   results = evaluate(
-    #       target,
-    #       data=dataset_name,
-    #       evaluators=EVALUATORS,
-    #       experiment_prefix="pronto-judges-v1",
-    #   )
-    #   # In the LangSmith UI, open the experiment and compare each evaluator's
-    #   # score against example.outputs["human"] — that's your agreement data
-    #   # for the math in section 3.
-    raise NotImplementedError("wire up the LangSmith evaluate() call here")
+    #   import asyncio; asyncio.run(main())
+    raise NotImplementedError("wire up the braintrust.Eval call here")
 
 
 # ---------------------------------------------------------------------------
-# 3. Agreement math — judge vs human labels.
+# 4. Agreement math — judge vs human labels (runs locally, no API needed).
 # ---------------------------------------------------------------------------
 def cohens_kappa(judge_labels: list, human_labels: list) -> float:
     """Cohen's kappa for two binary label lists (values 'PASS'/'FAIL')."""
@@ -108,13 +135,11 @@ def cohens_kappa(judge_labels: list, human_labels: list) -> float:
     n = len(judge_labels)
     agree = sum(j == h for j, h in zip(judge_labels, human_labels))
     p_o = agree / n
+    p_e = 0.0
     for label in ("PASS", "FAIL"):
         p_j = sum(j == label for j in judge_labels) / n
         p_h = sum(h == label for h in human_labels) / n
-        if label == "PASS":
-            p_e = p_j * p_h
-        else:
-            p_e += p_j * p_h
+        p_e += p_j * p_h
     return (p_o - p_e) / (1 - p_e) if p_e != 1 else 1.0
 
 
@@ -129,10 +154,15 @@ def agreement_matrix(judge_labels: list, human_labels: list) -> dict:
 
 if __name__ == "__main__":
     # TODO: load your 40 labels, e.g. labels.jsonl rows:
-    #   {"input": "...", "output": "...", "rubric": "policy_adherence", "human": "PASS"}
-    # Run each judge via run_judge(), collect judge_labels, then:
+    #   {"input": "...", "output": "...",
+    #    "human": {"policy_adherence": "PASS", "escalation_correctness": "FAIL",
+    #              "tool_call_accuracy": "PASS"}}
+    # Run each judge via run_judge() per rubric, collect judge_labels, then:
     #   print(agreement_matrix(judge_labels, human_labels))
     #   print("kappa:", cohens_kappa(judge_labels, human_labels))
-    # Then scale up: upload the 40 as a LangSmith dataset and run
-    # run_langsmith_eval() to see all three judges scored in the UI.
-    print("TODO: load labels, run judges, report agreement + kappa per rubric.")
+    # Then scale up: await run_braintrust_eval(cases) to see all three
+    # judges scored per-row in the Braintrust UI.
+    if not os.getenv("BRAINTRUST_API_KEY"):
+        print("Set BRAINTRUST_API_KEY in .env (free course access at braintrust.dev).")
+    else:
+        print("TODO: load labels, run judges, report agreement + kappa per rubric.")

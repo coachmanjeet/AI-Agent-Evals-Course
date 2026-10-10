@@ -8,6 +8,7 @@
 //
 //  100% client-side. API keys live only in this browser's localStorage under
 //  'jc101:apikey' and are sent only to the chosen provider's API.
+//  Providers: Braintrust (free course credit, default), OpenAI, Anthropic.
 //  ?mock=1 enables a deterministic mock provider for testing with no key.
 //
 //  Pure functions (computeMetrics, cohensKappa, confusionMatrix, mockVerdict)
@@ -31,10 +32,15 @@ export const STAGES = [
 ];
 
 export const MODELS = {
+  braintrust: [{ id: 'gpt-4o-mini', label: 'gpt-4o-mini via Braintrust (free course credit)' }],
   openai:    [{ id: 'gpt-4o-mini', label: 'gpt-4o-mini (cheap, fast)' }],
   anthropic: [{ id: 'claude-3-haiku-20240307', label: 'claude-3-haiku (cheap, fast)' }],
   mock:      [{ id: 'mock-judge-v1', label: 'mock-judge (deterministic, no API)' }],
 };
+
+// Braintrust's AI proxy is OpenAI-compatible: same request/response shape,
+// authenticated with the Braintrust API key.
+const BRAINTRUST_PROXY = 'https://api.braintrust.dev/v1/chat/completions';
 
 // Rough per-1M-token prices (USD) for the cheap judge models, for cost estimates.
 const PRICE_PER_1M = {
@@ -165,7 +171,7 @@ function defaultState() {
   return {
     version: JC_VERSION,
     stageId: 'setup',
-    provider: 'openai',
+    provider: 'braintrust',
     model: 'gpt-4o-mini',
     order: [],            // shuffled item ids
     labels: {},           // id -> {verdict, note, ts}
@@ -244,8 +250,9 @@ async function callJudge({ provider, model, apiKey, systemPrompt, userText, sign
   const onAbort = () => ctrl.abort();
   if (signal) signal.addEventListener('abort', onAbort);
   try {
-    if (provider === 'openai') {
-      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    if (provider === 'openai' || provider === 'braintrust') {
+      const endpoint = provider === 'braintrust' ? BRAINTRUST_PROXY : 'https://api.openai.com/v1/chat/completions';
+      const res = await fetch(endpoint, {
         method: 'POST', signal: ctrl.signal,
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
         body: JSON.stringify({
@@ -305,8 +312,9 @@ async function testKey(provider, apiKey) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 20000);
   try {
-    if (provider === 'openai') {
-      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    if (provider === 'openai' || provider === 'braintrust') {
+      const endpoint = provider === 'braintrust' ? BRAINTRUST_PROXY : 'https://api.openai.com/v1/chat/completions';
+      const res = await fetch(endpoint, {
         method: 'POST', signal: ctrl.signal,
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
         body: JSON.stringify({ model: 'gpt-4o-mini', max_tokens: 5, messages: [{ role: 'user', content: 'Reply with the single word: ok' }] }),
@@ -444,7 +452,7 @@ function renderSetup(mount) {
     el('label', {}, ['Provider']),
     (() => {
       const sel = el('select', { class: 'jc-select', id: 'jc-provider' });
-      [['openai', 'OpenAI'], ['anthropic', 'Anthropic'], ['mock', 'Mock (no key)']].forEach(([v, l]) => {
+      [['braintrust', 'Braintrust (free course credit)'], ['openai', 'OpenAI'], ['anthropic', 'Anthropic'], ['mock', 'Mock (no key)']].forEach(([v, l]) => {
         const o = el('option', { value: v }, [l]);
         if (state.provider === v) o.selected = true;
         sel.appendChild(o);
@@ -462,7 +470,7 @@ function renderSetup(mount) {
   if (state.provider !== 'mock') {
     const keyInput = el('input', {
       class: 'jc-input', id: 'jc-key', type: 'password',
-      placeholder: state.provider === 'openai' ? 'sk-…' : 'sk-ant-…',
+      placeholder: state.provider === 'openai' ? 'sk-…' : state.provider === 'braintrust' ? 'Braintrust API key…' : 'sk-ant-…',
       value: getApiKey(), autocomplete: 'off', spellcheck: 'false',
     });
     mount.appendChild(el('div', { class: 'jc-field' }, [el('label', {}, ['API key']), keyInput]));
