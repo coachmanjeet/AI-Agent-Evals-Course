@@ -89,6 +89,23 @@ assignments cover wiring the eval infrastructure:
   the full postmortem template (blameless). Use when Assignment 2's flywheel
   cycle deserves more than the short template.
 
+## Beyond text: multimodal and rigor upgrades
+
+Short, teachable additions in
+[`resources/multimodal-evals/`](../../resources/multimodal-evals/) — distilled
+from production multimodal-eval practice, Pronto-flavored:
+
+- `eval-contracts.md` — organize evals as contracts with kappa-gated deployment
+  (CI bar vs monitoring floor). Read before defining your Assignment 1 gates.
+- `eval-debt-register.md` — the quarterly audit that keeps evals from rotting.
+  Use in Assignment 2's flywheel.
+- `experiment-pre-registration.md` — lock the decision rule before you see
+  data. Use whenever Assignment 2 proposes an experiment.
+- `cross-modal-consistency.md`, `ingestion-fidelity.md` — the two new failure
+  classes for photo/audio features, with a compact judge prompt each.
+- `decode-session.md` — a 90-minute PM + engineer ritual for turning a feature
+  requirement into gradable claims. Useful any week you plan evals.
+
 ## Close the loop
 
 Dig out your Week 1 answers (the 1–10 confidence score and the "demos beautifully,
