@@ -16,12 +16,17 @@ Run it, then open the "pronto-demo" project at braintrust.dev -> Logs and
 click the trace: one root span per turn, model calls and tool calls nested
 inside it, in the order the agent actually ran them.
 
+In --chat mode the message history carries across turns, so the agent
+remembers earlier turns; each turn still lands in Braintrust as its own
+trace (one trace per turn is the right granularity for debugging).
+
 Needs:  pip install braintrust
         BRAINTRUST_API_KEY and OPENAI_API_KEY in .env (Week 2+ keys)
 
 Usage (from the repo root — the `python agent/...py` form breaks on imports):
     python -m agent.pronto_braintrust_demo --ask "Where is my order PRN-10421?"
     python -m agent.pronto_braintrust_demo --ask "My $85 order arrived half missing, refund me in full"
+    python -m agent.pronto_braintrust_demo --chat   # multi-turn: history carries across turns
 """
 
 import argparse
@@ -139,14 +144,17 @@ TOOL_SCHEMAS = [
 
 
 @traced
-def run_turn(user_message: str) -> str:
-    """One customer turn, as a real agent loop. This @traced is the ROOT span."""
+def run_turn(messages: list, user_message: str) -> str:
+    """One customer turn, as a real agent loop. `messages` is the shared
+    conversation history — it grows across turns, which is what makes the
+    agent multi-turn. This @traced is the ROOT span for this turn's trace."""
+    messages.append({"role": "user", "content": user_message})
+
     lowered = user_message.lower()
     if any(k in lowered for k in ESCALATION_KEYWORDS):
-        return escalate_to_human("legal/safety/privacy keyword matched")["reason"]
-
-    messages = [{"role": "system", "content": SYSTEM},
-                {"role": "user", "content": user_message}]
+        reason = escalate_to_human("legal/safety/privacy keyword matched")["reason"]
+        messages.append({"role": "assistant", "content": reason})
+        return reason
 
     for _ in range(MAX_STEPS):
         # Model thinks (auto-traced by wrap_openai) — may call tools, may answer.
@@ -168,17 +176,41 @@ def run_turn(user_message: str) -> str:
             messages.append({"role": "tool", "tool_call_id": call.id,
                              "content": json.dumps(result)})
 
-    return escalate_to_human("too many steps without resolving")["reason"]
+    reason = escalate_to_human("too many steps without resolving")["reason"]
+    messages.append({"role": "assistant", "content": reason})
+    return reason
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--ask", default="Where is my order PRN-10421?",
                         help="customer message to run through the agent")
+    parser.add_argument("--chat", action="store_true",
+                        help="interactive multi-turn chat (type 'quit' to exit)")
     args = parser.parse_args()
 
+    # One shared history for the whole session — this is what makes it multi-turn.
+    messages = [{"role": "system", "content": SYSTEM}]
+
+    if args.chat:
+        print("Pronto agent — multi-turn chat. Type 'quit' to exit.\n")
+        while True:
+            try:
+                user_message = input("> ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print()
+                break
+            if user_message.lower() in {"quit", "exit"}:
+                break
+            if not user_message:
+                continue
+            print(run_turn(messages, user_message))
+            print()
+            logger.flush()  # each turn lands in Braintrust as its own trace
+        return
+
     print(f"> {args.ask}\n")
-    print(run_turn(args.ask))
+    print(run_turn(messages, args.ask))
     logger.flush()  # make sure spans land before exit
     print("\n— trace sent. Open braintrust.dev → project 'pronto-demo' → Logs.")
 
