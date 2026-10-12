@@ -20,8 +20,11 @@ In --chat mode the message history carries across turns, so the agent
 remembers earlier turns; each turn still lands in Braintrust as its own
 trace (one trace per turn is the right granularity for debugging).
 
-Needs:  pip install braintrust
-        BRAINTRUST_API_KEY and OPENAI_API_KEY in .env (Week 2+ keys)
+Needs:  pip install braintrust openai python-dotenv
+        BRAINTRUST_API_KEY in .env (free tier at braintrust.dev), plus either
+        OPENAI_API_KEY — or, for a free local model —
+        PRONTO_BASE_URL=http://localhost:11434/v1, PRONTO_API_KEY=ollama,
+        PRONTO_MODEL=qwen2.5:14b  (needs `ollama serve` + `ollama pull qwen2.5:14b`)
 
 Usage (from the repo root — the `python agent/...py` form breaks on imports):
     python -m agent.pronto_braintrust_demo --ask "Where is my order PRN-10421?"
@@ -51,16 +54,26 @@ load_dotenv()
 # Reuse the canonical Pronto demo data — no duplication.
 from agent.agent import DEMO_ORDERS, DEMO_POLICIES, ESCALATION_KEYWORDS
 
+# Optional: point the agent at any OpenAI-compatible endpoint instead of OpenAI
+# itself (e.g. local Ollama: PRONTO_BASE_URL=http://localhost:11434/v1,
+# PRONTO_API_KEY=ollama, PRONTO_MODEL=qwen2.5:14b). Traces still go to Braintrust.
+USE_LOCAL_MODEL = bool(os.getenv("PRONTO_BASE_URL"))
+
 if not os.getenv("BRAINTRUST_API_KEY"):
     sys.exit("Set BRAINTRUST_API_KEY in .env  (free tier at braintrust.dev)")
-if not os.getenv("OPENAI_API_KEY"):
+if not USE_LOCAL_MODEL and not os.getenv("OPENAI_API_KEY"):
     sys.exit("Set OPENAI_API_KEY in .env  (any provider key works from Week 2 on)")
 
 # Move 1: open the pipe. Everything logged from here goes to this project.
 logger = init_logger(project="pronto-demo")
 
 # Move 2: wrap the client. Every chat.completions.create() is now a span.
-client = wrap_openai(OpenAI())
+_client_kwargs = {}
+if os.getenv("PRONTO_BASE_URL"):
+    _client_kwargs["base_url"] = os.environ["PRONTO_BASE_URL"]
+if os.getenv("PRONTO_API_KEY"):
+    _client_kwargs["api_key"] = os.environ["PRONTO_API_KEY"]
+client = wrap_openai(OpenAI(**_client_kwargs))
 
 MODEL = os.getenv("PRONTO_MODEL", "gpt-4o-mini")
 MAX_STEPS = 6  # the agent gets 6 model->tool rounds, then we escalate
