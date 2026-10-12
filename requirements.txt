@@ -1,6 +1,7 @@
 # Core deps for the course. Versions unpinned intentionally — install fresh.
 # This is the DAY-ONE set: tracing + one model client + env loading.
 langsmith          # tracing, datasets, annotation (Weeks 1+)
+braintrust         # tracing, datasets, scorers, evals, judge proxy (Weeks 1-2+)
 openai             # model provider client (any provider works; swap as you like)
 python-dotenv      # loads .env
 crewai             # multi-agent framework (Week 5 Pronto crew)
