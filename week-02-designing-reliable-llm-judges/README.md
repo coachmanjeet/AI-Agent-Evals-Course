@@ -63,11 +63,11 @@ flowchart LR
 — the interactive companion for this week. Label 24 Pronto support responses
 pass/fail, write a judge prompt, and watch your judge's agreement with your
 labels scored live (accuracy, precision/recall, F1, Cohen's κ) — then check
-your labels against the gold answer key. Paste your Braintrust API key (free
-course credit), bring your own OpenAI/Anthropic key, or run the whole thing
-in `?mock=1` test mode with no key (note: the Braintrust path needs an AI
-provider key in the org — Settings → AI Providers — since the proxy routes
-judge calls through it). Source and docs:
+your labels against the gold answer key. Paste your Braintrust API key
+(platform is free for students; the Braintrust path needs an AI provider
+key in the org — Settings → AI Providers — since the proxy routes judge
+calls through it), bring your own OpenAI/Anthropic key, or run the whole
+thing in `?mock=1` test mode with no key. Source and docs:
 `docs/judge-calibration-game/`.
 
 > Requires GitHub Pages to be enabled on this repo (Settings → Pages →
