@@ -51,7 +51,7 @@ def _judge_client():
     # TODO: pip install openai braintrust   (both in requirements.txt)
     #   from openai import OpenAI
     #   return OpenAI(
-    #       base_url="https://api.braintrust.dev/v1",
+    #       base_url="https://api.braintrust.dev/v1/proxy",
     #       api_key=os.environ["BRAINTRUST_API_KEY"],
     #   )
     raise NotImplementedError("wire up your judge LLM client here")

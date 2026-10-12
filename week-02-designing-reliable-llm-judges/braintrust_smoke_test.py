@@ -35,7 +35,7 @@ API_KEY = os.getenv("BRAINTRUST_API_KEY")
 if not API_KEY:
     sys.exit("Set BRAINTRUST_API_KEY first: export BRAINTRUST_API_KEY='...'")
 
-PROXY = "https://api.braintrust.dev/v1"
+PROXY = "https://api.braintrust.dev/v1/proxy"
 MODEL = "gpt-4o-mini"
 
 

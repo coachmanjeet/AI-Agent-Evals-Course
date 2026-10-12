@@ -160,7 +160,7 @@ to Step 3 and toughen the inputs.
 ```python
 from openai import OpenAI
 def _judge_client():
-    return OpenAI(base_url="https://api.braintrust.dev/v1",
+    return OpenAI(base_url="https://api.braintrust.dev/v1/proxy",
                   api_key=os.environ["BRAINTRUST_API_KEY"])
 ```
 
