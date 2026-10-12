@@ -1,13 +1,12 @@
 """Week 2, Assignment 1 starter: three binary LLM judges + agreement math.
 
-Braintrust is the default platform for this course (free credit for the
-duration of the course). Prefer LangSmith or another tool? Fine — the rubrics
-and the validation method below transfer unchanged.
+Braintrust is the default platform for this course (platform itself is free).
+Prefer LangSmith or another tool? Fine — the rubrics and the validation method
+below transfer unchanged.
 
 Fill in the three rubric prompts, wire the Braintrust scorers, then run
 against your 40 hand labels. Requires: BRAINTRUST_API_KEY in .env
-(free course access at braintrust.dev — no separate model key needed,
-the course credit covers judge calls too).
+(free at braintrust.dev — plus an AI provider key in the org, see below).
 """
 
 import os
@@ -38,13 +37,15 @@ Output EXACTLY: PASS or FAIL on the first line, then one line starting with
 
 
 # ---------------------------------------------------------------------------
-# 2. Judge LLM call — via Braintrust's proxy (free course credit).
+# 2. Judge LLM call — via Braintrust's proxy (needs a provider key in the org).
 # ---------------------------------------------------------------------------
 def _judge_client():
     """OpenAI-compatible client pointed at Braintrust's AI proxy.
 
-    Your BRAINTRUST_API_KEY doubles as the model credential here, so judge
-    calls draw from the free course credit. Prefer your own provider key?
+    Your BRAINTRUST_API_KEY authenticates you; the proxy routes to the AI
+    provider configured in your Braintrust org (Settings -> AI Providers —
+    add your OpenAI key there once). Judge calls are gpt-4o-mini, so the
+    whole assignment costs about a cent. Prefer to skip Braintrust?
     Point the client at api.openai.com (or Anthropic's API) instead — the
     rest of this file doesn't care.
     """

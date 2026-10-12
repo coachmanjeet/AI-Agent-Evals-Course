@@ -3,10 +3,11 @@
 When to trust an LLM to grade your agent, how to design judges that isolate
 root causes, and how to validate them against human labels before they gate anything.
 
-> **Tooling:** Braintrust is the default platform for this course — you get
-> free access for the whole course, so there's no API key to buy and no
-> separate model key needed (judge calls run on the course credit via
-> Braintrust's proxy). Prefer LangSmith or another tool? Totally fine — the
+> **Tooling:** Braintrust is the default platform for this course — the
+> platform itself is free for the whole course. One setup step: add your
+> OpenAI key under Settings → AI Providers in the Braintrust org, so judge
+> calls can route through Braintrust's proxy (gpt-4o-mini — the whole week
+> costs about a cent). Prefer LangSmith or another tool? Totally fine — the
 > rubrics, agreement math, and trust gates below transfer unchanged.
 
 ## This week's workflow
@@ -45,7 +46,7 @@ flowchart LR
 ## Links
 
 - Braintrust evals — datasets, scorers, `Eval()`, experiment view: https://www.braintrust.dev/docs/guides/evals
-- Braintrust AI proxy (judge calls on course credit): https://www.braintrust.dev/docs/reference/proxy
+- Braintrust AI proxy (routes through the org's provider key): https://www.braintrust.dev/docs/reference/proxy
 - LangSmith evaluators (if you prefer LangSmith) — custom evaluators, `evaluate()`, experiments: https://docs.langchain.com/langsmith/evaluation
 
 ## In this folder
@@ -64,7 +65,9 @@ pass/fail, write a judge prompt, and watch your judge's agreement with your
 labels scored live (accuracy, precision/recall, F1, Cohen's κ) — then check
 your labels against the gold answer key. Paste your Braintrust API key (free
 course credit), bring your own OpenAI/Anthropic key, or run the whole thing
-in `?mock=1` test mode with no key. Source and docs:
+in `?mock=1` test mode with no key (note: the Braintrust path needs an AI
+provider key in the org — Settings → AI Providers — since the proxy routes
+judge calls through it). Source and docs:
 `docs/judge-calibration-game/`.
 
 > Requires GitHub Pages to be enabled on this repo (Settings → Pages →

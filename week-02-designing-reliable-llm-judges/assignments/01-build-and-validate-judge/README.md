@@ -19,7 +19,7 @@ with human judgment before you trust it to gate anything.
 > before you start: label 24 Pronto responses, write one judge prompt, and
 > watch your agreement scored live. It teaches the whole loop — labels,
 > rubric, agreement matrix, kappa — before you touch code. Paste your
-> Braintrust API key in the game's Setup step (free course credit), or run it
+> Braintrust API key in the game's Setup step, or run it
 > in `?mock=1` mode with no key.
 
 ## Setup
@@ -27,8 +27,9 @@ with human judgment before you trust it to gate anything.
 1. `pip install braintrust openai` (both are in the course `requirements.txt` —
    skip if you ran `make setup`).
 2. Put `BRAINTRUST_API_KEY=...` in your `.env` (free course access at
-   braintrust.dev — no separate model key needed; judge calls run on the
-   course credit through Braintrust's proxy).
+   braintrust.dev — plus your OpenAI key added once under Settings →
+   AI Providers in the Braintrust org, which is what the proxy routes
+   judge calls through).
 3. Sanity-check with `python ../../braintrust_smoke_test.py` — all three
    checks should print OK. If they don't, fix that before writing a single
    rubric.
@@ -53,7 +54,7 @@ with human judgment before you trust it to gate anything.
 2. **Implement them as Braintrust scorers** (`starter.py` has the skeleton):
    one scorer function per rubric, each returning 0/1, run over your labeled
    cases with `braintrust.Eval`. Judge calls go through Braintrust's proxy,
-   so they draw from the free course credit.
+   so they route through the provider key in your Braintrust org.
    
    > Prefer LangSmith or another tool? Fine — implement the same three
    > rubrics there instead. The rubrics and the validation below are what get
@@ -99,7 +100,7 @@ with human judgment before you trust it to gate anything.
 
 `starter.py` — rubric prompt templates, Braintrust scorer skeleton
 (`run_judge` + `make_scorer` + `run_braintrust_eval` wiring), judge calls via
-Braintrust's proxy (free course credit, no separate model key), and
+Braintrust's proxy (routed through the org's provider key), and
 `cohens_kappa()` + `agreement_matrix()` implementations. Fill in the three
 prompts and the judge wiring, then run the `__main__` flow.
 
