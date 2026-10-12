@@ -39,8 +39,9 @@ export const MODELS = {
 };
 
 // Braintrust's AI proxy is OpenAI-compatible: same request/response shape,
-// authenticated with the Braintrust API key.
-const BRAINTRUST_PROXY = 'https://api.braintrust.dev/v1/chat/completions';
+// authenticated with the Braintrust API key. Direct-fetch equivalent of the
+// Python smoke test's base_url="https://api.braintrust.dev/v1/proxy".
+const BRAINTRUST_PROXY = 'https://api.braintrust.dev/v1/proxy/chat/completions';
 
 // Rough per-1M-token prices (USD) for the cheap judge models, for cost estimates.
 const PRICE_PER_1M = {
