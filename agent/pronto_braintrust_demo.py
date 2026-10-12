@@ -19,9 +19,9 @@ inside it, in the order the agent actually ran them.
 Needs:  pip install braintrust
         BRAINTRUST_API_KEY and OPENAI_API_KEY in .env (Week 2+ keys)
 
-Usage:
-    python agent/pronto_braintrust_demo.py --ask "Where is my order PRN-10421?"
-    python agent/pronto_braintrust_demo.py --ask "My $85 order arrived half missing, refund me in full"
+Usage (from the repo root — the `python agent/...py` form breaks on imports):
+    python -m agent.pronto_braintrust_demo --ask "Where is my order PRN-10421?"
+    python -m agent.pronto_braintrust_demo --ask "My $85 order arrived half missing, refund me in full"
 """
 
 import argparse
