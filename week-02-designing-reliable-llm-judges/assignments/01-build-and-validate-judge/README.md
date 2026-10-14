@@ -18,8 +18,9 @@ with human judgment before you trust it to gate anything.
 > [Judge Calibration Game](https://coachmanjeet.github.io/AI-Agent-Evals-Course/judge-calibration-game/)
 > before you start: label 24 Pronto responses, write one judge prompt, and
 > watch your agreement scored live. It teaches the whole loop — labels,
-> rubric, agreement matrix, kappa — before you touch code. Paste your
-> Braintrust API key in the game's Setup step, or run it
+> rubric, agreement matrix, kappa — before you touch code. Paste your OpenAI
+> key in the game's Setup step (browsers can't reach Braintrust's proxy, so
+> the game uses provider keys directly), or run it
 > in `?mock=1` mode with no key.
 
 ## Setup

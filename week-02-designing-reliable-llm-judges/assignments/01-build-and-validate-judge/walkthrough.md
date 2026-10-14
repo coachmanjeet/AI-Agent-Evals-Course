@@ -58,7 +58,10 @@ This is the exact UI you'll use for the assignment — get comfortable here.
 ## Step 2 — Warm up with the game (15 min, done in class)
 
 **Do this:** open https://coachmanjeet.github.io/AI-Agent-Evals-Course/judge-calibration-game/
-- Setup step: pick **Braintrust**, paste your key, hit **Test key**. (Needs an AI provider key in the Braintrust org — Settings → AI Providers.)
+- Setup step: pick **OpenAI**, paste your OpenAI key (the same one you added
+  under Braintrust's Settings → AI Providers), hit **Test key**. (The game
+  can't use your Braintrust key directly — browsers are blocked from calling
+  Braintrust's proxy. The assignment's Python code uses Braintrust normally.)
 - Label all 24 responses pass/fail. Don't overthink — go with your gut, the
   way a support lead would.
 - Write one judge prompt, run it, and read your agreement numbers.

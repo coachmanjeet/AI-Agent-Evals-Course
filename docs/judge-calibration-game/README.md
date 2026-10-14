@@ -29,14 +29,13 @@ http://localhost:8000/judge-calibration-game/?mock=1
 
 ## With a real key
 
-Pick **Braintrust** in the Setup step and paste your Braintrust API key —
-the Braintrust platform is free for course students. (The game calls
-Braintrust's OpenAI-compatible proxy, which routes through the AI provider
-key in your Braintrust org — Settings → AI Providers.)
-You can also bring your own OpenAI or Anthropic key instead. Keys stay in your
-browser's localStorage and are sent only to the provider's API — there is no
-backend. A full judge run over your labeled items costs well under $0.10 on a
-paid key.
+Pick **OpenAI** in the Setup step and paste your OpenAI key directly — a full
+judge run costs well under $0.10 on gpt-4o-mini. (Braintrust is not listed:
+its proxy does not allow browser calls, so the game uses provider APIs
+directly. The Week 2 Python assignment still runs through Braintrust — that
+path is unaffected.) You can also bring an Anthropic key instead. Keys stay in
+your browser's localStorage and are sent only to the provider's API — there is
+no backend.
 
 ## Live URL (once Pages is enabled)
 

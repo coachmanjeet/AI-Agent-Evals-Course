@@ -32,7 +32,6 @@ export const STAGES = [
 ];
 
 export const MODELS = {
-  braintrust: [{ id: 'gpt-4o-mini', label: 'gpt-4o-mini via Braintrust (free course credit)' }],
   openai:    [{ id: 'gpt-4o-mini', label: 'gpt-4o-mini (cheap, fast)' }],
   anthropic: [{ id: 'claude-3-haiku-20240307', label: 'claude-3-haiku (cheap, fast)' }],
   mock:      [{ id: 'mock-judge-v1', label: 'mock-judge (deterministic, no API)' }],
@@ -40,8 +39,9 @@ export const MODELS = {
 
 // Braintrust's AI proxy is OpenAI-compatible: same request/response shape,
 // authenticated with the Braintrust API key. Direct-fetch equivalent of the
-// Python smoke test's base_url="https://api.braintrust.dev/v1/proxy".
-const BRAINTRUST_PROXY = 'https://api.braintrust.dev/v1/proxy/chat/completions';
+// NOTE: Braintrust's proxy (https://api.braintrust.dev/v1/proxy) does not send
+// CORS headers, so browsers cannot call it directly — the game uses provider
+// APIs instead. The Python assignment code is unaffected (no CORS server-side).
 
 // Rough per-1M-token prices (USD) for the cheap judge models, for cost estimates.
 const PRICE_PER_1M = {
@@ -172,7 +172,7 @@ function defaultState() {
   return {
     version: JC_VERSION,
     stageId: 'setup',
-    provider: 'braintrust',
+    provider: 'openai',
     model: 'gpt-4o-mini',
     order: [],            // shuffled item ids
     labels: {},           // id -> {verdict, note, ts}
@@ -192,7 +192,11 @@ function loadState() {
     const raw = localStorage.getItem(STATE_KEY);
     if (!raw) return null;
     const s = JSON.parse(raw);
-    return (s && s.version === JC_VERSION) ? s : null;
+    if (!(s && s.version === JC_VERSION)) return null;
+    // Braintrust was removed as a game provider (its proxy blocks browser
+    // CORS); migrate anyone who still has it saved.
+    if (s.provider === 'braintrust') { s.provider = 'openai'; s.model = 'gpt-4o-mini'; }
+    return s;
   } catch (_) { return null; }
 }
 
@@ -251,8 +255,8 @@ async function callJudge({ provider, model, apiKey, systemPrompt, userText, sign
   const onAbort = () => ctrl.abort();
   if (signal) signal.addEventListener('abort', onAbort);
   try {
-    if (provider === 'openai' || provider === 'braintrust') {
-      const endpoint = provider === 'braintrust' ? BRAINTRUST_PROXY : 'https://api.openai.com/v1/chat/completions';
+    if (provider === 'openai') {
+      const endpoint = 'https://api.openai.com/v1/chat/completions';
       const res = await fetch(endpoint, {
         method: 'POST', signal: ctrl.signal,
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
@@ -313,8 +317,8 @@ async function testKey(provider, apiKey) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 20000);
   try {
-    if (provider === 'openai' || provider === 'braintrust') {
-      const endpoint = provider === 'braintrust' ? BRAINTRUST_PROXY : 'https://api.openai.com/v1/chat/completions';
+    if (provider === 'openai') {
+      const endpoint = 'https://api.openai.com/v1/chat/completions';
       const res = await fetch(endpoint, {
         method: 'POST', signal: ctrl.signal,
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
@@ -453,7 +457,7 @@ function renderSetup(mount) {
     el('label', {}, ['Provider']),
     (() => {
       const sel = el('select', { class: 'jc-select', id: 'jc-provider' });
-      [['braintrust', 'Braintrust (free course credit)'], ['openai', 'OpenAI'], ['anthropic', 'Anthropic'], ['mock', 'Mock (no key)']].forEach(([v, l]) => {
+      [['openai', 'OpenAI'], ['anthropic', 'Anthropic'], ['mock', 'Mock (no key)']].forEach(([v, l]) => {
         const o = el('option', { value: v }, [l]);
         if (state.provider === v) o.selected = true;
         sel.appendChild(o);
@@ -467,11 +471,14 @@ function renderSetup(mount) {
     })(),
   ]);
   mount.appendChild(provRow);
+  mount.appendChild(el('p', { class: 'jc-muted' }, [
+    'Why no Braintrust here? Its proxy blocks browser calls, so the game uses your OpenAI/Anthropic key directly (a full run costs < $0.10). The Week 2 assignment code still runs through Braintrust — that path is unaffected.',
+  ]));
 
   if (state.provider !== 'mock') {
     const keyInput = el('input', {
       class: 'jc-input', id: 'jc-key', type: 'password',
-      placeholder: state.provider === 'openai' ? 'sk-…' : state.provider === 'braintrust' ? 'Braintrust API key…' : 'sk-ant-…',
+      placeholder: state.provider === 'openai' ? 'sk-…' : 'sk-ant-…',
       value: getApiKey(), autocomplete: 'off', spellcheck: 'false',
     });
     mount.appendChild(el('div', { class: 'jc-field' }, [el('label', {}, ['API key']), keyInput]));
