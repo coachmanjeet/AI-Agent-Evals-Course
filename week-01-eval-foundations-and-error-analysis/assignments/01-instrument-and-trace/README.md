@@ -35,6 +35,9 @@ Get every agent run leaving a trace you can inspect, then build your first annot
    (Path B: annotate in the Trace Viewer instead of LangSmith.)
 6. Export the annotations to `annotations.csv` (the starter writes this for you).
    (Path B: your Trace Viewer JSON/CSV export is accepted instead.)
+   Format reference: `annotations-template.csv` in this folder shows 4 worked
+   rows — including a multi-turn mixed-outcome example. Stuck on what a good
+   `note` looks like? See §8 of the [student clarity guide](../../student-clarity-guide.md).
 
 ## Acceptance criteria
 

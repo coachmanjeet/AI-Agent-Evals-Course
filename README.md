@@ -96,12 +96,17 @@ Each assignment folder has its own README with a **Goal**, numbered **Steps**, a
 
 ## Troubleshooting
 
+- **Prereqs:** Python 3.10+ (`python3 --version`). Recommended: `python3 -m venv .venv && source .venv/bin/activate` (Windows: `.venv\Scripts\activate`), then `pip install -r requirements.txt` or `make setup`.
 - **Setup seems stuck:** it's the 3–5 minute pip install — don't Ctrl-C. If you did, just rerun `make setup`; it resumes.
-- **Windows:** native Windows works fine — all Python deps are Windows-friendly. WSL2 also works if you prefer it.
+- **pip fails on Rust / maturin / compiler errors:** upgrade pip first (`pip install -U pip`), then rerun. If one package still fails: `pip install <package> --only-binary :all:`.
+- **Windows:** native Windows works fine — all Python deps are Windows-friendly. If `python` opens the Windows Store, use `python3`. WSL2 also works if you prefer it.
+- **`ModuleNotFoundError`:** your venv isn't active, or setup didn't finish — look for the `[3/3]` line in `make setup` output.
 - **LangSmith 401:** check `LANGSMITH_API_KEY` in `.env` (not committed — that's the point), and that your project is named `ai-evals-course`.
+- **Verify your keys:** after `make setup`, run `make agent` — it prints a demo reply with no API key. Then run one traced input and confirm the trace appears in your LangSmith project (Path A) or the Trace Viewer (Path B, keyless).
 - **`make agent` fails:** did `make setup` finish? Look for the `[3/3]` line.
 - **Judge game API errors:** 401 → check the key; 429 → wait 30s and retry; anything else → append `?mock=1` to the URL for keyless practice.
 - **promptfoo not found:** it's Node-based — `npm install -g promptfoo` (Week 3).
+- **Nothing works and the session is tomorrow:** use Path B (Trace Viewer) — `python export_otel.py` in the Week 1 assignment folder needs stdlib only, and annotation happens in your browser. Full credit, zero setup.
 
 ## Weekly rhythm
 

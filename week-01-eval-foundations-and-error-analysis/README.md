@@ -3,6 +3,11 @@
 Why AI products need evals, the six quality dimensions, and the error-analysis
 workflow that turns production failures into datasets.
 
+> **New here? Read [student-clarity-guide.md](student-clarity-guide.md) first.**
+> It answers the top office-hours questions: what to submit, what traces/spans/
+> turns/annotations mean, the pass/fail decision table, turn-level vs
+> trace-level evaluation, and which tools are required vs preview.
+
 > **Two paths through this week's hands-on work — pick one, both are legitimate.**
 > **Path A — LangSmith** (recommended for engineers): follow the assignment steps
 > below. Needs a `LANGSMITH_API_KEY` in your `.env`; traces land in the

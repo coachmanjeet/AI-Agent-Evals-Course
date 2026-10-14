@@ -3,6 +3,12 @@
 When to trust an LLM to grade your agent, how to design judges that isolate
 root causes, and how to validate them against human labels before they gate anything.
 
+> **Scope:** this week you *automate* judgment — LLM judges, validation
+> against your Week 1 hand labels, A/B comparison. No new agent features, no
+> safety red-teaming (Week 3), no RAG metrics (Week 4). Your Week 1
+> `annotations.csv` is the ground truth everything here is measured against —
+> if you haven't finished Week 1's labeling, do that first.
+
 > **Tooling:** Braintrust is the default platform for this course — the
 > platform itself is free for the whole course. One setup step: add your
 > OpenAI key under Settings → AI Providers in the Braintrust org, so judge
