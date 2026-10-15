@@ -6,7 +6,7 @@ Find out how your agent behaves under attack — automatically first, then with 
 
 ## Steps
 
-1. Install Promptfoo: `npm install -g promptfoo` (Node required — it's not a Python tool).
+1. Install Promptfoo: `npm install -g promptfoo@0.124.1` (Node required — it's not a Python tool; version pinned — this is the tested version for this course).
 2. Write `promptfooconfig.yaml` (starter has the skeleton): point it at your agent, with a set of adversarial probes — at least 2 prompt injections (one direct, one indirect), 1 jailbreak, 1 data-leakage probe, 1 harmful-content probe.
 3. Run the baseline scan: `promptfoo eval`. Record the pass/fail per probe.
 4. Triage every failing trace into a **frequency × severity matrix** (starter template): how often could this happen × how bad if it does.

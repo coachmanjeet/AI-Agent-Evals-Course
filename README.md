@@ -67,7 +67,7 @@ make agent          # runs the Week 1 agent skeleton in --demo mode (no API key 
 Later, as the weeks need them:
 
 ```bash
-npm install -g promptfoo   # before Week 3: adversarial scans (Node-based)
+npm install -g promptfoo@0.124.1   # before Week 3: adversarial scans (Node-based; version pinned — tested for this course)
 ```
 
 ## Repo tour
@@ -105,7 +105,7 @@ Each assignment folder has its own README with a **Goal**, numbered **Steps**, a
 - **Verify your keys:** after `make setup`, run `make agent` — it prints a demo reply with no API key. Then run one traced input and confirm the trace appears in your LangSmith project (Path A) or the Trace Viewer (Path B, keyless).
 - **`make agent` fails:** did `make setup` finish? Look for the `[3/3]` line.
 - **Judge game API errors:** 401 → check the key; 429 → wait 30s and retry; anything else → append `?mock=1` to the URL for keyless practice.
-- **promptfoo not found:** it's Node-based — `npm install -g promptfoo` (Week 3).
+- **promptfoo not found:** it's Node-based — `npm install -g promptfoo@0.124.1` (Week 3; version pinned).
 - **Nothing works and the session is tomorrow:** use Path B (Trace Viewer) — `python export_otel.py` in the Week 1 assignment folder needs stdlib only, and annotation happens in your browser. Full credit, zero setup.
 
 ## Weekly rhythm
