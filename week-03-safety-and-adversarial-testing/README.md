@@ -4,6 +4,26 @@ Adversarial eval is a different discipline from quality eval: you're not
 asking "does it work?" but "can someone make it misbehave?" — then building
 the guardrails that catch it.
 
+## The target
+
+From Week 3 on, you attack the REAL loop: `agent/pronto_agent.py`
+(run it as `python -m agent.pronto_agent --ask "..."` from the repo root).
+`agent/agent.py` was the Week 1 skeleton — rule-based, canned responses.
+A skeleton can't be prompt-injected (there's no model to trick), so from
+here the agent under test is model-driven, multi-turn, and genuinely
+attackable. Its traces land in Braintrust (or LangSmith, or nowhere —
+see `agent/README.md`); bring them to your annotation tool of choice.
+
+The agent ships with exactly ONE built-in defense: an
+`ESCALATION_KEYWORDS` pre-check (legal threats, safety issues, other
+customers' data) that escalates to a human. It is deliberately crude.
+Your Week 3 job: measure it (catch rate vs over-block rate), then build
+better ones.
+
+Model path: with `BRAINTRUST_API_KEY` in `.env` (your Week 2 key — zero
+new setup) the agent talks through Braintrust's AI proxy. `PRONTO_*`
+overrides point it at a local or other model instead.
+
 ## This week's workflow
 
 ```mermaid

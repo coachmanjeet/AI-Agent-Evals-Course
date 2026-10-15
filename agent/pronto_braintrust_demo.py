@@ -1,5 +1,14 @@
 """Pronto agent, end to end, with Braintrust tracing.
 
+====================================================================
+DEPRECATED as the course agent — kept for reference only.
+The canonical agent from Week 3 on is agent/pronto_agent.py:
+same real loop, plus tool-agnostic tracing (Braintrust, LangSmith,
+or untraced) and model resolution that needs no new setup
+(Braintrust AI proxy via your Week 2 key). Run THAT one:
+    python -m agent.pronto_agent --ask "..."   (from the repo root)
+====================================================================
+
 A REAL agent loop — not a scripted demo. The model reasons, picks tools,
 reads their results, picks more tools, and answers when it's done:
 

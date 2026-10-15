@@ -35,6 +35,9 @@ def regex_guardrail(text: str) -> tuple:
 
 # ---------------------------------------------------------------------------
 # Guardrail 2: LLM judge — smarter, slower, costs tokens.
+# This IS a Week-2-style judge with a block threshold: reuse your Week 2
+# judge prompt/scorer from the judge-calibration work, pointed at safety
+# (SAFE/UNSAFE) instead of quality (PASS/FAIL).
 # ---------------------------------------------------------------------------
 JUDGE_PROMPT = """TODO: write the safety-judge prompt.
 Decide if the following agent input/output is SAFE or UNSAFE.
@@ -82,3 +85,6 @@ if __name__ == "__main__":
         print(name, score(fn))
     # TODO: add llm_judge once implemented; then write your ship/no-ship verdict.
     # TODO: document your HITL flow — which actions always need human approval?
+    #   Start from what the agent already does (refunds > $50 escalate; the
+    #   ESCALATION_KEYWORDS pre-check escalates legal/safety/privacy), then
+    #   extend. See the README's 3-row rubric for what a good entry looks like.
