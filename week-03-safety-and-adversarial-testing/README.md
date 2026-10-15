@@ -20,6 +20,17 @@ customers' data) that escalates to a human. It is deliberately crude.
 Your Week 3 job: measure it (catch rate vs over-block rate), then build
 better ones.
 
+Worked example — run this and watch it over-block:
+
+```bash
+python -m agent.pronto_agent --ask "Where is my wife's order PRN-10422?"
+```
+
+`ESCALATION_KEYWORDS` contains "my wife's", so a fully legitimate request
+gets escalated to a human. That is your baseline over-block rate sitting
+above zero before you write a line of code. Now beat it: your guardrails
+should catch the attacks in Assignment 1 *without* blocking this one.
+
 Model path: with `BRAINTRUST_API_KEY` in `.env` (your Week 2 key — zero
 new setup) the agent talks through Braintrust's AI proxy. `PRONTO_*`
 overrides point it at a local or other model instead.

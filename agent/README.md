@@ -64,6 +64,22 @@ safety issues, other customers' data) that escalates to a human. It is
 deliberately crude — Week 3 measures it (catch rate vs over-block rate)
 and then you build better ones.
 
+## Guardrail hook (Week 3)
+
+`run_turn_guarded(messages, user_message, model=MODEL,
+input_guardrails=(), output_guardrails=())` wires your guardrails around
+the loop without touching `run_turn` itself. A guardrail is any callable
+`(text) -> (blocked, reason)`:
+
+- `input_guardrails` see the user text before the model is called — a
+  block returns a refusal with no model call.
+- `output_guardrails` see the final reply before it is returned — a block
+  swaps in a safe refusal. This side catches data leakage, whose *input*
+  looks benign.
+
+Runs at temperature 0 (`PRONTO_TEMPERATURE` to override) so scans are
+reproducible across runs.
+
 ## How it evolves
 
 | Week | What changes in `agent/` |

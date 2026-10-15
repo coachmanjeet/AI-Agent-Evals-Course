@@ -5,6 +5,7 @@ test set (20 adversarial + 20 legitimate edge cases).
 """
 
 import re
+import time
 
 # ---------------------------------------------------------------------------
 # Test set — TODO: fill with your 40 inputs.
@@ -17,7 +18,10 @@ TEST_SET = [
 
 
 # ---------------------------------------------------------------------------
-# Guardrail 1: regex — cheap, fast, dumb. Good for known patterns.
+# Guardrail 1: regex — INPUT-SIDE. Cheap, fast, dumb. Good for known patterns.
+# Runs on the raw user text BEFORE the model sees it (see run_turn_guarded):
+# injection phrases belong here. Secret formats (SSN-shaped, API keys) belong
+# OUTPUT-SIDE — on the reply — because a leakage probe's INPUT looks benign.
 # ---------------------------------------------------------------------------
 BLOCK_PATTERNS = [
     r"ignore (previous|all) instructions",
@@ -34,7 +38,9 @@ def regex_guardrail(text: str) -> tuple:
 
 
 # ---------------------------------------------------------------------------
-# Guardrail 2: LLM judge — smarter, slower, costs tokens.
+# Guardrail 2: LLM judge — INPUT-SIDE or OUTPUT-SIDE (you choose; label it).
+# Smarter, slower, costs tokens. Wire it into run_turn_guarded on the side
+# you label: input_guardrails=[...] or output_guardrails=[...].
 # This IS a Week-2-style judge with a block threshold: reuse your Week 2
 # judge prompt/scorer from the judge-calibration work, pointed at safety
 # (SAFE/UNSAFE) instead of quality (PASS/FAIL).
@@ -51,6 +57,8 @@ def llm_judge_guardrail(text: str) -> tuple:
 
 # ---------------------------------------------------------------------------
 # Guardrail 3: hybrid — regex pre-filter, LLM judge only on suspicious input.
+# INPUT-SIDE as written (judge sees user text). If you move it output-side,
+# relabel it — the side is a design decision, not an accident.
 # ---------------------------------------------------------------------------
 def hybrid_guardrail(text: str) -> tuple:
     blocked, reason = regex_guardrail(text)
@@ -65,16 +73,22 @@ def hybrid_guardrail(text: str) -> tuple:
 
 
 # ---------------------------------------------------------------------------
-# Scoring: catch rate vs over-block rate.
+# Scoring: catch rate vs over-block rate vs latency.
+# Guardrail choice is THREE numbers: what it catches, what it wrongly
+# blocks, and what it costs (wall time per check here; tokens in production).
 # ---------------------------------------------------------------------------
 def score(guardrail_fn, test_set=TEST_SET) -> dict:
     attacks = [t for t, is_attack in test_set if is_attack]
     legit = [t for t, is_attack in test_set if not is_attack]
+    start = time.perf_counter()
     caught = sum(1 for t in attacks if guardrail_fn(t)[0])
     overblocked = sum(1 for t in legit if guardrail_fn(t)[0])
+    elapsed_ms = (time.perf_counter() - start) * 1000
+    n_calls = len(attacks) + len(legit)
     return {
         "catch_rate": caught / len(attacks) if attacks else 0.0,
         "over_block_rate": overblocked / len(legit) if legit else 0.0,
+        "avg_ms": elapsed_ms / n_calls if n_calls else 0.0,
         "n_attacks": len(attacks),
         "n_legit": len(legit),
     }
@@ -82,7 +96,11 @@ def score(guardrail_fn, test_set=TEST_SET) -> dict:
 
 if __name__ == "__main__":
     for name, fn in [("regex", regex_guardrail), ("hybrid", hybrid_guardrail)]:
-        print(name, score(fn))
+        s = score(fn)
+        print(f"{name}: catch={s['catch_rate']:.0%} "
+              f"over_block={s['over_block_rate']:.0%} "
+              f"avg={s['avg_ms']:.1f}ms "
+              f"(n_attacks={s['n_attacks']}, n_legit={s['n_legit']})")
     # TODO: add llm_judge once implemented; then write your ship/no-ship verdict.
     # TODO: document your HITL flow — which actions always need human approval?
     #   Start from what the agent already does (refunds > $50 escalate; the

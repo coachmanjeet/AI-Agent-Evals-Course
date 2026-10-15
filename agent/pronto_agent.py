@@ -45,6 +45,10 @@ form breaks on imports:
 --ask (or the positional prompt) prints ONLY clean JSON
 {"input": ..., "output": ...} to stdout, so it is safe as a promptfoo
 exec provider. Banners and diagnostics go to stderr.
+
+Runs at temperature 0 by default (PRONTO_TEMPERATURE to override):
+determinism is a prerequisite for measurement — the same probes must give
+the same results across runs, or your catch/over-block rates mean nothing.
 """
 
 import argparse
@@ -104,6 +108,10 @@ def _resolve_client():
 
 client = _resolve_client()
 MODEL = os.getenv("PRONTO_MODEL", "gpt-4o-mini")
+# Determinism is a prerequisite for measurement: temperature 0 means the same
+# probes give the same results across runs, so scan results are comparable.
+# Override with PRONTO_TEMPERATURE=... if you ever need sampling.
+TEMPERATURE = float(os.getenv("PRONTO_TEMPERATURE", "0.0"))
 MAX_STEPS = 6  # the agent gets 6 model->tool rounds, then we escalate
 
 # ---------------------------------------------------------------------------
@@ -228,7 +236,8 @@ def run_turn(messages: list, user_message: str, model: str = MODEL) -> str:
     for _ in range(MAX_STEPS):
         # Model thinks — may call tools, may answer.
         resp = client.chat.completions.create(
-            model=model, messages=messages, tools=TOOL_SCHEMAS)
+            model=model, messages=messages, tools=TOOL_SCHEMAS,
+            temperature=TEMPERATURE)
         msg = resp.choices[0].message
         messages.append(msg)
 
@@ -248,6 +257,50 @@ def run_turn(messages: list, user_message: str, model: str = MODEL) -> str:
     reason = escalate_to_human("too many steps without resolving")["reason"]
     messages.append({"role": "assistant", "content": reason})
     return reason
+
+
+@traced
+def run_turn_guarded(messages: list, user_message: str, model: str = MODEL,
+                     input_guardrails=(), output_guardrails=()) -> str:
+    """One turn with guardrails wired around the agent (Week 3, Assignment 2).
+
+    A guardrail is any callable: (text) -> (blocked: bool, reason: str).
+
+    - INPUT-SIDE guardrails see the raw user text BEFORE the model is called.
+      They catch prompt injections and jailbreaks. If one blocks, the model
+      is never called: the turn returns a short refusal, and both the user
+      message and the refusal are appended to `messages` so the trace stays
+      complete.
+    - OUTPUT-SIDE guardrails see the agent's final reply BEFORE it is
+      returned. They catch data leakage and PII. This side matters because
+      a leakage probe's INPUT looks benign ("What is the home address on
+      file...?") — input filtering alone cannot catch it.
+
+    `run_turn` is called untouched underneath; with empty guardrail tuples
+    this function behaves exactly like `run_turn`. Refusals stay generic on
+    purpose — never leak guardrail internals (which pattern fired) back to
+    a potential attacker.
+    """
+    for guardrail in input_guardrails:
+        blocked, _reason = guardrail(user_message)
+        if blocked:
+            messages.append({"role": "user", "content": user_message})
+            refusal = ("I can't help with that request. "
+                       "A human specialist can pick it up if you need.")
+            messages.append({"role": "assistant", "content": refusal})
+            return refusal
+
+    reply = run_turn(messages, user_message, model=model)
+
+    for guardrail in output_guardrails:
+        blocked, _reason = guardrail(reply)
+        if blocked:
+            safe = ("I can't share that information. "
+                    "A human specialist can help with your request.")
+            messages.append({"role": "assistant", "content": safe})
+            return safe
+
+    return reply
 
 
 def main() -> None:

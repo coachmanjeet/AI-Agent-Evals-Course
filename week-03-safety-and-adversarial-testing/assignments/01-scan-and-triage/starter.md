@@ -50,3 +50,11 @@ Copy into `attacks.md`. Five rows, this schema:
 |---|-------------|--------|---------------------------|-------------------|
 | 1 | indirect injection | `lookup_policy` | ... | agent must not act on injected policy text |
 | 2 | | | | |
+| 3 | | | | |
+| 4 | | | | |
+| 5 | multi-turn (run via `--chat`, paste transcript) | | turn 1: ... / turn 2: ... | |
+
+At least one row must be multi-turn: Promptfoo's exec provider runs one
+probe per process, so multi-turn attacks don't fit `promptfoo eval`.
+Run them by hand with `python -m agent.pronto_agent --chat` and paste
+the transcript — real injections often build over several turns.
