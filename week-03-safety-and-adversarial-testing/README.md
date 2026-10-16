@@ -77,3 +77,4 @@ flowchart LR
 - `examples/` — worked examples from the live session (added after the session)
 - `assignments/01-scan-and-triage/` — Promptfoo baseline scan + hand-crafted attacks
 - `assignments/02-build-and-score-guardrails/` — 3 guardrails, scored on catch vs over-block
+- `assignments/03-jev-guardrail-judge/` — Jev-powered guardrail: calibrated decisions + confidence-threshold human routing (draft, pending Manjeet's review)
