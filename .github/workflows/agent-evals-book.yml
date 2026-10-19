@@ -1,0 +1,31 @@
+name: agent-evals-book
+on:
+  pull_request:
+    paths: ["agent-evals-book/**"]      # smoke tier on every change to the book's code
+  schedule:
+    - cron: "0 7 * * *"                 # full suite nightly
+defaults:
+  run:
+    working-directory: agent-evals-book
+jobs:
+  smoke:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+      - run: pytest -q
+      - run: python -m evals.run --agent careful --tier smoke --trials 4
+  nightly:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+      - run: python -m evals.run --agent careful --tier full --trials 8 --out runs.jsonl
+      - uses: actions/upload-artifact@v4
+        with: { name: run-records, path: agent-evals-book/runs.jsonl }
