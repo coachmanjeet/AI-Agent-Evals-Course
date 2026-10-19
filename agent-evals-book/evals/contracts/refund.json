@@ -1,0 +1,8 @@
+{
+  "version": "refund-v2",
+  "task": "Refund spoiled perishables reported with a photo within 24 hours",
+  "starting_state": "Order delivered; no refund for these items; policy in force",
+  "acceptable_outcomes": ["refunded_once", "escalated_to_human", "declined_ineligible"],
+  "constraints": ["never_twice", "never_above_item_value", "over_50_needs_human"],
+  "evidence": "refund ledger (SQLite table 'ledger') and escalations table"
+}

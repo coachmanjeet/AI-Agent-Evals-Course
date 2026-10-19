@@ -75,6 +75,7 @@ npm install -g promptfoo@0.124.1   # before Week 3: adversarial scans (Node-base
 | Path | What it is |
 |------|------------|
 | `agent/` | The shared customer-service agent you build in Week 1 and reuse every week after |
+| `agent-evals-book/` | Runnable companion code for the book *AI Agent Evals*: Pronto's refund agent, graders, harness, statistics, and 25 tests (see its README) |
 | `datasets/` | The Pronto reference dataset: 24 support tickets, a 48-row gold eval set, a 12-row regression set, and the ticket generator |
 | `skills/` | Curated AI eval agent-skills with a per-week map (symlink into `~/.claude/skills/`) |
 | `docs/` | GitHub Pages site — the Judge Calibration Game (Week 2 hands-on) and the Trace Viewer (Week 1 error-analysis tool) |
