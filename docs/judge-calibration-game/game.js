@@ -8,8 +8,9 @@
 //
 //  100% client-side. API keys live only in this browser's localStorage under
 //  'jc101:apikey' and are sent only to the chosen provider's API.
-//  Providers: Braintrust (free course credit, default), OpenAI, Anthropic.
-//  ?mock=1 enables a deterministic mock provider for testing with no key.
+//  Providers: OpenAI (the course default — paste your own key), Anthropic,
+//  Braintrust. ?mock=1 enables a deterministic mock provider for testing with
+//  no key.
 //
 //  Pure functions (computeMetrics, cohensKappa, confusionMatrix, mockVerdict)
 //  are exported and DOM-free so they can be unit-tested in node.

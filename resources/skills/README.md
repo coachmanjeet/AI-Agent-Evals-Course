@@ -1,14 +1,18 @@
-# Eval skills
+# Eval skills — moved
 
-Reusable Claude Code skills for eval work, salvaged from the retired
-`ai-evals-workshop` repo (Reforge-era). All five are product-agnostic —
-they work with Pronto datasets just as well as they did with the Market Map
-agent.
+**The single home for course skills is [`skills/`](../../skills/).**
+This folder is only a pointer — do not add skills here. (One fact, one
+home: see [`docs/course-architecture.md`](../../docs/course-architecture.md).)
 
-| Skill | What it does | Course week |
-|---|---|---|
-| `ticket-to-eval-skill` | Convert a support ticket/trace into eval dataset rows (regression + generalized), with PII stripping | 1–2 |
-| `eval-code-skill` | Write deterministic code-based evaluators; audit existing ones for brittleness | 2 |
-| `eval-llm-judge-skill` | Write LLM-as-judge evaluator prompts; audit for bias/vagueness | 2 |
-| `llm-align-skill` | Measure LLM-judge vs human-label alignment (TPR/TNR), investigate disagreements | 2 (pairs with the judge calibration game) |
-| `uig-skill` | Build a User Input Grid to audit dataset coverage and find gaps | 3 |
+The five salvaged skills that used to live here were consolidated into
+`skills/` on 2026-10-20:
+
+| Was here | Now |
+|---|---|
+| `uig-skill.md` | Merged — [`skills/uig/SKILL.md`](../../skills/uig/SKILL.md) (it had no equivalent in `skills/`) |
+| `ticket-to-eval-skill.md` | Duplicate of [`skills/ticket-to-eval.md`](../../skills/ticket-to-eval.md) (Pronto-adapted version) — dropped |
+| `eval-code-skill.md` | Duplicate of [`skills/write-code-eval/`](../../skills/write-code-eval/) — dropped |
+| `eval-llm-judge-skill.md` | Duplicate of [`skills/write-judge-prompt/`](../../skills/write-judge-prompt/) — dropped |
+| `llm-align-skill.md` | Duplicate of [`skills/validate-evaluator/`](../../skills/validate-evaluator/) — dropped |
+
+Install and per-week mapping: [`skills/README.md`](../../skills/README.md).

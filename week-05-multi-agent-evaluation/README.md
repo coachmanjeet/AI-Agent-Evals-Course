@@ -40,6 +40,14 @@ flowchart LR
 - LangSmith docs — tracing multi-step trajectories: https://docs.langchain.com/langsmith
 - CrewAI docs — agents, tasks, crews, tools: https://docs.crewai.com
 
+## Assignments
+
+Each assignment README is the complete assignment document (steps,
+judging rules, acceptance criteria) — this page only links to them:
+
+- [Assignment 1 — Score tools and trajectories](assignments/01-score-tools-and-trajectories/README.md) — expected-action records + trajectory evaluator
+- [Assignment 2 — Find interaction failures](assignments/02-find-interaction-failures/README.md) — three-layer report + handoff root causes
+
 ## In this folder
 
 - `examples/` — worked examples from the live session (added after the session)

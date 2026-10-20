@@ -1,12 +1,9 @@
 # Week 6 examples
 
-Worked examples from the live session land here after the session runs.
+Worked examples for this week land here as they are produced.
 
-Planned examples:
-
-- `eval-gate.yml` (worked) — the PR check + nightly cron wired to the real harness
-- `monitoring_setup.md` — worked production monitoring: signals, sampling, dashboards
-- `canary_config.md` — worked scheduled canary evaluation with alerting policy
-- `flywheel_cycle.md` — worked incident → root cause → fix → regression test
-- `cost_routing.md` — worked eval-driven model routing recommendation
-- `ownership.md` — worked ownership doc with operating cadence
+**The rule (see `../../docs/course-architecture.md`):** `examples/` holds
+*method worked-examples* — worked demonstrations of a technique, always
+visible. It does **not** hold assignment answers: those live in
+the top-level `solutions/` folder and are released weekly after the live session. This page
+deliberately does not list planned files that do not exist yet.

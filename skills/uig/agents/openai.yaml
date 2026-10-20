@@ -1,0 +1,7 @@
+interface:
+  display_name: "User Input Grid"
+  short_description: "Audit eval dataset coverage with a User Input Grid."
+  default_prompt: "Use $uig to build a User Input Grid and audit my eval dataset coverage."
+
+policy:
+  allow_implicit_invocation: true

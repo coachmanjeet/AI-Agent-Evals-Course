@@ -1,11 +1,10 @@
 # Week 2 examples
 
-Worked examples from the live session land here after the session runs.
+**The rule for this folder:** `examples/` holds method worked-examples from
+the live session — illustrations of the technique, always visible to
+students. Worked examples are added here after the session runs.
 
-Planned examples:
-
-- `judge_prompts.md` — the three binary rubric prompts (policy adherence, escalation correctness, tool-call accuracy)
-- `braintrust_scorers.py` — the rubrics implemented as Braintrust scorers with strict output formats
-- `agreement_matrix.md` — judge–human agreement on the 40-label set, with Cohen's kappa
-- `ab_results.md` — per-metric deltas from the prompt-variant A/B test
-- `ship_decision.md` — worked ship/no-ship decision with numeric thresholds
+Assignment answers are **not** examples: they live in `solutions/`, one
+folder per week, and are released weekly after the session. If you are
+looking for assignment instructions, they live only in the assignment
+READMEs under `assignments/` — not here.

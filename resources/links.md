@@ -8,7 +8,7 @@ Grouped by week. Framework docs first, then one or two seminal reads per theme.
 
 ## Week 1 — Foundations
 
-- LangSmith observability concepts (traces, spans, runs): https://docs.langchain.com/langsmith/observability-concepts
+Week 1 links live in the [Week 1 README](../week-01-eval-foundations-and-error-analysis/README.md#links) — one home, not copied here.
 
 ## Week 2 — LLM judges
 

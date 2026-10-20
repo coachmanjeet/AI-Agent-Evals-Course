@@ -48,7 +48,7 @@ flowchart TD
 - Python 3.10+ (Mac, Windows, or Linux, 4 GB RAM)
 - Basic familiarity with Git and GitHub
 - An LLM API key — any provider works (OpenAI, Anthropic, or Gemini); **$5** is enough to start. **Not needed for Week 1** (Path B below is fully keyless), but required from Week 2 onward.
-- A free Braintrust key (Week 4) — sign up at braintrust.dev, add `BRAINTRUST_API_KEY` to `.env`.
+- A free Braintrust key — **not required for Week 1, required from Week 2 onward** — sign up at braintrust.dev, add `BRAINTRUST_API_KEY` to `.env`.
 
 ## Setup
 
@@ -88,7 +88,7 @@ npm install -g promptfoo@0.124.1   # before Week 3: adversarial scans (Node-base
 
 | | |
 |---|---|
-| ![Trace Viewer with 30 Pronto traces loaded — trace list, span waterfall, annotation panel](docs/images/trace-viewer.png) | ![Judge Calibration Game — label Pronto responses, earn XP](docs/images/judge-game.png) |
+| ![Trace Viewer — trace list, span waterfall, annotation panel](docs/images/trace-viewer.png) | ![Judge Calibration Game — label Pronto responses, earn XP](docs/images/judge-game.png) |
 | **[Trace Viewer](https://coachmanjeet.github.io/AI-Agent-Evals-Course/trace-viewer/)** — explore OTel traces and annotate failures in your browser (Week 1) | **[Judge Calibration Game](https://coachmanjeet.github.io/AI-Agent-Evals-Course/judge-calibration-game/)** — label 24 Pronto responses, then score your judge vs your labels (Week 2) |
 
 ## How assignments work
@@ -97,12 +97,11 @@ Each assignment folder has its own README with a **Goal**, numbered **Steps**, a
 
 ## Troubleshooting
 
-- **Prereqs:** Python 3.10+ (`python3 --version`). Recommended: `python3 -m venv .venv && source .venv/bin/activate` (Windows: `.venv\Scripts\activate`), then `pip install -r requirements.txt` or `make setup`.
+- **Week 1 setup & troubleshooting** (prereqs/venv, LangSmith 401 and project name, Path B fallback) has one home: the [Week 1 clarity guide §9](week-01-eval-foundations-and-error-analysis/student-clarity-guide.md) — see there instead of a second copy here.
 - **Setup seems stuck:** it's the 3–5 minute pip install — don't Ctrl-C. If you did, just rerun `make setup`; it resumes.
 - **pip fails on Rust / maturin / compiler errors:** upgrade pip first (`pip install -U pip`), then rerun. If one package still fails: `pip install <package> --only-binary :all:`.
 - **Windows:** native Windows works fine — all Python deps are Windows-friendly. If `python` opens the Windows Store, use `python3`. WSL2 also works if you prefer it.
 - **`ModuleNotFoundError`:** your venv isn't active, or setup didn't finish — look for the `[3/3]` line in `make setup` output.
-- **LangSmith 401:** check `LANGSMITH_API_KEY` in `.env` (not committed — that's the point), and that your project is named `ai-evals-course`.
 - **Verify your keys:** after `make setup`, run `make agent` — it prints a demo reply with no API key. Then run one traced input and confirm the trace appears in your LangSmith project (Path A) or the Trace Viewer (Path B, keyless).
 - **`make agent` fails:** did `make setup` finish? Look for the `[3/3]` line.
 - **Judge game API errors:** 401 → check the key; 429 → wait 30s and retry; anything else → append `?mock=1` to the URL for keyless practice.

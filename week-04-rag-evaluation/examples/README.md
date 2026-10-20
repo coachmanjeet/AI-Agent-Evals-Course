@@ -1,11 +1,9 @@
 # Week 4 examples
 
-Worked examples from the live session land here after the session runs.
+Worked examples for this week land here as they are produced.
 
-Planned examples:
-
-- `golden_set_v1.jsonl` — the 150+ case golden set (schema + sample rows)
-- `braintrust_harness.py` — the four Braintrust scorers wired into the eval harness
-- `groundedness_failure.md` — worked example: a real groundedness failure, dissected
-- `bootstrap_test.py` — paired bootstrap test comparing two retrieval variants
-- `report.md` — worked reproducible report: one config, one command, full results
+**The rule (see `../../docs/course-architecture.md`):** `examples/` holds
+*method worked-examples* — worked demonstrations of a technique, always
+visible. It does **not** hold assignment answers: those live in
+the top-level `solutions/` folder and are released weekly after the live session. This page
+deliberately does not list planned files that do not exist yet.

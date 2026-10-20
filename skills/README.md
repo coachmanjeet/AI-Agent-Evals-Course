@@ -7,7 +7,7 @@ then invoke by name in any agent that supports skills (Claude Code, Codex, etc.)
 ## Install
 
 ```bash
-# all ten skills — symlink them into your agent's skills directory
+# all eleven skills — symlink them into your agent's skills directory
 for d in ~/workspace/AI-Agent-Evals-Course/skills/*/; do
   [ -f "$d/SKILL.md" ] && ln -sfn "$d" ~/.claude/skills/$(basename "$d")
 done
@@ -40,6 +40,7 @@ No CLI? Point your agent at the skill folder directly:
 | `write-code-eval` | Weeks 1–2 | Code checks for objective failure modes — always try these before reaching for an LLM judge. |
 | `evals-start` | Anytime | Entry point: describe your situation and it routes you to the right skill. |
 | `eval-audit` | Week 6 | Audits an existing eval pipeline and prioritizes what's broken — a second opinion on your production harness. |
+| `uig` | Week 3 | Builds a User Input Grid (Synthetic Query Matrix) to audit dataset coverage and find gaps — merged here from the retired `resources/skills/` collection (2026-10-20), where it was the one skill with no equivalent in this folder. |
 
 > **Why `ticket-to-eval` and not `error-discovery`?** `error-discovery` finds failure
 > *patterns* across many traces (Week 1, Assignments 1–2). `ticket-to-eval` converts

@@ -72,9 +72,16 @@ set was written against these rules:
 
 ## Per-week usage map
 
-- **W1 — Eval foundations & error analysis**: annotate traces from the 24 tickets;
-  cluster them into the failure taxonomy (compare your taxonomy against the
-  `failure_type` column); prioritize by frequency.
+- **W1 — Eval foundations & error analysis**: annotate traces from the **30
+  inputs** in `week-01-eval-foundations-and-error-analysis/assignments/01-instrument-and-trace/inputs.json`
+  (10 order-refund, 10 policy-warranty, 10 multi-turn) — that file, not the
+  24 tickets in `pronto-support-tickets.csv`, is Week 1's data source. Cluster
+  the failures into your own failure taxonomy and prioritize by frequency.
+  (Vocabulary note: the 14 snake_case values in the taxonomy above label
+  these datasets and the Trace Viewer dropdown; Week 1 student deliverables
+  use the SCREAMING_SNAKE codes defined in the Week 1 assignment READMEs —
+  e.g. dataset `over_refund` ≈ annotation code `OVER_LIMIT_REFUND`. They are
+  two label sets for two layers, not two taxonomies to merge.)
 - **W2 — LLM judges**: validate judges against `pronto-eval-gold.csv` — the
   `expected` column is your human-label proxy. Measure judge-vs-gold agreement;
   pay special attention to the 19 failure rows and the 4 adversarial rows.

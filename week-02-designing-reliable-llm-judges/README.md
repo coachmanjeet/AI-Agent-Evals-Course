@@ -55,11 +55,29 @@ flowchart LR
 - Braintrust AI proxy (routes through the org's provider key): https://www.braintrust.dev/docs/reference/proxy
 - LangSmith evaluators (if you prefer LangSmith) — custom evaluators, `evaluate()`, experiments: https://docs.langchain.com/langsmith/evaluation
 
+## Assignments
+
+Assignment instructions live **only** in the assignment READMEs below —
+there are no separate handouts or `.docx` copies. Each README is the single
+source of truth for its assignment (goal, steps, what to submit, acceptance
+criteria).
+
+1. **[Assignment 1 — Build and validate a judge](assignments/01-build-and-validate-judge/README.md)**
+   — 3 binary rubrics as Braintrust scorers, validated on 40 hand labels.
+   Includes the full step-by-step path (Steps 0–11). Start here.
+2. **[Assignment 2 — Diagnose and compare](assignments/02-diagnose-and-compare/README.md)**
+   — diagnose-and-fix cycle, prompt A/B, ship/no-ship decision. Builds
+   directly on Assignment 1's validated judges; do Assignment 1 first.
+   Report template: [`assignments/02-diagnose-and-compare/starter.md`](assignments/02-diagnose-and-compare/starter.md).
+
+No separate deadline is stated in this folder — follow the course schedule
+announced in the live session / portal for submission timing.
+
 ## In this folder
 
-- `examples/` — worked examples from the live session (added after the session)
-- `assignments/01-build-and-validate-judge/` — 3 binary rubrics as Braintrust scorers, validated on 40 labels
-- `assignments/02-diagnose-and-compare/` — diagnose-and-fix cycle, prompt A/B, ship/no-ship decision
+- `examples/` — method worked-examples from the live session (added after the session; assignment answers live in `solutions/`, released weekly)
+- `assignments/01-build-and-validate-judge/` — Assignment 1 (see link above)
+- `assignments/02-diagnose-and-compare/` — Assignment 2 (see link above)
 
 ## Hands-on game
 
@@ -69,11 +87,11 @@ flowchart LR
 — the interactive companion for this week. Label 24 Pronto support responses
 pass/fail, write a judge prompt, and watch your judge's agreement with your
 labels scored live (accuracy, precision/recall, F1, Cohen's κ) — then check
-your labels against the gold answer key. Paste your Braintrust API key
-(platform is free for students; the Braintrust path needs an AI provider
-key in the org — Settings → AI Providers — since the proxy routes judge
-calls through it), bring your own OpenAI/Anthropic key, or run the whole
-thing in `?mock=1` test mode with no key. Source and docs:
+your labels against the gold answer key. Setup: pick **OpenAI** and paste
+your OpenAI key (the same one you add under Braintrust's Settings →
+AI Providers for the assignment — browsers can't reach Braintrust's proxy,
+so the game uses provider keys directly), or run the whole thing in
+`?mock=1` test mode with no key. Source and docs:
 `docs/judge-calibration-game/`.
 
 > Requires GitHub Pages to be enabled on this repo (Settings → Pages →

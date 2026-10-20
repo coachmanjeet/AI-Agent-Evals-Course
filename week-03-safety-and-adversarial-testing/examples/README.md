@@ -1,11 +1,9 @@
 # Week 3 examples
 
-Worked examples from the live session land here after the session runs.
+Worked examples for this week land here as they are produced.
 
-Planned examples:
-
-- `promptfooconfig.yaml` — baseline adversarial scan config for the course agent
-- `attack_suite.md` — the test suite: attack type, target, expected behavior per case
-- `triage_matrix.md` — worked frequency × severity triage of failing traces
-- `guardrails.py` — worked regex, LLM-judge, and hybrid guardrails with scores
-- `hitl_flow.md` — worked human-in-the-loop approval flow design
+**The rule (see `../../docs/course-architecture.md`):** `examples/` holds
+*method worked-examples* — worked demonstrations of a technique, always
+visible. It does **not** hold assignment answers: those live in
+the top-level `solutions/` folder and are released weekly after the live session. This page
+deliberately does not list planned files that do not exist yet.

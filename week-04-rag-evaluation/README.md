@@ -50,6 +50,14 @@ flowchart LR
 2. Create an API key and add it to your `.env`: `BRAINTRUST_API_KEY=<paste your key>`.
 3. `pip install braintrust` in your `.venv`.
 
+## Assignments
+
+Each assignment README is the complete assignment document (steps,
+judging rules, acceptance criteria) — this page only links to them:
+
+- [Assignment 1 — Build and version a dataset](assignments/01-build-and-version-dataset/README.md) — 150+ case golden set, pinned v1
+- [Assignment 2 — Measure and test](assignments/02-measure-and-test/README.md) — Braintrust scorers, groundedness failure, bootstrap test
+
 ## In this folder
 
 - `examples/` — worked examples from the live session (added after the session)

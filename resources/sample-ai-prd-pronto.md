@@ -2,11 +2,13 @@
 
 **Owner:** [Your name] | **Status:** Prototyping | **Default Model:** [any — students use their own key]
 
-> A worked example for the course. Pronto is the support agent you build in
-> Week 1 and evaluate in every week after. This PRD follows the standard AI
-> PRD structure: problem, prompt logic, tools, eval criteria, edge cases,
-> findings, constraints. Your Week 1 assignment: write one of these for your
-> own agent.
+> A worked example / reference for the course — **not an assignment.**
+> Pronto is the support agent you build in Week 1 and evaluate in every
+> week after. This PRD follows the standard AI PRD structure: problem,
+> prompt logic, tools, eval criteria, edge cases, findings, constraints.
+> No Week 1 assignment requires you to write a PRD; read this one as a
+> model of what an eval-driven PRD looks like. (§4's numeric eval targets
+> are the course's reference targets for Pronto.)
 
 ## 1. Problem & Business Value
 

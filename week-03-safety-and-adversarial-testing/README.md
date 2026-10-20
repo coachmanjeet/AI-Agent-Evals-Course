@@ -72,6 +72,15 @@ flowchart LR
 - Promptfoo docs — red teaming, scans, config: https://promptfoo.dev
 - LangSmith docs: https://docs.langchain.com/langsmith
 
+## Assignments
+
+Each assignment README is the complete assignment document (steps,
+judging rules, acceptance criteria) — this page only links to them:
+
+- [Assignment 1 — Scan and triage](assignments/01-scan-and-triage/README.md) — Promptfoo baseline scan + hand-crafted attacks
+- [Assignment 2 — Build and score guardrails](assignments/02-build-and-score-guardrails/README.md) — 3 guardrails, scored on catch vs over-block
+- [Assignment 3 — Jev guardrail judge](assignments/03-jev-guardrail-judge/README.md) — Jev-powered guardrail: calibrated decisions + confidence-threshold human routing (draft, pending review)
+
 ## In this folder
 
 - `examples/` — worked examples from the live session (added after the session)

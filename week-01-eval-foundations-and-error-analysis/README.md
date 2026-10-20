@@ -3,25 +3,47 @@
 Why AI products need evals, the six quality dimensions, and the error-analysis
 workflow that turns production failures into datasets.
 
-> **New here? Read [student-clarity-guide.md](student-clarity-guide.md) first.**
-> It answers the top office-hours questions: what to submit, what traces/spans/
-> turns/annotations mean, the pass/fail decision table, turn-level vs
-> trace-level evaluation, and which tools are required vs preview.
+**This page is the week's entry point.** The assignments themselves live —
+complete, in one file each — in their READMEs:
+
+- **[Assignment 1 — Instrument and trace](assignments/01-instrument-and-trace/README.md)** —
+  wire up tracing, run the 30 inputs in `inputs.json`, annotate pass/fail.
+  The README contains the full judging rules: the pass/fail decision table,
+  turn-level vs trace-level evaluation, the stateless-agent warning, the
+  CSV format, and what a good annotation contains.
+- **[Assignment 2 — Build a failure taxonomy](assignments/02-failure-taxonomy/README.md)** —
+  cluster your Assignment 1 failures into 5+ binary codes, count them, map
+  them to quality dimensions, report the top 3 modes + 1 anomaly.
+- **[Student clarity guide](student-clarity-guide.md)** — background only:
+  glossary (traces / spans / turns / annotations), what regex does in this
+  course, and setup & troubleshooting. The judging rules that used to live
+  there now live in the assignment READMEs above.
+- **Tooling:** [Trace Viewer documentation](../../docs/trace-viewer/README.md)
+  (input formats, local run, exporting from other tools) ·
+  [LangSmith docs](https://docs.langchain.com/langsmith) ·
+  [LangSmith concepts (traces, spans, runs)](https://docs.langchain.com/langsmith/observability-concepts)
 
 > **Two paths through this week's hands-on work — pick one, both are legitimate.**
-> **Path A — LangSmith** (recommended for engineers): follow the assignment steps
-> below. Needs a `LANGSMITH_API_KEY` in your `.env`; traces land in the
+> **Path A — LangSmith** (recommended for engineers): follow Assignment 1's
+> steps. Needs a `LANGSMITH_API_KEY` in your `.env`; traces land in the
 > `ai-evals-course` project where you annotate them.
-> **Path B — Trace Viewer** (zero setup): open the
+> **Path B — Trace Viewer** (zero setup): run `python export_otel.py` in the
+> Assignment 1 folder — it replays all 30 inputs through the demo agent (no
+> API key needed) and writes `pronto-traces.json`. Upload that file to the
 > [Trace Viewer](https://coachmanjeet.github.io/AI-Agent-Evals-Course/trace-viewer/),
-> click "Load the Pronto sample", and annotate traces right in your browser —
-> no keys, no installs. Re-run the 6 sample traces a few times (or upload your
-> own OTel JSON), then export your annotations as JSON/CSV — that's your
-> `annotations.csv` equivalent for Assignment 1.
+> annotate all 30 traces there, and export your annotations as JSON/CSV —
+> that's your `annotations.csv` deliverable for Assignment 1.
 >
-> Path B is a complete Week 1 experience — no key needed at all. From Week 2
-> on you'll need an LLM API key (any provider — OpenAI, Anthropic, or Gemini;
-> $5 is enough to start), so get one set up before then.
+> (The Trace Viewer's built-in "Load the Pronto sample" button loads a small
+> 6-trace sample for trying the tool out. It is a demo, not the assignment —
+> Assignment 1 requires all 30 traces, which is what `export_otel.py`
+> produces.)
+>
+> Path B is a complete Week 1 experience — no key needed at all.
+> **Braintrust is not required in Week 1** — it is required starting
+> Week 2. From Week 2 on you'll also need an LLM API key (any provider —
+> OpenAI, Anthropic, or Gemini; $5 is enough to start), so get one set up
+> before then.
 
 ## This week's workflow
 
@@ -74,20 +96,13 @@ yours). The same two questions come back in Week 6.
 
 ## Tool: Trace Viewer
 
-![Trace Viewer with 30 Pronto traces loaded — trace list, span waterfall, and per-trace annotation](../../docs/images/trace-viewer.png)
+See the [Trace Viewer documentation](../../docs/trace-viewer/README.md) — input-format spec, local-run and export instructions live there.
 
-**[Trace Viewer](https://coachmanjeet.github.io/AI-Agent-Evals-Course/trace-viewer/)** —
-a static, in-browser OTel trace explorer built for this week's error-analysis
-workflow. Upload any OTel trace JSON (OTLP `resourceSpans` or flat `spans`),
-browse the span waterfall, inspect attributes/events, and annotate each trace
-with a failure mode from the course taxonomy. Annotations auto-save in your
-browser and export as JSON/CSV — the seed of the eval dataset you build in
-later weeks. Ships with a 6-trace Pronto sample (5 failure modes + 1 clean
-trace) so it works end-to-end with zero setup. No backend; nothing you upload
-leaves your browser.
+![Trace Viewer with the 6-trace Pronto sample loaded — trace list, span waterfall, and per-trace annotation](../../docs/images/trace-viewer.png)
 
 ## In this folder
 
-- `examples/` — worked examples from the live session (added after the session)
-- `assignments/01-instrument-and-trace/` — wire up tracing, run 30 inputs, annotate traces
-- `assignments/02-failure-taxonomy/` — cluster failures into codes, report top modes
+- `assignments/01-instrument-and-trace/` — Assignment 1: wire up tracing, run 30 inputs, annotate traces (complete instructions in its README)
+- `assignments/02-failure-taxonomy/` — Assignment 2: cluster failures into codes, report top modes (complete instructions in its README)
+- `student-clarity-guide.md` — background: glossary, regex note, setup & troubleshooting
+- `examples/` — method worked-examples (see its README for how examples differ from solutions)

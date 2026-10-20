@@ -1,11 +1,13 @@
 # Week 1 examples
 
-Worked examples from the live session land here after the session runs.
+`examples/` holds **method worked-examples** — illustrations of the Week 1
+method (error analysis, annotation, taxonomy-building) that are always
+visible, so you can see what good work looks like while you do your own.
 
-Planned examples:
-
-- `traced_agent.py` — the customer-service agent with LangSmith `@traceable` wired in
-- `inputs_30.json` — the 30 evaluation inputs (order/refund, policy/warranty, multi-turn)
-- `annotated_traces.csv` — pass/fail annotations with notes, exported from LangSmith
-- `failure_taxonomy.md` — worked example: 5+ binary trace codes with frequency counts
-- `flywheel_walkthrough.md` — one full loop: deploy → analyze → dataset → improve → monitor
+Assignment **answers** do not live here. They live in `solutions/`, released
+weekly after the assignment window closes. If a worked example and an
+assignment ask for the same artifact (e.g. an annotated CSV), the example
+shows the method on different inputs — your deliverable is always the one
+described in the assignment README, built from the files in the assignment
+folder (`assignments/01-instrument-and-trace/inputs.json`,
+`annotations-template.csv`, and the starters).

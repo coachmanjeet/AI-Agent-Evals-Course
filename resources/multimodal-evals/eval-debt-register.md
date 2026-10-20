@@ -19,7 +19,7 @@ register with no owners is a complaint list, not a governance artifact.
 - [ ] **Datasets** — what fraction of eval cases still resemble last month's
       production traffic? Any failure mode from a real incident missing from
       the regression set?
-- [ ] **Coverage** — run the UIG skill (`resources/skills/uig-skill.md`):
+- [ ] **Coverage** — run the UIG skill (`skills/uig/SKILL.md`):
       which user inputs have zero eval coverage?
 - [ ] **Cadence** — any recalibration or review that was scheduled but skipped?
 - [ ] **Incidents** — every production failure since last quarter: is there a

@@ -62,6 +62,17 @@ Rules of thumb:
 - GitHub Actions docs — workflows, schedules: https://docs.github.com/actions
 - LangSmith docs — monitoring and automations: https://docs.langchain.com/langsmith
 
+## Assignments
+
+Each assignment README is the complete assignment document (steps,
+judging rules, acceptance criteria) — this page only links to them. The
+decision-gates table above (in "Decision gates — from eval numbers to
+product calls") is this week's reference for turning scores into
+ship / no-ship calls.
+
+- [Assignment 1 — Deploy the infrastructure](assignments/01-deploy-the-infrastructure/README.md) — GitHub Actions gates + monitoring + canary
+- [Assignment 2 — Operate and document](assignments/02-operate-and-document/README.md) — flywheel cycle doc, cost-routing recommendation, ownership doc
+
 ## In this folder
 
 - `examples/` — worked examples from the live session (added after the session)
@@ -92,7 +103,7 @@ assignments cover wiring the eval infrastructure:
 ## Beyond text: multimodal and rigor upgrades
 
 Short, teachable additions in
-[`resources/multimodal-evals/`](../../resources/multimodal-evals/) — distilled
+[`resources/multimodal-evals/`](../resources/multimodal-evals/) — distilled
 from production multimodal-eval practice, Pronto-flavored:
 
 - `eval-contracts.md` — organize evals as contracts with kappa-gated deployment

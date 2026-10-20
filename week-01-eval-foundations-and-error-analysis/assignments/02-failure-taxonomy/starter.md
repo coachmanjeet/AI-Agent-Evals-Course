@@ -5,13 +5,16 @@ yes/no question answerable from a trace alone.
 
 ## Codes
 
+Starter example codes — the worked definitions live in the README (Step 2);
+don't copy them here. Write each code's binary question in your own words.
+
 | Code | Binary question | Quality dimension | Count (/30) | Example trace id |
 |------|-----------------|-------------------|-------------|------------------|
-| `WRONG_TOOL` | Did the agent call the wrong tool for the request? | product behavior | | |
-| `NO_TOOL` | Should it have called a tool but answered from nothing? | product behavior | | |
-| `HALLUCINATED_FACT` | Did it state a fact (order status, policy) not in any tool output? | model quality | | |
-| `BAD_ESCALATION` | Did it escalate when it had what it needed to answer? | product behavior | | |
-| `DOC_MISS` | Did a correct doc exist but never get surfaced? | reliability | | |
+| `WRONG_TOOL` | | product behavior | | |
+| `NO_TOOL` | | product behavior | | |
+| `HALLUCINATED_ORDER` | | model quality | | |
+| `BAD_ESCALATION` | | product behavior | | |
+| `DOC_MISS` | | reliability | | |
 | `YOUR_CODE_HERE` | | | | |
 
 (Add rows — you need 5+. Delete the examples above if they don't match your failures.)
@@ -30,5 +33,6 @@ yes/no question answerable from a trace alone.
 
 ## What you'd fix first
 
-One paragraph: if you had one engineering day, which failure mode you'd attack
-and what change you'd try — this becomes Week 2's diagnose-and-fix input.
+One paragraph: which failure mode you'd attack with one engineering day, and
+what change you'd try. (Requirement and context: README, acceptance criteria.
+This becomes Week 2's diagnose-and-fix input.)
