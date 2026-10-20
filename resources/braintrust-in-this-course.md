@@ -2,11 +2,14 @@
 
 Braintrust plays two roles: (1) where agent traces land so you can see what
 the agent did, and (2) the eval harness — datasets, scorers, and the results
-table. The key detail for students: one key does everything.
-`BRAINTRUST_API_KEY` is both the platform login and the model credential,
-because judge calls go through Braintrust's OpenAI-compatible proxy
-(api.braintrust.dev/v1). No separate OpenAI key needed — the free course
-credit covers judge calls too.
+table. The key detail for students: two keys, two jobs.
+`BRAINTRUST_API_KEY` is your Braintrust login — traces, datasets, evals.
+Judge calls go through Braintrust's OpenAI-compatible proxy
+(api.braintrust.dev/v1/proxy), and the proxy calls the model through a
+provider key you add once in Braintrust under Settings → AI Providers
+(your own OpenAI key; gpt-4o-mini judge calls cost ~$0.01 for the week).
+Without that provider key, the proxy has no model to call and judge
+calls fail.
 
 ## Week 1 — tracing
 

@@ -8,6 +8,9 @@ Verifies, in order:
 Setup:
   pip install braintrust openai
   export BRAINTRUST_API_KEY="..."   # from braintrust.dev -> your account -> API keys
+  AND add your OpenAI key once in Braintrust -> Settings -> AI Providers.
+  The proxy routes judge calls through that provider key; without it,
+  Check 1+2 fails. (The Braintrust key alone only logs traces/evals.)
 
 Run:
   python braintrust_smoke_test.py
