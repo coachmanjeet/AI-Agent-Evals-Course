@@ -54,13 +54,17 @@ against the confidence/probabilities metadata Braintrust returns.
    YOUR data? Report where it is over/under-confident. The video's claim —
    "when it says 80%, it's right 80% of the time" — is a hypothesis until
    your plot confirms it.
-5. **Thresholds as code.** Implement the bands: confidence ≥ 0.9 → auto
-   (block if `attack`, allow if `benign`); 0.1–0.9 → human review queue;
-   < 0.1 → auto-allow (or auto-block — justify your choice). Compute the
-   expected error rate on the auto band from your calibration curve. Then
-   the cost question: a false pass ships an attack, a false block annoys a
-   customer — make false passes 10× costlier and move the bar. Where does
-   it land, and what happens to your review rate?
+5. **Thresholds as code.** Implement the bands on Jev's attack
+   probability: P(attack) ≥ 0.9 → auto-block; P(attack) ≤ 0.1 →
+   auto-allow; between the two → human review queue. (Route on the
+   per-choice probability, not on the confidence of whichever label won —
+   for a binary choice that confidence never drops below 0.5, so a
+   "low-confidence" band would never fire.) Compute the expected error
+   rate on each auto band from your calibration data: false passes on the
+   allow band, false blocks on the block band. Then the cost question: a
+   false pass ships an attack, a false block annoys a customer — make
+   false passes 10× costlier and move the bars. Where do they land, and
+   what happens to your review rate?
 6. **Ship/no-ship verdict** with upfront numeric thresholds (e.g. "ship if
    catch ≥ 90% AND over-block ≤ 5% AND review rate ≤ 20%"), plus the HITL
    flow for the review band: what the reviewer sees (input text, Jev's

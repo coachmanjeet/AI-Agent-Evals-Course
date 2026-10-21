@@ -79,11 +79,11 @@ judging rules, acceptance criteria) — this page only links to them:
 
 - [Assignment 1 — Scan and triage](assignments/01-scan-and-triage/README.md) — Promptfoo baseline scan + hand-crafted attacks
 - [Assignment 2 — Build and score guardrails](assignments/02-build-and-score-guardrails/README.md) — 3 guardrails, scored on catch vs over-block
-- [Assignment 3 — Jev guardrail judge](assignments/03-jev-guardrail-judge/README.md) — Jev-powered guardrail: calibrated decisions + confidence-threshold human routing (draft, pending review)
+- [Assignment 3 — Jev guardrail judge](assignments/03-jev-guardrail-judge/README.md) — Jev-powered guardrail: calibrated decisions + probability-threshold human routing
 
 ## In this folder
 
 - `examples/` — worked examples from the live session (added after the session)
 - `assignments/01-scan-and-triage/` — Promptfoo baseline scan + hand-crafted attacks
 - `assignments/02-build-and-score-guardrails/` — 3 guardrails, scored on catch vs over-block
-- `assignments/03-jev-guardrail-judge/` — Jev-powered guardrail: calibrated decisions + confidence-threshold human routing (draft, pending Manjeet's review)
+- `assignments/03-jev-guardrail-judge/` — Jev-powered guardrail: calibrated decisions + probability-threshold human routing

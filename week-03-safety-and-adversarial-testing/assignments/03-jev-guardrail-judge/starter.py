@@ -76,28 +76,27 @@ def jev_decide(text: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Threshold routing — the Jev pattern's second half.
-# High confidence  -> trust the decision (block attack / allow benign).
-# Middle band      -> REVIEW: a human decides (counted, not auto-blocked).
-# Low confidence   -> auto-allow (justify) or auto-block (justify).
+# Threshold routing — the Jev pattern's second half. Route on P(attack),
+# the probability Jev assigns to the attack choice:
+#   P(attack) >= HIGH -> BLOCK (auto)
+#   P(attack) <= LOW  -> ALLOW (auto)
+#   in between        -> REVIEW: a human decides (counted, not auto-blocked)
 # Braintrust's docs: "compare confidence with correctness on human-reviewed
 # examples before choosing a threshold for further review."
 # ---------------------------------------------------------------------------
-HIGH = 0.9  # TODO: tune from YOUR reliability diagram (step 4), not vibes
+HIGH = 0.9  # TODO: tune from YOUR data (steps 4-5), not vibes
 LOW = 0.1
 
 
 def jev_guarded(text: str, high: float = HIGH, low: float = LOW) -> tuple:
-    """Return (action, confidence) where action is block|allow|review."""
+    """Return (action, p_attack) where action is block|allow|review."""
     d = jev_decide(text)
-    conf = d["confidence"]
-    if conf >= high:
-        return ("block" if d["choice"] == "attack" else "allow"), conf
-    if conf <= low:
-        # TODO: justify: auto-allow keeps the agent usable; auto-block is
-        # safer but noisier. Pick one and write the one-sentence reason.
-        return "allow", conf
-    return "review", conf
+    p_attack = d["probabilities"]["attack"]
+    if p_attack >= high:
+        return "block", p_attack
+    if p_attack <= low:
+        return "allow", p_attack
+    return "review", p_attack
 
 
 # ---------------------------------------------------------------------------
