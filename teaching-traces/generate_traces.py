@@ -267,7 +267,7 @@ class Conversation:
 
 
 # ---------------------------------------------------------------------------
-# Fixtures (mirror agent/agent.py demo data)
+# Fixtures (mirror agent/agent_skeleton.py demo data)
 # ---------------------------------------------------------------------------
 ORDERS = {
     "PRN-10421": {"status": "out_for_delivery", "eta": "about 25 minutes",

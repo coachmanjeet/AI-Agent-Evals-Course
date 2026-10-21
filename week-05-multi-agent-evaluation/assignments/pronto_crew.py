@@ -21,7 +21,7 @@ import sys
 
 # Make the repo root importable so we reuse the canonical Pronto data.
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
-from agent.agent import DEMO_ORDERS, DEMO_POLICIES, ESCALATION_KEYWORDS  # noqa: E402
+from agent.agent_skeleton import DEMO_ORDERS, DEMO_POLICIES, ESCALATION_KEYWORDS  # noqa: E402
 
 try:
     from dotenv import load_dotenv
@@ -46,7 +46,7 @@ def _logged(name, func):
 
 
 # ---------------------------------------------------------------------------
-# The four Pronto tools (same semantics as agent/agent.py).
+# The four Pronto tools (same semantics as agent/agent_skeleton.py).
 # ---------------------------------------------------------------------------
 def get_order_status(order_id: str) -> dict:
     """Look up a Pronto order by ID (e.g. PRN-10421)."""

@@ -15,10 +15,10 @@ calls fail.
 
 Week 1's assignments officially offer two paths: Path A (LangSmith, needs a
 key) and Path B (the keyless Trace Viewer in the browser). Braintrust is
-the third, upgrade option: `agent/pronto_braintrust_demo.py` runs the real
-Pronto agent loop with tracing in three moves — `init_logger(project=...)`,
-`wrap_openai(...)` so every model call becomes a span, `@traced` on each
-tool. Students open braintrust.dev → Logs → click a trace and see the full
+the third, upgrade option: the canonical agent — `python -m agent.pronto_agent`,
+run from the repo root — sends its traces to Braintrust automatically when
+`BRAINTRUST_API_KEY` is set, no extra wiring. Students open braintrust.dev →
+project `pronto` → Logs → click a trace and see the full
 nested run: model → tool → model → answer.
 
 Point to land: traces are the raw material. Everything in Week 2 (labels,
@@ -54,7 +54,7 @@ python week-02-designing-reliable-llm-judges/braintrust_smoke_test.py
 # → open braintrust.dev, project "smoke-test": 3 scored rows
 
 # 2. Traces (2 min)
-python agent/pronto_braintrust_demo.py --ask "My $85 order arrived half missing, refund me in full"
+python -m agent.pronto_agent --ask "My $85 order arrived half missing, refund me in full"
 # → braintrust.dev → Logs → click the trace, expand the spans
 
 # 3. The eval loop (2 min) — after students wire starter.py

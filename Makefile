@@ -10,7 +10,7 @@ setup:
 	@echo "Done. Edit .env with your API key, then run: make agent"
 
 agent:
-	.venv/bin/python agent/agent.py --demo
+	.venv/bin/python agent/agent_skeleton.py --demo
 
 agent-demo: agent  # alias used in the Week 1 assignment doc
 

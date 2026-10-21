@@ -7,8 +7,9 @@ grades its RAG answers, Week 5 scores its tool use, Week 6 gates its deploys.
 
 Two files, two eras:
 
-- `agent.py` — the **Week 1 skeleton**. Rule-based keyword matching, canned
-  responses. It was the right tool for learning traces and annotations.
+- `agent_skeleton.py` — the **Week 1 skeleton**. Rule-based keyword
+  matching, canned responses — not a real agent loop; the name says so.
+  It was the right tool for learning traces and annotations.
   From Week 3 on, it is retired as the agent under test.
 - **`pronto_agent.py` — the canonical agent from Week 3 on.** A REAL loop:
   model reasons -> calls tools -> reads results -> answers. Shared-history
@@ -84,22 +85,19 @@ reproducible across runs.
 
 | Week | What changes in `agent/` |
 |------|--------------------------|
-| 1 | `agent.py` skeleton: LangSmith tracing; annotate traces |
+| 1 | `agent_skeleton.py` skeleton: LangSmith tracing; annotate traces |
 | 2 | Judges score the agent's outputs |
 | 3+ | `pronto_agent.py` (real loop): guardrails wrap its tools |
 | 4 | Its doc answers get scored in Braintrust |
 | 5 | Its tool trajectories get evaluated |
 | 6 | Its evals gate every change in CI |
 
-## Reference: the old tracing demo
-
-`pronto_braintrust_demo.py` — the original real-loop demo this file was
-promoted from. Deprecated; kept for reference. Use `pronto_agent.py`.
-
 ## Harvested from the retired Braintrust tracing lab handout
 
 The old handout (`braintrust-tracing-lab-setup.docx`, deleted 2026-10-20)
-was a stale parallel of the deprecated demo above — it told students to
+was a stale parallel of the original real-loop demo
+(`pronto_braintrust_demo.py`, removed 2026-10-21 to avoid confusion — the
+canonical agent below supersedes it) — it told students to
 run `pronto_braintrust_demo` against a project named `pronto-demo` with a
 separate OpenAI key, all of which contradicts the canonical contract
 above. Its setup/run parts are **not** preserved. The two pieces of

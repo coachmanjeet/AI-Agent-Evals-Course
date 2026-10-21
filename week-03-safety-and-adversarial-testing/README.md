@@ -8,7 +8,7 @@ the guardrails that catch it.
 
 From Week 3 on, you attack the REAL loop: `agent/pronto_agent.py`
 (run it as `python -m agent.pronto_agent --ask "..."` from the repo root).
-`agent/agent.py` was the Week 1 skeleton — rule-based, canned responses.
+`agent/agent_skeleton.py` was the Week 1 skeleton — rule-based, canned responses.
 A skeleton can't be prompt-injected (there's no model to trick), so from
 here the agent under test is model-driven, multi-turn, and genuinely
 attackable. Its traces land in Braintrust (or LangSmith, or nowhere —

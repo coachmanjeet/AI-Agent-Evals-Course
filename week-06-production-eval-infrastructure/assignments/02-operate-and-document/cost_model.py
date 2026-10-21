@@ -21,7 +21,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[2] / "agent"))
-from agent import CustomerServiceAgent  # noqa: E402
+from agent_skeleton import CustomerServiceAgent  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Cost model — replace with your measured numbers when you have traces.

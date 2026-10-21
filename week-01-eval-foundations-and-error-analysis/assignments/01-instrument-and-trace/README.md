@@ -63,7 +63,7 @@ appears in the `ai-evals-course` project at smith.langchain.com.
 
 ## Steps
 
-1. Wire LangSmith tracing into `agent/agent.py`: decorate `run()` and each tool
+1. Wire LangSmith tracing into `agent/agent_skeleton.py`: decorate `run()` and each tool
    (`get_order_status`, `lookup_policy`, `issue_refund`, `escalate_to_human`)
    with `@traceable`. (Markers are already in the code — fill them in.)
    Keys: put **one model key (OpenAI OR Anthropic OR Gemini)** in `.env`,

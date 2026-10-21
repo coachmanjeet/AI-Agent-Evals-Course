@@ -1,6 +1,6 @@
 """Week 1, Assignment 1 starter: run 30 inputs through the traced agent.
 
-Prereqs: agent/agent.py has @traceable wired in (Assignment step 1),
+Prereqs: agent/agent_skeleton.py has @traceable wired in (Assignment step 1),
 inputs.json exists (Assignment step 3), .env has LANGSMITH_API_KEY.
 Writes annotations.csv with empty pass/fail + note columns for you to fill.
 
@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "agent"))
-from agent import CustomerServiceAgent  # noqa: E402
+from agent_skeleton import CustomerServiceAgent  # noqa: E402
 
 
 def load_inputs(path: str = "inputs.json") -> list:

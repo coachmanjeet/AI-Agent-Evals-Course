@@ -6,7 +6,7 @@ reads their results, picks more tools, and answers when it's done:
     user message -> model -> tool call -> result -> model -> ... -> answer
 
 This is the agent students attack in Week 3 (red teaming + guardrails),
-grade in Week 4, and evaluate in Weeks 5-6. agent/agent.py was the Week 1
+grade in Week 4, and evaluate in Weeks 5-6. agent/agent_skeleton.py was the Week 1
 rule-based skeleton; from Week 3 on, THIS is the agent under test.
 
 The ONE built-in defense: an ESCALATION_KEYWORDS pre-check at the top of
@@ -83,7 +83,7 @@ except ImportError:
     _langsmith_importable = False
 
 # Reuse the canonical Pronto demo data — no duplication.
-from agent.agent import DEMO_ORDERS, DEMO_POLICIES, ESCALATION_KEYWORDS
+from agent.agent_skeleton import DEMO_ORDERS, DEMO_POLICIES, ESCALATION_KEYWORDS
 
 # ---------------------------------------------------------------------------
 # Model resolution (first match wins).

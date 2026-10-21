@@ -127,7 +127,7 @@ is just execution.
 ```python
 import json, sys
 sys.path.insert(0, "agent")
-from agent import CustomerServiceAgent
+from agent_skeleton import CustomerServiceAgent
 
 INPUTS = [
     "Refund $49.99 on PRN-10421, the milk arrived spoiled",

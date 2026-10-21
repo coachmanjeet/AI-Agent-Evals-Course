@@ -21,7 +21,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[2] / "agent"))
-from agent import CustomerServiceAgent  # noqa: E402
+from agent_skeleton import CustomerServiceAgent  # noqa: E402
 
 TOOL_METHODS = ["get_order_status", "lookup_policy", "issue_refund", "escalate_to_human"]
 TRACE_VIEWER_URL = "https://coachmanjeet.github.io/AI-Agent-Evals-Course/trace-viewer/"
