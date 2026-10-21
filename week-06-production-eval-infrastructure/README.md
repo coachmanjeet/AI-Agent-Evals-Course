@@ -62,6 +62,14 @@ Rules of thumb:
 - GitHub Actions docs — workflows, schedules: https://docs.github.com/actions
 - LangSmith docs — monitoring and automations: https://docs.langchain.com/langsmith
 
+## Setup — your fork + Actions secrets
+
+This week's work happens in a repo you control, with GitHub Actions enabled:
+
+1. Fork (or clone and re-push) this repo and enable Actions on it.
+2. Add the secrets the gate needs — the full list is in Assignment 1's starter checklist (repo Settings → Secrets): model key, LangSmith, Braintrust.
+3. No new accounts: your LangSmith (Week 1) and Braintrust (Week 2) accounts carry over.
+
 ## Assignments
 
 Each assignment README is the complete assignment document (steps,

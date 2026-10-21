@@ -7,7 +7,7 @@ Copy to `deploy.md` and work through it.
 - [ ] Workflow file: `.github/workflows/eval-gate.yml` (start from the repo skeleton)
 - [ ] Fast suite defined: (list the evals — e.g. 3 judges on 20 inputs + guardrail spot-check)
 - [ ] Runs in under 10 minutes (measure it)
-- [ ] Secrets configured: `OPENAI_API_KEY`, `LANGSMITH_API_KEY` (repo Settings → Secrets)
+- [ ] Secrets configured: `OPENAI_API_KEY`, `LANGSMITH_API_KEY`, `BRAINTRUST_API_KEY` (repo Settings → Secrets) — the Braintrust key runs the Week 2 judges and the nightly scorers
 - [ ] Test: open a PR that breaks a known eval — the gate blocks it (`gate_demo.md`)
 
 ## 2. Nightly regression (full suite)
