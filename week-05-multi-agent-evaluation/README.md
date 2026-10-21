@@ -40,6 +40,14 @@ flowchart LR
 - LangSmith docs — tracing multi-step trajectories: https://docs.langchain.com/langsmith
 - CrewAI docs — agents, tasks, crews, tools: https://docs.crewai.com
 
+## Setup — model key + CrewAI
+
+The Pronto crew runs on a real model (default `gpt-4o-mini`):
+
+1. Put a model key in your `.env`: `OPENAI_API_KEY=<paste your key>` — or set `PRONTO_MODEL` to another model you have access to (the crew reads it in `pronto_crew.py`).
+2. `pip install crewai` in your `.venv`.
+3. Smoke-test from `assignments/`: `python pronto_crew.py "My strawberries from order PRN-10421 arrived moldy."` — the three agents work the request and the tool trajectory prints at the end.
+
 ## Assignments
 
 Each assignment README is the complete assignment document (steps,

@@ -69,7 +69,7 @@ def check_properties(trajectory: list, record: dict) -> dict:
 
 def score_arguments(trajectory: list) -> dict:
     """TODO: validate tool args as structured output (types, formats, required fields)."""
-    # TODO: e.g. order_id must match r"ORD-\d+"; escalate requires non-empty reason.
+    # TODO: e.g. order_id must match r"PRN-\d+"; escalate requires non-empty reason.
     raise NotImplementedError("validate tool arguments here")
 
 

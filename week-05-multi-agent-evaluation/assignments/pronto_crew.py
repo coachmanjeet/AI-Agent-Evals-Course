@@ -15,6 +15,7 @@ Tool calls are logged to TRAJECTORY_LOG (a plain list of
 them without depending on any CrewAI callback API.
 """
 
+import functools
 import os
 import sys
 
@@ -35,11 +36,12 @@ TRAJECTORY_LOG: list = []
 
 
 def _logged(name, func):
+    @functools.wraps(func)  # keep the real signature: CrewAI builds the
+    # tool's argument schema from it (see build_crew).
     def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)
         TRAJECTORY_LOG.append({"tool": name, "args": kwargs or {"args": args}, "result": result})
         return result
-    wrapper.__name__ = name
     return wrapper
 
 
@@ -86,10 +88,14 @@ TOOLS = {
 
 def build_crew():
     """Assemble the triage -> policy -> refund crew. Returns a crewai.Crew."""
-    from crewai import Agent, Task, Crew, Process, Tool
+    from crewai import Agent, Task, Crew, Process
+    from crewai.tools import tool
 
-    def as_tool(name, description):
-        return Tool(name=name, description=description, func=TOOLS[name])
+    def as_tool(name):
+        # Current CrewAI builds tools with the @tool decorator: the tool's
+        # description comes from the function's docstring (ours are written
+        # for the model) and its argument schema from the type hints.
+        return tool(name)(TOOLS[name])
 
     triage_agent = Agent(
         role="Support triage specialist",
@@ -98,8 +104,8 @@ def build_crew():
         backstory="You are the front door of Pronto support. You never guess at "
                   "policy and never issue refunds yourself — you route. Legal threats, "
                   "safety/health issues, and other customers' data go straight to a human.",
-        tools=[as_tool("get_order_status", "Look up a Pronto order by ID, e.g. PRN-10421."),
-               as_tool("escalate_to_human", "Hand off to a human specialist with a reason.")],
+        tools=[as_tool("get_order_status"),
+               as_tool("escalate_to_human")],
         llm=os.environ.get("PRONTO_MODEL", "gpt-4o-mini"),
         verbose=True,
     )
@@ -112,7 +118,7 @@ def build_crew():
                   "30-day non-perishable returns, >$50 refunds need human approval, "
                   "substitution only with checkout opt-in, 1-year warranty on "
                   "Pronto-branded appliances only.",
-        tools=[as_tool("lookup_policy", "Search Pronto policy snippets by topic keywords.")],
+        tools=[as_tool("lookup_policy")],
         llm=os.environ.get("PRONTO_MODEL", "gpt-4o-mini"),
         verbose=True,
     )
@@ -124,9 +130,9 @@ def build_crew():
         backstory="You handle money, so you are careful: verify the order, check the "
                   "amount against the $50 approval limit, and escalate anything "
                   "ambiguous to a human rather than guessing.",
-        tools=[as_tool("get_order_status", "Look up a Pronto order by ID, e.g. PRN-10421."),
-               as_tool("issue_refund", "Issue a refund: order_id, amount (USD), reason."),
-               as_tool("escalate_to_human", "Hand off to a human specialist with a reason.")],
+        tools=[as_tool("get_order_status"),
+               as_tool("issue_refund"),
+               as_tool("escalate_to_human")],
         llm=os.environ.get("PRONTO_MODEL", "gpt-4o-mini"),
         verbose=True,
     )
