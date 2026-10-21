@@ -35,6 +35,12 @@ Tracing (first match wins; never crashes on missing optional deps):
      set -> LangSmith tracing via @traceable.
   3. Otherwise -> no-op decorator. The agent still runs; it is just untraced.
 
+Neatlogs is separate and additive. When `neatlogs` is installed and
+NEATLOGS_API_KEY is set, the same turns also go to Neatlogs under the
+workflow "pronto-agent": one workflow span per turn, tool spans under it,
+and the model call traced by wrapping the OpenAI client. Turns that share
+one `messages` list (CLI --chat, or the browser chat) are one session.
+
 Usage — ALWAYS from the repo root, as a module. The `python agent/...py`
 form breaks on imports:
     python -m agent.pronto_agent --ask "Where is my order PRN-10421?"
@@ -52,16 +58,23 @@ the same results across runs, or your catch/over-block rates mean nothing.
 """
 
 import argparse
+import contextlib
 import json
 import os
 import sys
+import uuid
+from pathlib import Path
 
 # ---------------------------------------------------------------------------
 # Guarded imports — the agent must never crash on missing optional deps.
 # ---------------------------------------------------------------------------
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    # Root .env holds NEATLOGS_API_KEY. agent/.env is a local override.
+    # Load root first: find_dotenv() would stop at agent/.env and miss it.
+    _ROOT = Path(__file__).resolve().parents[1]
+    load_dotenv(_ROOT / ".env")
+    load_dotenv(_ROOT / "agent" / ".env")
 except ImportError:
     pass
 
@@ -81,6 +94,11 @@ try:
     _langsmith_importable = True
 except ImportError:
     _langsmith_importable = False
+
+try:
+    import neatlogs  # additive tracer — the agent runs fine without it
+except ImportError:
+    neatlogs = None
 
 # Reuse the canonical Pronto demo data — no duplication.
 from agent.agent_skeleton import DEMO_ORDERS, DEMO_POLICIES, ESCALATION_KEYWORDS
@@ -106,7 +124,22 @@ def _resolve_client():
         "                        PRONTO_BASE_URL=http://localhost:11434/v1 with Ollama)"
     )
 
+# Neatlogs is on only when it's installed AND NEATLOGS_API_KEY is set.
+# Init at import so the browser chat (agent/chat_ui.py) is traced too —
+# it calls run_turn in this module and has no tracer of its own.
+NEATLOGS = neatlogs is not None and bool(os.getenv("NEATLOGS_API_KEY"))
+if NEATLOGS:
+    neatlogs.init(
+        api_key=os.environ["NEATLOGS_API_KEY"],
+        endpoint=os.getenv("NEATLOGS_ENDPOINT", "https://ingest.neatlogs.com"),
+        workflow_name="pronto-agent",
+    )
+
 client = _resolve_client()
+# Neatlogs wraps the raw client, Braintrust wraps outside it. The reverse
+# order makes the two patched create() methods call each other forever.
+if NEATLOGS:
+    client = neatlogs.wrap(client)
 MODEL = os.getenv("PRONTO_MODEL", "gpt-4o-mini")
 # Determinism is a prerequisite for measurement: temperature 0 means the same
 # probes give the same results across runs, so scan results are comparable.
@@ -123,6 +156,10 @@ _bt_logger = None
 def _noop_decorator(fn):
     return fn
 
+def nl_span(**kwargs):
+    """@neatlogs.span(...) when Neatlogs is on; a no-op decorator otherwise."""
+    return neatlogs.span(**kwargs) if NEATLOGS else (lambda fn: fn)
+
 if _braintrust_importable and os.getenv("BRAINTRUST_API_KEY"):
     _bt_logger = init_logger(project="pronto")
     client = wrap_openai(client)  # every chat.completions.create() becomes a span
@@ -137,6 +174,23 @@ else:
 def _flush_traces():
     if _bt_logger is not None:
         _bt_logger.flush()
+    if NEATLOGS:
+        neatlogs.flush()
+
+
+# One Neatlogs session per conversation. The messages list is stable across
+# turns in --chat and in the browser UI, and a new list starts a new session.
+_CHAT_SESSIONS: dict[int, str] = {}
+
+
+def _session_ctx(messages: list):
+    if not NEATLOGS:
+        return contextlib.nullcontext()
+    sid = _CHAT_SESSIONS.get(id(messages))
+    if sid is None:
+        sid = f"chat_{uuid.uuid4().hex}"
+        _CHAT_SESSIONS[id(messages)] = sid
+    return neatlogs.identify(session_id=sid)
 
 
 SYSTEM = (
@@ -150,6 +204,7 @@ SYSTEM = (
 
 
 @traced
+@nl_span(kind="TOOL", name="get_order_status", tool_name="get_order_status")
 def get_order_status(order_id: str) -> dict:
     """Look up a Pronto order by ID, e.g. PRN-10421."""
     order = DEMO_ORDERS.get(order_id)
@@ -159,6 +214,7 @@ def get_order_status(order_id: str) -> dict:
 
 
 @traced
+@nl_span(kind="TOOL", name="lookup_policy", tool_name="lookup_policy")
 def lookup_policy(topic: str) -> dict:
     """Look up the Pronto policy bible for a topic (refunds, warranty, substitution...)."""
     topic = topic.lower()
@@ -168,6 +224,7 @@ def lookup_policy(topic: str) -> dict:
 
 
 @traced
+@nl_span(kind="TOOL", name="issue_refund", tool_name="issue_refund")
 def issue_refund(order_id: str, amount: float, reason: str) -> dict:
     """Refund a customer. Amounts over $50 escalate — the agent can't approve those."""
     if amount > 50:
@@ -178,6 +235,7 @@ def issue_refund(order_id: str, amount: float, reason: str) -> dict:
 
 
 @traced
+@nl_span(kind="TOOL", name="escalate_to_human", tool_name="escalate_to_human")
 def escalate_to_human(reason: str) -> dict:
     """Hand off to a human agent. Always safe to call; never the wrong move."""
     return {"escalated": True, "reason": reason}
@@ -217,6 +275,7 @@ TOOL_SCHEMAS = [
 
 
 @traced
+@nl_span(kind="WORKFLOW", name="run_turn")
 def run_turn(messages: list, user_message: str, model: str = MODEL) -> str:
     """One customer turn, as a real agent loop. `messages` is the shared
     conversation history — it grows across turns, which is what makes the
@@ -239,7 +298,9 @@ def run_turn(messages: list, user_message: str, model: str = MODEL) -> str:
             model=model, messages=messages, tools=TOOL_SCHEMAS,
             temperature=TEMPERATURE)
         msg = resp.choices[0].message
-        messages.append(msg)
+        # Neatlogs reads each message with .get(). The SDK returns a
+        # ChatCompletionMessage, so keep a plain dict in the history.
+        messages.append(msg.model_dump(exclude_none=True))
 
         if not msg.tool_calls:
             return msg.content or "(no answer produced)"
@@ -257,6 +318,20 @@ def run_turn(messages: list, user_message: str, model: str = MODEL) -> str:
     reason = escalate_to_human("too many steps without resolving")["reason"]
     messages.append({"role": "assistant", "content": reason})
     return reason
+
+
+def _export_turn(fn):
+    """Open the Neatlogs session before the turn span, and flush after it closes."""
+    def wrapper(messages, user_message, model=MODEL):
+        try:
+            with _session_ctx(messages):
+                return fn(messages, user_message, model=model)
+        finally:
+            _flush_traces()
+    return wrapper
+
+
+run_turn = _export_turn(run_turn)
 
 
 @traced
@@ -350,4 +425,9 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    finally:
+        if NEATLOGS:  # drain the span batch before the process exits
+            neatlogs.flush()
+            neatlogs.shutdown()

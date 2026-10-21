@@ -6,3 +6,4 @@ openai             # model provider client (any provider works; swap as you like
 python-dotenv      # loads .env
 crewai             # multi-agent framework (Week 5 Pronto crew)
 gradio             # browser chat UI for the agent (agent/chat_ui.py)
+neatlogs           # optional tracing for the Pronto agent (NEATLOGS_API_KEY)
