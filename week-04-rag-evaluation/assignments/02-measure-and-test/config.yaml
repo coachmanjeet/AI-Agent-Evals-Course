@@ -1,0 +1,15 @@
+# Week 4, Assignment 2 — the ONE config for the whole harness.
+# Both retrieval variants live here; the A/B comparison in step 4 changes
+# exactly ONE retrieval parameter between them. Run with:
+#   python starter.py --config config.yaml
+
+dataset: ../01-build-and-version-dataset/golden_set.jsonl
+model: gpt-4o-mini # generation + scorer model for both variants
+
+variant_a: # baseline retrieval config
+  top_k: 3
+  chunk_size: 500
+
+variant_b: # candidate — change ONE of these vs variant_a (here: top_k)
+  top_k: 5
+  chunk_size: 500

@@ -10,40 +10,50 @@ import random
 # ---------------------------------------------------------------------------
 # 1. Braintrust scorers — TODO: implement the four scorer functions.
 #
-# Braintrust scorers are plain functions returning 0..1. Write four, mirroring
-# the retrieval/generation split:
+# Braintrust scorers are plain functions returning 0..1, with the signature
+# (output, expected, metadata) — the same convention as Week 2's judges.
+# Write four, mirroring the retrieval/generation split:
 #   retrieval:  context_precision, context_recall
 #   generation: faithfulness, answer_relevancy
-# Each scorer receives the task output plus the fields you attach per row
-# (expected answer, retrieved contexts) — see the Eval() call below.
+#
+# Where each input comes from (this split is the week's whole point):
+#   output    — what your task returned at eval time: a dict with "answer"
+#               and "retrieved_contexts" (the chunks retrieval ACTUALLY
+#               returned for this case — never the gold contexts).
+#   expected  — the case's ground_truth text (criteria for a correct answer).
+#   metadata  — fields you attach per data row: "question" and
+#               "ground_truth_contexts" (the GOLD contexts from Assignment
+#               1 — the denominator context_recall is measured against).
 # ---------------------------------------------------------------------------
-def faithfulness(output: str, expected: str, context: dict, **kwargs) -> float:
+def faithfulness(output, expected, metadata, **kwargs) -> float:
     """Is every claim in the answer supported by the retrieved context?
 
-    context["contexts"] holds the retrieved snippets for this case.
-    TODO: LLM call — split the answer into claims, check each against the
-    contexts, return supported_claims / total_claims.
+    output["retrieved_contexts"] holds the snippets retrieved for this case.
+    TODO: LLM call — split output["answer"] into claims, check each against
+    the retrieved contexts, return supported_claims / total_claims.
     """
     raise NotImplementedError("implement the faithfulness scorer here")
 
 
-def answer_relevancy(output: str, expected: str, context: dict, **kwargs) -> float:
+def answer_relevancy(output, expected, metadata, **kwargs) -> float:
     """Does the answer actually address the question asked?"""
-    # TODO: LLM call or rubric check against the question in context["question"].
+    # TODO: LLM call or rubric check of output["answer"] against the
+    # question in metadata["question"].
     raise NotImplementedError("implement the answer_relevancy scorer here")
 
 
-def context_precision(output: str, expected: str, context: dict, **kwargs) -> float:
+def context_precision(output, expected, metadata, **kwargs) -> float:
     """Of the retrieved chunks, how many were relevant? (signal vs. noise)"""
-    # TODO: for each snippet in context["contexts"], judge relevant/not;
-    # return relevant / total.
+    # TODO: for each snippet in output["retrieved_contexts"], judge
+    # relevant/not; return relevant / total.
     raise NotImplementedError("implement the context_precision scorer here")
 
 
-def context_recall(output: str, expected: str, context: dict, **kwargs) -> float:
+def context_recall(output, expected, metadata, **kwargs) -> float:
     """Of the relevant chunks that exist, how many were retrieved? (coverage)"""
-    # TODO: compare context["contexts"] against the ground-truth contexts in
-    # context["ground_truth_contexts"]; return retrieved_relevant / total_relevant.
+    # TODO: compare output["retrieved_contexts"] (what retrieval returned)
+    # against metadata["ground_truth_contexts"] (the gold set);
+    # return retrieved_relevant / total_relevant.
     raise NotImplementedError("implement the context_recall scorer here")
 
 
@@ -55,8 +65,12 @@ def run_braintrust(cases: list) -> dict:
     # TODO:
     #   from braintrust import Eval
     #
-    #   def rag_pipeline(input: str) -> str:
+    #   def rag_pipeline(input: str) -> dict:
     #       # TODO: your retrieval + generation pipeline over the Pronto docs.
+    #       # It must return BOTH the answer and the contexts retrieval
+    #       # actually returned for this input:
+    #       #   return {"answer": <generated answer>,
+    #       #           "retrieved_contexts": [<chunks retrieval returned>]}
     #       ...
     #
     #   Eval(
@@ -67,7 +81,11 @@ def run_braintrust(cases: list) -> dict:
     #               "expected": c["ground_truth"],
     #               "metadata": {
     #                   "question": c["question"],
-    #                   "contexts": c["contexts"],  # retrieved at eval time? or gold?
+    #                   # GOLD contexts from Assignment 1. These are the
+    #                   # denominator for context_recall — and nothing else.
+    #                   # Do NOT also feed them to the task or the scorers
+    #                   # as "retrieved": recall would then compare gold
+    #                   # against itself and score a meaningless 1.0.
     #                   "ground_truth_contexts": c["contexts"],
     #               },
     #           }

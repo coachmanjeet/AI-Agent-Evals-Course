@@ -22,3 +22,4 @@ Score your RAG pipeline component-wise with Braintrust scorers, find a real grou
 ## Starter
 
 `starter.py` — Braintrust scorer + `Eval()` wiring, bootstrap test, and the one-command report runner. (`pip install braintrust`; key in `.env`.)
+`config.yaml` — the one config file: dataset path, model, and the retrieval params for variant A vs variant B (change exactly one for step 4).
