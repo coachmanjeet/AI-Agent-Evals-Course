@@ -1,4 +1,4 @@
-.PHONY: setup agent test-weeks
+.PHONY: setup agent test-weeks chat
 
 setup:
 	@echo "[1/3] Creating virtualenv (.venv)..."
@@ -11,6 +11,9 @@ setup:
 
 agent:
 	.venv/bin/python agent/agent_skeleton.py --demo
+
+chat:
+	.venv/bin/python -m agent.chat_ui
 
 agent-demo: agent  # alias used in the Week 1 assignment doc
 

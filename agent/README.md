@@ -38,6 +38,28 @@ providers:
   - id: 'exec: python -m agent.pronto_agent'
 ```
 
+## Chat with it in a browser
+
+Same agent, friendlier face — `agent/chat_ui.py` serves a chat page on
+your own machine:
+
+```bash
+python -m agent.chat_ui     # or: make chat
+```
+
+Open http://127.0.0.1:7860 and chat. It is a front end only: it holds the
+same shared `messages` history as `--chat` and calls `run_turn` per
+message, so traces and behavior are identical to the CLI, and model
+resolution (below) is unchanged. Local only — never share the page
+publicly; a public link would let anyone spend your model key.
+
+The page's **demo guardrail** checkbox wires one example regex input
+guardrail (Week 3, Assignment 2 style — it lives in `chat_ui.py`, not in
+the agent) around the agent via `run_turn_guarded`, so you can watch an
+injection attempt get refused before the model is ever called. Off =
+exactly the CLI's behavior; the built-in ESCALATION_KEYWORDS pre-check
+is on either way.
+
 ## Model resolution (first match wins)
 
 1. `PRONTO_BASE_URL` set -> local model, e.g. Ollama at
