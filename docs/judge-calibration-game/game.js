@@ -34,8 +34,15 @@ export const STAGES = [
 
 export const MODELS = {
   openai:    [{ id: 'gpt-4o-mini', label: 'gpt-4o-mini (cheap, fast)' }],
-  anthropic: [{ id: 'claude-3-haiku-20240307', label: 'claude-3-haiku (cheap, fast)' }],
+  anthropic: [{ id: 'claude-haiku-4-5-20251001', label: 'claude-haiku-4-5 (cheap, fast)' }],
   mock:      [{ id: 'mock-judge-v1', label: 'mock-judge (deterministic, no API)' }],
+};
+
+// Retired model ids that may still sit in a student's saved browser state.
+// Anthropic retired claude-3-haiku-20240307 on 2026-04-20 (404 model not found);
+// its documented replacement is claude-haiku-4-5-20251001.
+export const RETIRED_MODELS = {
+  'claude-3-haiku-20240307': 'claude-haiku-4-5-20251001',
 };
 
 // Braintrust's AI proxy is OpenAI-compatible: same request/response shape,
@@ -47,7 +54,7 @@ export const MODELS = {
 // Rough per-1M-token prices (USD) for the cheap judge models, for cost estimates.
 const PRICE_PER_1M = {
   'gpt-4o-mini': { input: 0.15, output: 0.60 },
-  'claude-3-haiku-20240307': { input: 0.25, output: 1.25 },
+  'claude-haiku-4-5-20251001': { input: 1.00, output: 5.00 },
   'mock-judge-v1': { input: 0, output: 0 },
 };
 
@@ -141,6 +148,8 @@ export function mockVerdict(itemId, goldLabel) {
 /** Plain-English mapping for provider/API errors. */
 export function friendlyError(err, provider) {
   const msg = String((err && err.message) || err || '');
+  if (/404|not_found|model not found/i.test(msg))
+    return 'Model not found (404) — the judge model id is retired or wrong. Hard refresh this page (Ctrl+Shift+R) so you get the current version, then try again. If you still see this, tell your instructor which provider you picked.';
   if (/401|unauthorized|invalid_api_key|invalid x-api-key/i.test(msg))
     return 'Key rejected (401) — double-check the key for ' + provider + '. It may be mistyped, revoked, or from the wrong provider.';
   if (/429|rate/i.test(msg))
@@ -197,6 +206,14 @@ function loadState() {
     // Braintrust was removed as a game provider (its proxy blocks browser
     // CORS); migrate anyone who still has it saved.
     if (s.provider === 'braintrust') { s.provider = 'openai'; s.model = 'gpt-4o-mini'; }
+    // Retired model ids saved before a model swap would keep returning 404
+    // even after the fix ships; migrate them to the replacement.
+    if (s.model && RETIRED_MODELS[s.model]) { s.model = RETIRED_MODELS[s.model]; }
+    // Any other saved model that is no longer offered for its provider
+    // falls back to that provider's current default.
+    if (s.provider && MODELS[s.provider] && !MODELS[s.provider].some(m => m.id === s.model)) {
+      s.model = MODELS[s.provider][0].id;
+    }
     return s;
   } catch (_) { return null; }
 }
@@ -335,7 +352,7 @@ async function testKey(provider, apiKey) {
         'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true',
       },
       body: JSON.stringify({
-        model: 'claude-3-haiku-20240307', max_tokens: 5,
+        model: MODELS.anthropic[0].id, max_tokens: 5,
         messages: [{ role: 'user', content: 'Reply with the single word: ok' }],
       }),
     });
