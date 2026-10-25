@@ -43,6 +43,7 @@ Any tool-calling model works if it implements `run(world, task) -> reply`.
 | `evals/redact.py`: redaction before traces become cases | 19 |
 | `judges/`: judge bake-off script and dated results template | 10 |
 | `evals/reconcile.py`: duplicates, wrong amounts, missing and unexpected writes | 19 |
+| `evals/gates.py`: gate table and the ship, limit, or hold verdict | 26 |
 | `../.github/workflows/agent-evals-book.yml`: smoke on every PR, full suite nightly | 22 |
 
 ## Extend it
