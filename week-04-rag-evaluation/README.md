@@ -22,13 +22,12 @@ flowchart LR
 - Golden-set schema; criteria-based ground truth
 - Synthetic data generation and validation (and why synthetic labels need checking)
 - Dataset versioning and pinning in LangSmith
-- Benchmark literacy: MMLU, HumanEval, SWE-bench (what they measure, what they don't)
 - Component-wise RAG evaluation: retrieval vs. generation
 - The four RAG scorers (Braintrust): faithfulness, answer relevance, context precision, context recall
 - Groundedness: is the answer supported by the retrieved context?
 - Braintrust experiments: datasets, custom scorer functions, per-scorer means
 - Sample size and margin of error; paired testing
-- Bootstrap confidence intervals; significance testing and p-values
+- Bootstrap confidence intervals; grading on the interval, not a p-value
 - Multiple comparisons and held-out re-testing
 - Repeatable harness design: pinned datasets, one config, reproducible runs
 

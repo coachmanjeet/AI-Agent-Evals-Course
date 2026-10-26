@@ -9,14 +9,14 @@ Score your RAG pipeline component-wise with Braintrust scorers, find a real grou
 1. Wire four Braintrust scorers into your harness (`starter.py` skeleton — plain scorer functions returning 0..1): **faithfulness**, **answer relevance**, **context precision**, **context recall**. Run them over the pinned golden set v1 with `braintrust.Eval()`.
 2. Report retrieval metrics and generation metrics **separately**. Which component is weaker?
 3. Find **one groundedness failure**: an answer that sounds right but isn't supported by the retrieved context. Dissect it — was it a retrieval miss or a generation hallucination?
-4. Change ONE retrieval parameter (e.g. top-k, chunk size) and re-run. Compare with a **paired bootstrap test** on the same inputs; report the delta with a 95% confidence interval.
+4. Change ONE retrieval parameter (e.g. top-k, chunk size) and re-run. Compare with a **paired bootstrap test** on the same inputs; report the delta with a 95% confidence interval. A null result (an interval crossing zero) with a correctly reported CI passes: the deliverable is the test, not a significant win.
 5. Ship the harness: **one config, one command, one reproducible report** (`report.md`). Someone cloning the repo should reproduce your numbers.
 
 ## Acceptance criteria
 
 - [ ] All four Braintrust scorers reported on golden set v1, retrieval vs generation separated
 - [ ] One groundedness failure documented with root cause (retrieval vs generation)
-- [ ] Paired bootstrap test: delta + 95% CI reported for the retrieval change
+- [ ] Paired bootstrap test: delta + 95% CI reported for the retrieval change (a null result with a correctly reported CI passes)
 - [ ] `report.md` reproducible from one command with one config file
 
 ## Starter
