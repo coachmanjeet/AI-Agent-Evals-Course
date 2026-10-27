@@ -15,7 +15,7 @@ Score your RAG pipeline component-wise with Braintrust scorers, find a real grou
 ## Acceptance criteria
 
 - [ ] All four Braintrust scorers reported on golden set v1, retrieval vs generation separated
-- [ ] One groundedness failure documented with root cause (retrieval vs generation)
+- [ ] `groundedness_failure.md`: one groundedness failure documented with root cause (retrieval vs generation)
 - [ ] Paired bootstrap test: delta + 95% CI reported for the retrieval change (a null result with a correctly reported CI passes)
 - [ ] `report.md` reproducible from one command with one config file
 
