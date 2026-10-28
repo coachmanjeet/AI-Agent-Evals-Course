@@ -1,0 +1,25 @@
+name: fleet-pulse
+on:
+  schedule:
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+  pull-requests: read
+  issues: read
+jobs:
+  pulse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Smoke compile shipped Python
+        run: python3 -m compileall -q agent skills
+      - name: Fleet counts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "## Fleet pulse"
+            echo "Merged PRs (all time): $(gh pr list --state merged --limit 200 --json number --jq length)"
+            echo "Open fleet issues: $(gh issue list --label fleet --state open --json number --jq length)"
+          } >> "$GITHUB_STEP_SUMMARY"
