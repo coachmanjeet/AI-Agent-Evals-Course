@@ -20,18 +20,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install -r requirements.txt
-      - name: Run fast eval subset
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
-          BRAINTRUST_API_KEY: ${{ secrets.BRAINTRUST_API_KEY }}
-        run: |
-          echo "TODO (Week 6): replace with your fast PR eval suite."
-          echo "Example: python -m eval_harness run --suite pr --fail-under 0.9"
+      - name: Run fleet fast check
+        run: bash scripts/fast_check.sh
 
   nightly-regression:
     if: github.event_name == 'schedule'
