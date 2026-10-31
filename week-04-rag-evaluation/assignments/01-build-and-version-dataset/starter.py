@@ -12,8 +12,11 @@ CASE_SCHEMA = {
     "question": str,        # the user question
     "contexts": list,       # list of {"title": ..., "text": ...} that SHOULD be retrieved
     "ground_truth": str,    # criteria-based: what a correct answer must contain
-    "source": str,          # "hand-written" | "synthetic" | "production-log"
+    "source": str,          # "demo-docs" (hand-written from DEMO_DOCS / Week 1 inputs)
+                            # | "synthetic" | "production-log"
     "difficulty": str,      # "easy" | "medium" | "hard"
+    "intent": str,          # what the user is trying to do, e.g. "policy-lookup"
+    "segment": str,         # case segment for slicing results, e.g. "policy"
 }
 
 TARGET_CASES = 150

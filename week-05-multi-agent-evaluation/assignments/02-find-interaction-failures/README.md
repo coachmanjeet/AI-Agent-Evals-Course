@@ -11,6 +11,7 @@ Prove that system-level failures exist that no single-agent eval would catch —
 3. Evaluate each handoff on **completeness** (did everything needed transfer?), **fidelity** (did B understand what A meant?), **routing** (did it go to the right next step?).
 4. Produce the **three-layer report** (`starter.md` template): model scores, agent scores, system scores side by side. Compute the **model→system score gap** — where the model looks fine but the system fails.
 5. Document **3 interaction failures** with handoff root causes: what broke *between* the agents that neither agent's individual eval caught.
+6. **Voice extension**: pick 2 of your handoff scenarios and re-run them with a noisy transcript (one ASR error each, e.g. a misheard order ID or amount). Report transcript fidelity, whether the handoff scores change, and which voice failure class it maps to (ingestion-fidelity for ASR errors, cross-modal-consistency when the voice reply contradicts the transcript). Pointers: `../../../resources/multimodal-evals/ingestion-fidelity.md` and `../../../resources/multimodal-evals/cross-modal-consistency.md`.
 
 ## Acceptance criteria
 
@@ -18,6 +19,7 @@ Prove that system-level failures exist that no single-agent eval would catch —
 - [ ] 10+ handoff scenarios run, scored on completeness / fidelity / routing
 - [ ] Three-layer report: model, agent, system scores with the gap quantified
 - [ ] 3 interaction failures documented, each with a handoff root cause
+- [ ] Voice extension: 2 scenarios re-run with a noisy transcript (one ASR error each); transcript fidelity, handoff score delta, and voice failure class reported
 
 ## Starter
 

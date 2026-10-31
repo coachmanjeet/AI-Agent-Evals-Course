@@ -2,6 +2,10 @@
 # Both retrieval variants live here; the A/B comparison in step 4 changes
 # exactly ONE retrieval parameter between them. Run with:
 #   python starter.py --config config.yaml
+#
+# FROZEN at v1: golden_set.jsonl is pinned in LangSmith as v1 (see
+# ../01-build-and-version-dataset/dataset.md for the version id). Do NOT
+# edit it after pinning; new cases go into a new version (v2), never v1.
 
 dataset: ../01-build-and-version-dataset/golden_set.jsonl
 model: gpt-4o-mini # generation + scorer model for both variants

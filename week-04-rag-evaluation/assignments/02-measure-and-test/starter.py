@@ -120,15 +120,34 @@ def load_cases(path: str = "../01-build-and-version-dataset/golden_set.jsonl") -
         return [json.loads(line) for line in f if line.strip()]
 
 
+def load_config(path: str) -> dict:
+    """Load the one harness config (YAML). Needs pyyaml (`pip install pyyaml`)."""
+    try:
+        import yaml
+    except ImportError:
+        raise SystemExit("pyyaml is required: pip install pyyaml (see requirements.txt)")
+    with open(path) as f:
+        return yaml.safe_load(f)
+
+
 if __name__ == "__main__":
-    cases = load_cases()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Week 4, Assignment 2 harness.")
+    parser.add_argument("--config", default="config.yaml",
+                        help="path to the harness config (default: config.yaml)")
+    args = parser.parse_args()
+    cfg = load_config(args.config)
+    print(f"Config: {args.config} | model={cfg.get('model')} | "
+          f"variant_a={cfg.get('variant_a')} | variant_b={cfg.get('variant_b')}")
+    cases = load_cases(cfg.get("dataset", "../01-build-and-version-dataset/golden_set.jsonl"))
     print(f"Loaded {len(cases)} golden cases.")
     # TODO:
     #   1. scores = run_braintrust(cases) -> report the four scorers,
     #      retrieval vs generation.
     #   2. Find ONE groundedness failure; write it up in groundedness_failure.md
     #      (was it retrieval or generation at fault?).
-    #   3. Change one retrieval param, re-run, collect per-case faithfulness for
+    #   3. Change one retrieval param, re-run, collect per-case context recall for
     #      both variants, then:
     #        delta, lo, hi = paired_bootstrap(a_scores, b_scores)
     #        print(f"delta={delta:.3f} 95% CI=[{lo:.3f}, {hi:.3f}]")
