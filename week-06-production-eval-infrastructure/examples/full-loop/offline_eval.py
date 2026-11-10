@@ -11,6 +11,8 @@ Setup:
     pip install braintrust openai
     export BRAINTRUST_API_KEY="..."   (your Braintrust key; also enables tracing)
     export NEATLOGS_LLM_KEY="sk-..."  (gateway key, pays for all model calls)
+    export OPENAI_API_KEY="sk-..."    (fallback when the gateway key is absent:
+        model calls go to OpenAI directly; Braintrust still gets the traces)
     Keys may also live in the repo-root .env, like the other course scripts.
 
 Run (from the repo root):
@@ -33,9 +35,10 @@ What it does:
 
 Two things worth knowing before you run it:
     - Agent generation and judge calls both go through the Neatlogs gateway
-      (PRONTO_BASE_URL + PRONTO_API_KEY), so the $25 gateway credit pays for
-      everything. Braintrust still receives the traces (project "pronto")
-      because BRAINTRUST_API_KEY is set.
+      (PRONTO_BASE_URL + PRONTO_API_KEY) when NEATLOGS_LLM_KEY is set, so
+      the $25 gateway credit pays for everything. When it is absent, they
+      go to OpenAI directly on OPENAI_API_KEY. Braintrust still receives
+      the traces (project "pronto") because BRAINTRUST_API_KEY is set.
     - The gold set's order IDs (PRN-84xxx) do not exist in the agent's demo
       data (DEMO_ORDERS holds only PRN-10421/22/23). Lookup cases will
       therefore show the agent correctly reporting "not found" while the
@@ -75,6 +78,7 @@ CASES = [
 ]
 
 GATEWAY_URL = "https://llm.neatlogs.ai/v1"
+OPENAI_URL = "https://api.openai.com/v1"
 MODEL = "gpt-4o-mini"
 
 # ---------------------------------------------------------------------------
@@ -239,19 +243,28 @@ def main() -> None:
     except ImportError:
         pass
 
-    missing = [v for v in ("BRAINTRUST_API_KEY", "NEATLOGS_LLM_KEY") if not os.environ.get(v)]
+    missing = [v for v in ("BRAINTRUST_API_KEY",) if not os.environ.get(v)]
+    if not os.environ.get("NEATLOGS_LLM_KEY") and not os.environ.get("OPENAI_API_KEY"):
+        missing.append("NEATLOGS_LLM_KEY or OPENAI_API_KEY")
     if missing:
         print("Missing environment variables:", ", ".join(missing))
         print("Set them in .env or export them first, then re-run.")
         print("No keys are stored in this file.")
         sys.exit(1)
 
-    # Route the agent's generation through the Neatlogs gateway BEFORE
-    # importing it: the agent resolves its client at import time, and
-    # PRONTO_BASE_URL wins over the Braintrust proxy. Braintrust still gets
-    # the traces because BRAINTRUST_API_KEY is set.
-    os.environ["PRONTO_BASE_URL"] = GATEWAY_URL
-    os.environ["PRONTO_API_KEY"] = os.environ["NEATLOGS_LLM_KEY"]
+    # Route the agent's generation BEFORE importing it: the agent resolves
+    # its client at import time, and PRONTO_BASE_URL wins over the
+    # Braintrust proxy. Gateway first (the $25 credit pays); OpenAI direct
+    # when the gateway key is absent. Braintrust still gets the traces
+    # because BRAINTRUST_API_KEY is set.
+    if os.environ.get("NEATLOGS_LLM_KEY"):
+        model_key, model_base = "NEATLOGS_LLM_KEY", GATEWAY_URL
+        print("Model calls go through the Neatlogs gateway (NEATLOGS_LLM_KEY set).")
+    else:
+        model_key, model_base = "OPENAI_API_KEY", OPENAI_URL
+        print("NEATLOGS_LLM_KEY is not set; model calls go to OpenAI directly.")
+    os.environ["PRONTO_BASE_URL"] = model_base
+    os.environ["PRONTO_API_KEY"] = os.environ[model_key]
 
     try:
         from openai import OpenAI
@@ -272,7 +285,7 @@ def main() -> None:
         print("Run from the repo root.")
         sys.exit(1)
 
-    judge_client = OpenAI(api_key=os.environ["NEATLOGS_LLM_KEY"], base_url=GATEWAY_URL)
+    judge_client = OpenAI(api_key=os.environ[model_key], base_url=model_base)
     cases = load_cases(repo_root)
     by_input = {c["input"]: c for c in cases}
     results = {}

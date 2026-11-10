@@ -1,6 +1,6 @@
 """Week 6 full-loop demo: before/after improvement runner (worked example).
 
-Runs the same 8 gold cases twice and shows whether the self-correcting
+Runs the same 10 gold cases twice and shows whether the self-correcting
 agent actually improved anything:
 
     BEFORE = the canonical agent (agent/pronto_agent.py, run_turn_guarded)
@@ -12,7 +12,8 @@ escalation correctness, no other customer's data), then the script prints
 a per-case before/after table, per-category judge pass rates, the delta,
 and the Week 6 decision-gate reading for each arm.
 
-Model route: the Neatlogs gateway when NEATLOGS_LLM_KEY is set, else the
+Model route: the Neatlogs gateway when NEATLOGS_LLM_KEY is set, OpenAI
+direct when the gateway key is absent but OPENAI_API_KEY is set, else the
 Braintrust proxy (BRAINTRUST_API_KEY). The agent picks the proxy natively
 when PRONTO_BASE_URL is unset; the judge client below gets the same
 fallback explicitly. This script never stores a key; keys live in the
@@ -50,6 +51,7 @@ from pathlib import Path
 
 GATEWAY_URL = "https://llm.neatlogs.ai/v1"
 PROXY_URL = "https://api.braintrust.dev/v1/proxy"
+OPENAI_URL = "https://api.openai.com/v1"
 
 # ---------------------------------------------------------------------------
 # Pure helpers (no keys, no network): unit-tested in test_improve_demo.py.
@@ -72,13 +74,17 @@ CODE_SCORERS = ("no_refund_over_50", "escalation_correctness",
 def model_route(env=None):
     """Pick the model route from the environment. Returns (base_url, key_name).
 
-    Neatlogs gateway wins when NEATLOGS_LLM_KEY is set; otherwise the
-    Braintrust proxy on BRAINTRUST_API_KEY. Only the key NAME is returned,
-    never a key value, so this stays safe to test with canned env dicts.
+    Neatlogs gateway wins when NEATLOGS_LLM_KEY is set; OpenAI direct
+    when the gateway key is absent but OPENAI_API_KEY is set; otherwise
+    the Braintrust proxy on BRAINTRUST_API_KEY. Only the key NAME is
+    returned, never a key value, so this stays safe to test with canned
+    env dicts.
     """
     env = os.environ if env is None else env
     if env.get("NEATLOGS_LLM_KEY"):
         return GATEWAY_URL, "NEATLOGS_LLM_KEY"
+    if env.get("OPENAI_API_KEY"):
+        return OPENAI_URL, "OPENAI_API_KEY"
     return PROXY_URL, "BRAINTRUST_API_KEY"
 
 
@@ -217,15 +223,16 @@ def main() -> None:
         sys.exit(1)
 
     base_url, key_name = model_route()
-    route = ("Neatlogs gateway" if key_name == "NEATLOGS_LLM_KEY"
-             else "Braintrust proxy (NEATLOGS_LLM_KEY not set)")
+    route = {"NEATLOGS_LLM_KEY": "Neatlogs gateway",
+             "OPENAI_API_KEY": "OpenAI direct (NEATLOGS_LLM_KEY not set)",
+             "BRAINTRUST_API_KEY": "Braintrust proxy (no gateway or OpenAI key)"}[key_name]
     print(f"Model route: {route} (base_url {base_url})")
-    if key_name == "NEATLOGS_LLM_KEY":
-        # Route the agent's generation through the Neatlogs gateway BEFORE
+    if key_name in ("NEATLOGS_LLM_KEY", "OPENAI_API_KEY"):
+        # Route the agent's generation through the chosen base URL BEFORE
         # importing it: the agent resolves its client at import time, and
         # PRONTO_BASE_URL wins over the Braintrust proxy.
-        os.environ["PRONTO_BASE_URL"] = GATEWAY_URL
-        os.environ["PRONTO_API_KEY"] = os.environ["NEATLOGS_LLM_KEY"]
+        os.environ["PRONTO_BASE_URL"] = base_url
+        os.environ["PRONTO_API_KEY"] = os.environ[key_name]
     else:
         # Deterministic fallback: drop any stray gateway setting so the
         # agent takes its native Braintrust proxy branch.
@@ -275,7 +282,7 @@ def main() -> None:
                "no_other_customer_data": no_other_customer_data}
 
     def run_arm(label, turn_fn):
-        """One Eval arm over the 8 cases. Returns per-case row dicts."""
+        """One Eval arm over the 10 cases. Returns per-case row dicts."""
         results = {}
 
         def task(case_input):

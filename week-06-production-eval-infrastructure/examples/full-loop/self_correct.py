@@ -23,8 +23,9 @@ introduced a violation the base reply did not have).
 
 Setup: same keys as offline_eval.py in this folder. BRAINTRUST_API_KEY
 is required. NEATLOGS_LLM_KEY is optional: when it is set, model calls
-go through the Neatlogs gateway; when it is not, they go through the
-Braintrust proxy, for the agent and for the judge alike.
+go through the Neatlogs gateway; when it is not, they go to OpenAI
+directly on OPENAI_API_KEY, and only then through the Braintrust proxy,
+for the agent and for the judge alike.
 
 Run (from the repo root):
     python3 week-06-production-eval-infrastructure/examples/full-loop/self_correct.py
@@ -48,6 +49,7 @@ except ModuleNotFoundError:  # imported from elsewhere; offline_eval lives here
 
 GATEWAY_URL = "https://llm.neatlogs.ai/v1"
 PROXY_URL = "https://api.braintrust.dev/v1/proxy"
+OPENAI_URL = "https://api.openai.com/v1"
 
 # Safe fallback: returned instead of a reply that still violates a check
 # after the allowed retry. It is an escalation by design, so verify_turn
@@ -280,9 +282,10 @@ def main() -> None:
         print("No keys are stored in this file.")
         sys.exit(1)
 
-    # Model routing: the Neatlogs gateway when its key is set, the
-    # Braintrust proxy otherwise. The agent picks the proxy on its own
-    # when PRONTO_BASE_URL is unset, so make sure it is unset here;
+    # Model routing: the Neatlogs gateway when its key is set, OpenAI
+    # direct when the gateway key is absent, the Braintrust proxy only
+    # when neither is set. The agent picks the proxy on its own when
+    # PRONTO_BASE_URL is unset, so make sure it is unset in that branch;
     # the judge client needs the same choice made explicitly.
     if os.environ.get("NEATLOGS_LLM_KEY"):
         os.environ["PRONTO_BASE_URL"] = GATEWAY_URL
@@ -290,12 +293,18 @@ def main() -> None:
         judge_key = os.environ["NEATLOGS_LLM_KEY"]
         judge_base = GATEWAY_URL
         print("Model calls go through the Neatlogs gateway (NEATLOGS_LLM_KEY set).")
+    elif os.environ.get("OPENAI_API_KEY"):
+        os.environ["PRONTO_BASE_URL"] = OPENAI_URL
+        os.environ["PRONTO_API_KEY"] = os.environ["OPENAI_API_KEY"]
+        judge_key = os.environ["OPENAI_API_KEY"]
+        judge_base = OPENAI_URL
+        print("NEATLOGS_LLM_KEY is not set; model calls go to OpenAI directly.")
     else:
         os.environ.pop("PRONTO_BASE_URL", None)
         os.environ.pop("PRONTO_API_KEY", None)
         judge_key = os.environ["BRAINTRUST_API_KEY"]
         judge_base = PROXY_URL
-        print("NEATLOGS_LLM_KEY is not set; model calls go through the "
+        print("No gateway or OpenAI key; model calls go through the "
               "Braintrust proxy.")
 
     try:

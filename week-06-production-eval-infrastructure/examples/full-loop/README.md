@@ -15,9 +15,11 @@ python3 week-06-production-eval-infrastructure/examples/full-loop/offline_eval.p
 ```
 
 Keys (`.env` in the repo root, or exported): `BRAINTRUST_API_KEY` and
-`NEATLOGS_LLM_KEY`. The agent's generation and the judge calls both go
-through the Neatlogs gateway, so the $25 gateway credit pays for the run.
-Braintrust still receives the traces (project `pronto`).
+`NEATLOGS_LLM_KEY` (or `OPENAI_API_KEY` when the gateway key is absent).
+Model calls go through the Neatlogs gateway when its key is set, so the
+$25 gateway credit pays for the run; otherwise they go to OpenAI directly
+on `OPENAI_API_KEY`. Braintrust still receives the traces (project
+`pronto`).
 
 The run uploads an experiment to the `pronto-full-loop-stage3` project and
 prints a per-case and per-category summary. Open the experiment link it
@@ -108,5 +110,6 @@ mode escalate, for different reasons.
 
 All three mains take keys the same way as Stage 3: `BRAINTRUST_API_KEY`
 required, `NEATLOGS_LLM_KEY` optional. When the gateway key is set, model
-calls go through the Neatlogs gateway; when it is not, they fall back to
-the Braintrust proxy.
+calls go through the Neatlogs gateway; when it is not, they go to OpenAI
+directly on `OPENAI_API_KEY`; only when neither is set do they fall back
+to the Braintrust proxy.
