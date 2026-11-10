@@ -1,7 +1,7 @@
 """Week 6 full-loop demo, Stage 3: offline eval (worked example, NOT an assignment).
 
-One command runs the canonical Pronto agent over an 8-case subset of the
-48-case gold set (datasets/pronto-eval-gold.csv) and scores it in Braintrust
+One command runs the canonical Pronto agent over a 10-case subset of the
+50-case gold set (datasets/pronto-eval-gold.csv) and scores it in Braintrust
 as an experiment in the "pronto-full-loop-stage3" project. Open the
 experiment link it prints and walk the class through it: per-case scores,
 per-category scores, and every failure linked back to its Stage 2 trace via
@@ -17,10 +17,11 @@ Run (from the repo root):
     python3 week-06-production-eval-infrastructure/examples/full-loop/offline_eval.py
 
 What it does:
-    1. Loads 8 cases from the gold CSV by ID (the CSV is the single source
-       of truth; no case text is duplicated here). The 8 cover the six demo
-       threads from the full-loop plan: order lookup, refund under $50, the
-       $85 refund escalation, prompt injection, data-leak probe, multi-turn.
+    1. Loads 10 cases from the gold CSV by ID (the CSV is the single source
+       of truth; no case text is duplicated here). The 10 cover all eight
+       demo threads from the full-loop plan: order lookup, refund under $50,
+       the $85 refund escalation, prompt injection, data-leak probe,
+       multi-turn, the wife's-order over-block, and the step-limit long chat.
     2. Runs each case through the canonical agent (agent/pronto_agent.py,
        run_turn_guarded, temperature 0). Multi-turn inputs are replayed as
        conversation history; the last customer line is the live turn.
@@ -57,7 +58,7 @@ import sys
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
-# The 8 cases: (gold-set id, category, demo thread). Everything else about
+# The 10 cases: (gold-set id, category, demo thread). Everything else about
 # each case (input, expected, root_span_id) is read from the CSV at runtime.
 # ---------------------------------------------------------------------------
 CASES = [
@@ -69,6 +70,8 @@ CASES = [
     ("00a2cf49-11c1-5aa2-887d-5a47199f0243", "adversarial", "prompt injection (RefundBot)"),
     ("10b52369-7866-56c5-a2df-9811d6c8f107", "adversarial", "neighbor data-leak probe"),
     ("84852e5e-f213-5ac2-b7f7-731de4964a16", "adversarial", "$90 refund waiver attempt"),
+    ("fe1b9486-935c-56f0-976c-ab9305c8f0ab", "order_status", "wife's-order over-block"),
+    ("cedb52c4-fa89-5478-b550-a6dfa9521046", "warranty_claim", "step-limit long chat"),
 ]
 
 GATEWAY_URL = "https://llm.neatlogs.ai/v1"
@@ -209,7 +212,7 @@ def run_judge(client, case_input: str, reply: str, expected: str):
 # ---------------------------------------------------------------------------
 
 def load_cases(repo_root: Path):
-    """Read the 8 cases from the gold CSV. Loud failure if an ID is missing."""
+    """Read the 10 cases from the gold CSV. Loud failure if an ID is missing."""
     with open(repo_root / "datasets" / "pronto-eval-gold.csv", newline="") as f:
         by_id = {row["id"]: row for row in csv.DictReader(f)}
     cases = []
@@ -326,7 +329,7 @@ def main() -> None:
         print(f"  reply: {r['reply'][:200]}")
 
     print("\nPer-category judge pass rate (of cases in the category):")
-    for category in ("order_status", "refund_request", "adversarial"):
+    for category in ("order_status", "refund_request", "adversarial", "warranty_claim"):
         group = [results[c["id"]] for c in cases if c["category"] == category]
         passed = sum(1 for r in group if r.get("judge") == "PASS")
         print(f"  {category}: {passed}/{len(group)} judge PASS")

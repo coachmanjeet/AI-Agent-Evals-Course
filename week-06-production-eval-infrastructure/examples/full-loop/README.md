@@ -1,8 +1,9 @@
 # Full loop, Stage 3: offline eval
 
 Worked example for the Week 6 capstone. Stage 3 runs the canonical Pronto
-agent over 8 gold-set cases and scores it in Braintrust. Stage 4 (online
-evals) stays a walkthrough from the plan; this folder holds Stage 3 only.
+agent over 10 gold-set cases and scores it in Braintrust. The same folder
+also holds the step-5 self-correction wrapper, the before/after improvement
+runner, and the Stage 4 walkthrough (see below).
 
 ## Run it
 
@@ -22,10 +23,10 @@ The run uploads an experiment to the `pronto-full-loop-stage3` project and
 prints a per-case and per-category summary. Open the experiment link it
 prints and walk the class through it.
 
-## The 8 cases
+## The 10 cases
 
 Read from `datasets/pronto-eval-gold.csv` by ID at runtime; the CSV is the
-single source of truth. They cover the six demo threads from the full-loop
+single source of truth. They cover all eight demo threads from the full-loop
 plan:
 
 | Category | Thread | Gold ID (short) |
@@ -38,6 +39,8 @@ plan:
 | adversarial | prompt injection (RefundBot, $150) | 00a2cf49 |
 | adversarial | neighbor data-leak probe | 10b52369 |
 | adversarial | $90 refund waiver attempt | 84852e5e |
+| order_status | wife's-order over-block | fe1b9486 |
+| warranty_claim | step-limit long chat | cedb52c4 |
 
 ## How it is scored
 
@@ -73,7 +76,37 @@ gold set or extend `DEMO_ORDERS` instead.
 ## Out of scope (by design)
 
 No new 40-case harvest, no Neatlogs branch in the agent, no Braintrust
-dataset versioning beyond the CSV subset, and no Stage 4. Two demo threads
-from the plan are not in the gold set at all (the wife's-order over-block
-and the step-limit long chat); teach those two as walkthrough only, or add
-2 harvested cases from Week 1 inputs and Week 3 attack material.
+dataset versioning beyond the CSV subset, and no Stage 4. The two demo
+threads added here (the wife's-order over-block and the step-limit long
+chat) are now in the gold set as rows 49 and 50: the wife's-order input is
+harvested verbatim from the Week 3 guardrail material, and the step-limit
+input is built from teaching trace conv-tool-04 with constructed middle
+turns. The step-limit case is a probe, not a guaranteed fail: the judge is
+the discriminating scorer for it, since the narrow escalation scorer counts
+any escalation as a match and both the correct behavior and the failure
+mode escalate, for different reasons.
+
+## The rest of the loop (same folder)
+
+- **Step 5, self-correction:** `self_correct.py` wraps the agent in a
+  verify-before-act loop. After a turn, three deterministic checks run
+  (refund over $50 approved, unjustified escalation, leaked order ID). On
+  a violation the agent re-drafts once with the violation named; still
+  failing means escalate to a human. It prints the correction rate and the
+  new-error rate. Unit tests in `test_self_correct.py` run key-free.
+- **Step 4, improve and optimize:** `improve_demo.py` runs the same 10
+  cases twice, base agent vs self-correcting agent, and prints the
+  before/after table, the delta, and the decision-gate reading (SHIP, SHIP
+  WITH CONDITIONS, NO-SHIP) against the Week 6 README targets. Unit tests
+  in `test_improve_demo.py` run key-free.
+- **Stage 4, online evals:** `STAGE4-WALKTHROUGH.md` is a walkthrough, not
+  a live build. It covers the Braintrust online scorer, one Neatlogs
+  Detection, one Neatlogs review campaign, and the close-the-loop procedure
+  (online failure becomes a new gold row, re-run the offline eval, the
+  decision gate reads the delta). Paths that could not be verified from a
+  live account are marked "verify in class".
+
+All three mains take keys the same way as Stage 3: `BRAINTRUST_API_KEY`
+required, `NEATLOGS_LLM_KEY` optional. When the gateway key is set, model
+calls go through the Neatlogs gateway; when it is not, they fall back to
+the Braintrust proxy.

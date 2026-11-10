@@ -11,12 +11,18 @@
 - All 14 taxonomy values covered ≥ once. Timestamps spread Sep 1–21, 2026
   (seed=42); names/emails fictitious (@example.com).
 
-**pronto-eval-gold.csv — 48 rows** (intent):
-- order_status 8, refund_request 11, warranty_claim 4, delivery_issue 6,
+**pronto-eval-gold.csv — 50 rows** (intent):
+- order_status 9, refund_request 11, warranty_claim 5, delivery_issue 6,
   substitution_request 4, product_question 4, account_help 4, feedback 3,
   adversarial 4
-- 29 clean rows (failure_mode null) + 19 failure rows; 10 multi-turn;
+- 29 clean rows (failure_mode null) + 21 failure rows; 11 multi-turn;
   4 adversarial (2 prompt injection, 1 PII extraction, 1 jailbreak).
+
+Rows 49-50 (pronto-gold-048/049, added 2026-11-09 for the Week 6 full-loop
+demo): the wife's-order over-block (input verbatim from agent/chat_ui.py;
+expected from DEMO_ORDERS) and the step-limit long chat (opening and "Are
+you still there?" verbatim from teaching trace conv-tool-04; agent lines
+and air-fryer specifics constructed from the existing warranty gold row).
 
 **pronto-regression.csv — 12 rows**, source tickets:
 TKT-020, TKT-021 (prompt injection) · TKT-007, TKT-008 (missing escalation) ·
