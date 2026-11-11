@@ -55,6 +55,34 @@ exec provider. Banners and diagnostics go to stderr.
 Runs at temperature 0 by default (PRONTO_TEMPERATURE to override):
 determinism is a prerequisite for measurement — the same probes must give
 the same results across runs, or your catch/over-block rates mean nothing.
+
+HOW THIS FILE IS ORGANIZED (read it in this order):
+  Section 1 — Imports: guarded imports. Optional tracers may be missing;
+      the agent must never crash because a tracer is not installed.
+  Section 2 — Demo data: reused from agent_skeleton.py. No duplication;
+      the orders, policies, and escalation keywords live in one place.
+  Section 3 — Model resolution: which model client to build, first match
+      wins (local base URL, then Braintrust proxy, then OpenAI direct).
+  Section 4 — Tracing setup: Neatlogs init and the client wrap order.
+      Neatlogs wraps the raw client first, Braintrust wraps outside it.
+  Section 5 — Model constants: model name, temperature, and step limit.
+  Section 6 — Tracing resolution: pick one `traced` decorator
+      (Braintrust, then LangSmith, then a no-op), plus trace helpers.
+  Section 7 — System prompt: the instructions the model sees every turn.
+  Section 8 — Tools: the four things the agent can actually do, plus the
+      TOOLS dispatch dict and the TOOL_SCHEMAS the model sees.
+  Section 9 — Agent loop: run_turn, the model -> tool -> model loop, and
+      the _export_turn wrapper that opens a session and flushes traces.
+  Section 10 — Guardrails wrapper: run_turn_guarded, input and output
+      guardrails wired around run_turn without changing it.
+  Section 11 — CLI: main(), --ask / --chat / --model, and clean JSON
+      output for promptfoo. Nothing below this section runs on import.
+
+Nothing is deleted here to make it shorter: the LangSmith, Neatlogs, and
+local-model paths look unused on a machine that has only BRAINTRUST_API_KEY
+and OPENAI_API_KEY set, but students use them in Weeks 1, 2, 4, and 6, and
+the Week 6 full-loop scripts set PRONTO_BASE_URL themselves. Each path is
+guarded, so an unconfigured path costs nothing at runtime.
 """
 
 import argparse
@@ -65,9 +93,15 @@ import sys
 import uuid
 from pathlib import Path
 
-# ---------------------------------------------------------------------------
-# Guarded imports — the agent must never crash on missing optional deps.
-# ---------------------------------------------------------------------------
+# ===========================================================================
+# Section 1 — Imports (guarded)
+# Purpose: load everything the agent needs, without ever crashing because
+# an optional tracer is not installed. Only `openai` is required; the
+# agent exits with a clear message if it is missing. `braintrust`,
+# `langsmith`, and `neatlogs` are optional, each guarded by its own
+# try/except, and each one only activates later if its API key is set too.
+# `dotenv` is also optional: without it, keys must come from the shell.
+# ===========================================================================
 try:
     from dotenv import load_dotenv
     # Root .env holds NEATLOGS_API_KEY. agent/.env is a local override.
@@ -100,12 +134,29 @@ try:
 except ImportError:
     neatlogs = None
 
-# Reuse the canonical Pronto demo data — no duplication.
+# ===========================================================================
+# Section 2 — Demo data (reused, not duplicated)
+# Purpose: give the tools something real to look up. DEMO_ORDERS is the
+# three demo orders (PRN-10421/22/23), DEMO_POLICIES is the policy bible
+# the agent quotes, and ESCALATION_KEYWORDS is the crude keyword list
+# that triggers an immediate human handoff in run_turn. All three live
+# in agent_skeleton.py, the Week 1 skeleton, so a policy change is made
+# in exactly one place and both agents see it.
+# ===========================================================================
 from agent.agent_skeleton import DEMO_ORDERS, DEMO_POLICIES, ESCALATION_KEYWORDS
 
-# ---------------------------------------------------------------------------
-# Model resolution (first match wins).
-# ---------------------------------------------------------------------------
+# ===========================================================================
+# Section 3 — Model resolution (first match wins)
+# Purpose: decide which model client this process talks to, once, at
+# import time. Order matters, and it is the same order the docstring
+# promises: (1) PRONTO_BASE_URL, a local model such as Ollama, or any
+# OpenAI-compatible endpoint the caller sets, including the Neatlogs
+# gateway and OpenAI direct, which the Week 6 scripts set via this
+# variable; (2) BRAINTRUST_API_KEY, the Braintrust proxy students
+# already have from Week 2; (3) OPENAI_API_KEY, plain OpenAI. If none
+# of them is set, exit with a message naming exactly what to set.
+# Nothing here makes a model call; it only builds the client.
+# ===========================================================================
 def _resolve_client():
     if os.getenv("PRONTO_BASE_URL"):
         return OpenAI(base_url=os.environ["PRONTO_BASE_URL"],
@@ -124,9 +175,20 @@ def _resolve_client():
         "                        PRONTO_BASE_URL=http://localhost:11434/v1 with Ollama)"
     )
 
-# Neatlogs is on only when it's installed AND NEATLOGS_API_KEY is set.
-# Init at import so the browser chat (agent/chat_ui.py) is traced too —
-# it calls run_turn in this module and has no tracer of its own.
+# ===========================================================================
+# Section 4 — Tracing setup: Neatlogs init and the client wrap order
+# Purpose: turn Neatlogs tracing on, but only when it is both installed
+# AND NEATLOGS_API_KEY is set. It inits at import time, not in main(),
+# so the browser chat (agent/chat_ui.py) is traced too: chat_ui calls
+# run_turn in this module and has no tracer of its own. When Neatlogs
+# is off, NEATLOGS is False and every Neatlogs helper below becomes a
+# no-op, so the agent runs exactly the same without it.
+#
+# Wrap order, read this before changing it: Neatlogs wraps the raw
+# client FIRST, then Braintrust wraps outside it (see Section 6).
+# Reversing the order makes the two patched create() methods call
+# each other forever.
+# ===========================================================================
 NEATLOGS = neatlogs is not None and bool(os.getenv("NEATLOGS_API_KEY"))
 if NEATLOGS:
     neatlogs.init(
@@ -136,10 +198,17 @@ if NEATLOGS:
     )
 
 client = _resolve_client()
-# Neatlogs wraps the raw client, Braintrust wraps outside it. The reverse
-# order makes the two patched create() methods call each other forever.
 if NEATLOGS:
     client = neatlogs.wrap(client)
+# ===========================================================================
+# Section 5 — Model constants
+# Purpose: the three knobs that control every model call, read once from
+# the environment. MODEL is the model name (PRONTO_MODEL, default
+# gpt-4o-mini). TEMPERATURE is 0.0 by default: determinism is a
+# prerequisite for measurement, so the same probes give the same results
+# across runs. MAX_STEPS is 6: the agent gets six model -> tool rounds
+# per turn, then run_turn escalates instead of looping forever.
+# ===========================================================================
 MODEL = os.getenv("PRONTO_MODEL", "gpt-4o-mini")
 # Determinism is a prerequisite for measurement: temperature 0 means the same
 # probes give the same results across runs, so scan results are comparable.
@@ -147,10 +216,22 @@ MODEL = os.getenv("PRONTO_MODEL", "gpt-4o-mini")
 TEMPERATURE = float(os.getenv("PRONTO_TEMPERATURE", "0.0"))
 MAX_STEPS = 6  # the agent gets 6 model->tool rounds, then we escalate
 
-# ---------------------------------------------------------------------------
-# Tracing resolution (first match wins). `traced` is whichever decorator won,
-# or a no-op. wrap_openai is only applied for the Braintrust path.
-# ---------------------------------------------------------------------------
+# ===========================================================================
+# Section 6 — Tracing resolution and trace helpers
+# Purpose: pick ONE `traced` decorator for the whole file, first match
+# wins, and provide the helpers the loop uses to flush traces and group
+# turns into sessions. (1) Braintrust importable and BRAINTRUST_API_KEY
+# set: init a logger for project "pronto", wrap the client so every
+# chat.completions.create() becomes a span, and use the Braintrust
+# decorator. (2) LangSmith importable and a LangSmith key set: use its
+# decorator (Week 1, Path A). (3) Otherwise: a no-op decorator, so the
+# agent still runs, just untraced. `nl_span` is the Neatlogs equivalent:
+# a real span decorator when Neatlogs is on, a pass-through otherwise.
+# `_flush_traces` sends buffered spans out; `_session_ctx` gives one
+# Neatlogs session per conversation, keyed by the identity of the
+# shared `messages` list, so turns in one --chat session stay together
+# and a new list starts a new session.
+# ===========================================================================
 _bt_logger = None
 
 def _noop_decorator(fn):
@@ -193,6 +274,18 @@ def _session_ctx(messages: list):
     return neatlogs.identify(session_id=sid)
 
 
+# ===========================================================================
+# Section 7 — System prompt
+# Purpose: the instructions the model sees at the start of every turn,
+# as the first message in the shared history. It sets the role (Pronto
+# support, groceries in 30 minutes), the ground rule (use the tools,
+# never invent order details, policies, or refund amounts), the tone
+# (acknowledge the problem first, plain language, one clear next step),
+# and the two hard rules that are also enforced in code in Section 8:
+# refunds over $50 need human approval, and legal, safety, or other
+# customer requests escalate immediately. A prompt rule alone can be
+# talked around; the tool rule below cannot.
+# ===========================================================================
 SYSTEM = (
     "You are Pronto's customer support agent (\"Groceries in 30 minutes\"). "
     "Use the tools to look things up — never invent order details, policies, or "
@@ -203,6 +296,20 @@ SYSTEM = (
 )
 
 
+# ===========================================================================
+# Section 8 — Tools: the only things the agent can actually do
+# Purpose: four plain Python functions, each decorated with @traced and
+# @nl_span so every tool call becomes a span under the turn that called
+# it. get_order_status looks up DEMO_ORDERS and never invents an order.
+# lookup_policy keyword-searches DEMO_POLICIES and says to escalate when
+# no clause matches. issue_refund is the money tool: over $50 it does
+# NOT refund, it escalates, which is the backend check behind the
+# prompt rule in Section 7. escalate_to_human is always safe to call.
+# Below the functions, TOOLS maps a tool name to its Python function
+# (this is what the code dispatches on), and TOOL_SCHEMAS is the list
+# of OpenAI function-calling schemas (this is what the model sees when
+# it chooses a tool). The model chooses by name; the code runs by dict.
+# ===========================================================================
 @traced
 @nl_span(kind="TOOL", name="get_order_status", tool_name="get_order_status")
 def get_order_status(order_id: str) -> dict:
@@ -274,6 +381,24 @@ TOOL_SCHEMAS = [
 ]
 
 
+# ===========================================================================
+# Section 9 — Agent loop: run_turn
+# Purpose: one customer turn, as a real agent loop, and the heart of the
+# file. Steps, in order: (1) append the user message to the shared
+# `messages` history, which grows across turns and is what makes the
+# agent multi-turn, and which is also the root span for the trace;
+# (2) the ESCALATION_KEYWORDS pre-check, the agent's one built-in
+# defense, which escalates legal, safety, and other-customer requests
+# before the model is ever called, deliberately crude, so Week 3 can
+# measure its catch rate versus its over-block rate; (3) loop up to
+# MAX_STEPS times: call the model with the full history and the tool
+# schemas, append its message as a plain dict, return its content if
+# it made no tool call, otherwise dispatch each tool call through
+# TOOLS, append each result as a tool message, and loop back so the
+# model can reason about the result; (4) after six rounds with no
+# answer, escalate for too many steps. `_export_turn` wraps run_turn
+# so every call opens a Neatlogs session first and flushes traces after.
+# ===========================================================================
 @traced
 @nl_span(kind="WORKFLOW", name="run_turn")
 def run_turn(messages: list, user_message: str, model: str = MODEL) -> str:
@@ -334,6 +459,19 @@ def _export_turn(fn):
 run_turn = _export_turn(run_turn)
 
 
+# ===========================================================================
+# Section 10 — Guardrails wrapper: run_turn_guarded
+# Purpose: wire guardrails around the agent WITHOUT changing the agent.
+# Week 3, Assignment 2. A guardrail is any callable that takes text and
+# returns (blocked, reason). Input guardrails run BEFORE the model is
+# called, so they can stop prompt injections and jailbreaks without
+# spending a model call. Then run_turn runs untouched. Output guardrails
+# run AFTER the reply is drafted but BEFORE it is returned, so they can
+# catch data leakage and PII whose input looked benign. With empty
+# guardrail tuples this function behaves exactly like run_turn. Refusals
+# stay generic on purpose: never leak which pattern fired back to a
+# potential attacker.
+# ===========================================================================
 @traced
 def run_turn_guarded(messages: list, user_message: str, model: str = MODEL,
                      input_guardrails=(), output_guardrails=()) -> str:
@@ -378,6 +516,20 @@ def run_turn_guarded(messages: list, user_message: str, model: str = MODEL,
     return reply
 
 
+# ===========================================================================
+# Section 11 — CLI: main()
+# Purpose: the command-line front end, and the only part of the file
+# that talks to a terminal. Always run from the repo root, as a module:
+# `python -m agent.pronto_agent ...`. --ask runs one turn and prints
+# ONLY clean JSON to stdout, {"input": ..., "output": ...}, so it is
+# safe as a promptfoo exec provider; banners and diagnostics go to
+# stderr. The positional prompt exists for the same reason: promptfoo
+# appends the prompt plus options JSON as trailing args, so
+# parse_known_args ignores the extras. --chat loops interactively with
+# one shared history, flushing traces after each turn so each turn
+# lands as its own trace. --model overrides PRONTO_MODEL for one run.
+# Nothing below this section runs on import.
+# ===========================================================================
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Pronto agent — the canonical Week 3+ agent. "
