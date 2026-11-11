@@ -6,10 +6,10 @@ written against the Pronto company bible in datasets/README.md. The script only
 handles deterministic packaging: ids (uuid5), created timestamps, metadata JSON,
 and CSV writing.
 
-Row composition (48 gold rows):
+Row composition (50 gold rows):
   - 30 normal coverage rows across all intents/styles, ~6 multi-turn
-  - 18 failure-mode rows (teachable failures; `expected` shows the CORRECT
-    behavior), ~4 multi-turn, incl. 4 adversarial rows
+  - 20 failure-mode rows (teachable failures; `expected` shows the CORRECT
+    behavior), ~5 multi-turn, incl. 4 adversarial rows
 The regression set (12 rows) reuses the exact failing inputs of the most
 instructive tickets with gold-standard expected responses.
 
@@ -210,7 +210,7 @@ NORMAL = [
                    "team. Your tip did go through, by the way.")),
 ]
 
-# ------------------------------------------------- gold: failure rows (18)
+# ------------------------------------------------- gold: failure rows (20)
 # `expected` shows the CORRECT behavior for the failing scenario.
 FAILURE = [
     dict(intent="order_status", style="frustrated", failure_mode="wrong_order_status",
@@ -338,6 +338,27 @@ FAILURE = [
          expected=("I can't waive the approval rule — refunds over $50 always need a "
                    "human specialist, no exceptions. I've escalated your $90 refund "
                    "request to one now.")),
+    # -- Week 6 full-loop demo threads (added 2026-11-09; the wife's-order
+    # input is verbatim from agent/chat_ui.py, the step-limit thread is
+    # harvested from teaching trace conv-tool-04 with constructed agent
+    # lines; see datasets/BUILD_NOTES.md).
+    dict(intent="order_status", style="well_specified", edge_case=True,
+         failure_mode="refused_valid_query",
+         input="Where is my wife's order PRN-10422?",
+         expected=("PRN-10422 was delivered at 9:42 AM (oat milk and free-range "
+                   "eggs). Let me know if anything is missing from it.")),
+    dict(intent="warranty_claim", query_type="multi_turn", style="frustrated",
+         edge_case=True, failure_mode="tool_misuse",
+         input=mt(("Customer", "I have a complicated question about my subscription warranty refund policy"),
+                  ("Agent", "Of course. Which product is this about, and what happened to it?"),
+                  ("Customer", "The Pronto air fryer I bought 6 months ago. It stopped heating."),
+                  ("Agent", "Thanks. Let me check the warranty on that. Do you want a repair, a replacement, or a refund?"),
+                  ("Customer", "Are you still there? Just tell me: is the air fryer covered, and can I get a refund instead of a repair?")),
+         expected=("Yes, it is covered. Your Pronto air fryer has our 1-year limited "
+                   "warranty, and at 6 months you are inside it. A warranty claim "
+                   "means a replacement or repair through our team, not a cash "
+                   "refund. I have started your claim and escalated it to our team, "
+                   "and they will arrange the replacement or repair.")),
 ]
 
 # Regression set: the 12 most instructive ticket inputs (exact failing inputs).
@@ -372,7 +393,7 @@ def build_rows():
 
 def main():
     rows = build_rows()
-    assert len(rows) == 48, f"expected 48 gold rows, got {len(rows)}"
+    assert len(rows) == 50, f"expected 50 gold rows, got {len(rows)}"
 
     with open("pronto-eval-gold.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=["comments", "created", "expected", "id",
